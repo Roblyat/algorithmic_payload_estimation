@@ -1,26 +1,39 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="ur5_manipulator">
 
-    <!-- load ur5 robot from ros_industrial/ur_description-->  
-    <xacro:include filename="$(find ur_description)/urdf/ur5.xacro" />
+    <!-- Define a property to select your robot prefix -->
+    <xacro:property name="robot_prefix" value="ur5_" />
 
-    <!-- include gazbeo ft sensor plugin -->
+    <!-- Include base attachment -->
+    <xacro:include filename="$(find manipulator_description)/urdf/base_attachment.urdf.xacro" />
+    <!-- Include UR5 robot from ros_industrial/ur_description -->  
+    <xacro:include filename="$(find ur_description)/urdf/inc/ur5_macro.xacro" />
+    <!-- include gripper -->
+    <xacro:include filename="$(find robotiq_gripper)/urdf/robotiq_85_gripper.urdf.xacro" />
+    <!-- Include Gazebo force-torque sensor plugin -->
     <xacro:include filename="$(find manipulator_description)/urdf/ft_sensor.gazebo.xacro" />
+    <!-- Include the file that defines the 'table' macro -->
+    <xacro:include filename="$(find manipulator_description)/urdf/table.urdf.xacro" />
+
 
     <!-- Define the world link -->
-    <!-- <link name="world" /> -->
+    <link name="world" />
 
-    <!-- call the ur5 robot -->
-    <xacro:ur5_robot prefix="ur5_"/>
+    <!-- Call the base attachment using the property value -->
+    <xacro:base_attachment name="${robot_prefix}attachment" parent="world" robot="${robot_prefix}" />
 
-    <!-- mount plugin to ur5 robot -->
-    <xacro:ft_sensor_gazebo joint="wrist_3_joint"/>
+    <!-- Call the UR5 robot using the property value -->
+    <xacro:ur5_robot prefix="${robot_prefix}"/>
 
-    <!-- <joint name="ur5_world_fix" type="fixed">
-    <parent link="world" />
-    <child link="base_link" />
-    <origin xyz="0 0 0" rpy="0 0 0" />
-    </joint>     -->
+    <!-- Mount the force-torque sensor plugin to the UR5 robot using the property value -->
+    <xacro:ft_sensor_gazebo joint="${robot_prefix}wrist_3_joint"/>
 
+    <!-- mount gripper -->
+    <xacro:robotiq_85_gripper prefix="gripper_" parent="${robot_prefix}tool0">
+        <origin xyz="0 0 0" rpy="0 -1.57 0" />
+    </xacro:robotiq_85_gripper>
+      
+    <!-- add table -->
+    <xacro:table name="table" parent="world"/>
 
 </robot>

@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="base_attachment">
+
+  <!-- Macro for the base attachment using params -->
+  <xacro:macro name="base_attachment" params="name parent robot">
+
+    <!-- Joint to connect cylinder base to the world -->
+    <joint name="${name}_to_world" type="fixed">
+        <parent link="${parent}"/>
+        <child link="${name}_base_link"/>
+        <origin xyz="0 0.6 0.425" rpy="0 0 -1.5708"/> <!-- Lift by half the cylinder height -->
+    </joint>
+
+
+    <!-- Grey Cylinder Base -->
+    <link name="${name}_base_link">
+      <visual>
+        <geometry>
+          <cylinder radius="0.1" length="0.85"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.5 0.5 0.5 1.0"/>
+        </material>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </visual>
+      <collision>
+        <geometry>
+          <cylinder radius="0.3" length="0.5"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </collision>
+      <inertial>
+        <mass value="10.0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
+      </inertial>
+    </link>
+
+    <!-- Joint between Cylinder Base and UR5 Robot -->
+    <joint name="${name}_to_${robot}" type="fixed">
+      <parent link="${name}_base_link"/>
+      <child link="${robot}base_link"/> <!-- As per your request -->
+      <origin xyz="0 0 0.425" rpy="0 0 0"/> <!-- Position the UR5 on top of the cylinder -->
+    </joint>
+
+  </xacro:macro>
+
+</robot>
