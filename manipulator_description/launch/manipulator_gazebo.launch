@@ -1,0 +1,9 @@
+<launch>
+
+    <!-- Set use_sim_time parameter to true -->
+    <param name="use_sim_time" value="true" />
+
+    <!-- Include the MoveIt demo Gazebo launch file -->
+    <include file="$(find manipulator_moveit_config)/launch/demo_gazebo.launch" />
+
+</launch>
