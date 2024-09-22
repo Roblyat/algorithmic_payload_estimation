@@ -10,7 +10,7 @@
     <!-- Include UR5 robot from ros_industrial/ur_description -->  
     <xacro:include filename="$(find ur_description)/urdf/inc/ur5_macro.xacro" />
     <!-- include gripper -->
-    <!-- <xacro:include filename="$(find robotiq_gripper)/urdf/robotiq_85_gripper.urdf.xacro" /> -->
+    <xacro:include filename="$(find robotiq_description)/urdf/robotiq_85_gripper.urdf.xacro" />
     <!-- Include Gazebo force-torque sensor plugin -->
     <xacro:include filename="$(find manipulator_description)/urdf/ft_sensor.gazebo.xacro" />
     <!-- Include the file that defines the 'table' macro -->
@@ -30,9 +30,9 @@
     <xacro:ft_sensor_gazebo joint="${robot_prefix}wrist_3_joint"/>
 
     <!-- mount gripper -->
-    <!-- <xacro:robotiq_85_gripper prefix="gripper_" parent="${robot_prefix}tool0">
+    <xacro:robotiq_85_gripper prefix="gripper_" parent="${robot_prefix}tool0">
         <origin xyz="0 0 0" rpy="0 -1.57 0" />
-    </xacro:robotiq_85_gripper> -->
+    </xacro:robotiq_85_gripper>
       
     <!-- add table -->
     <xacro:table name="table" parent="world"/>
