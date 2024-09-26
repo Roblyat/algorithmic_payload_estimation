@@ -37,4 +37,10 @@
     <!-- add table -->
     <xacro:table name="table" parent="world"/>
 
+    <!-- Add the gazebo_ros_control plugin to the robot, if out commented dont forget to add in moveit generated urdf -->
+    <!-- <gazebo>
+        <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control">
+        </plugin>
+    </gazebo> -->
+
 </robot>
