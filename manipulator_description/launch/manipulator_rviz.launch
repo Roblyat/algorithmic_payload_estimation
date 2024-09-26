@@ -6,7 +6,7 @@
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
     
     <!-- Visualization in Rviz-->
-    <node name="rviz" pkg="rviz" type="rviz"  /> <!-- args="-d $(find manipulator_description)/cfg/config.rviz" -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find manipulator_description)/cfg/config.rviz" />
     
     <!-- Visualization of the use GUI for playing with joint-->
     <arg name="use_gui" default="true"/>

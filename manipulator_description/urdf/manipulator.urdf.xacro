@@ -4,15 +4,19 @@
     <!-- Define a property to select your robot prefix -->
     <xacro:property name="robot_prefix" value="ur5_" />
     <xacro:property name="transmission_interface" value="hardware_interface/EffortJointInterface" />
+    <xacro:property name="ft_prefix" value="sensor_" />
+    <xacro:property name="gripper_prefix" value="gripper_" />
 
     <!-- Include base attachment -->
     <xacro:include filename="$(find manipulator_description)/urdf/base_attachment.urdf.xacro" />
     <!-- Include UR5 robot from ros_industrial/ur_description -->  
     <xacro:include filename="$(find ur_description)/urdf/inc/ur5_macro.xacro" />
-    <!-- include gripper -->
-    <xacro:include filename="$(find robotiq_description)/urdf/robotiq_85_gripper.urdf.xacro" />
+    <!-- include force-torque sensor -->
+    <xacro:include filename="$(find robotiq_ft_sensor)/urdf/robotiq_ft300.urdf.xacro" />
     <!-- Include Gazebo force-torque sensor plugin -->
     <xacro:include filename="$(find manipulator_description)/urdf/ft_sensor.gazebo.xacro" />
+    <!-- include gripper -->
+    <xacro:include filename="$(find robotiq_description)/urdf/robotiq_85_gripper.urdf.xacro" />
     <!-- Include the file that defines the 'table' macro -->
     <xacro:include filename="$(find manipulator_description)/urdf/table.urdf.xacro" />
 
@@ -26,11 +30,14 @@
     <!-- Call the UR5 robot using the property value -->
     <xacro:ur5_robot prefix="${robot_prefix}" transmission_hw_interface="${transmission_interface}"/>
 
-    <!-- Mount the force-torque sensor plugin to the UR5 robot using the property value -->
-    <xacro:ft_sensor_gazebo joint="${robot_prefix}wrist_3_joint"/>
+    <!-- Mount the force-torque sensor & plugin to the UR5 -->
+     <xacro:robotiq_ft300 parent="${robot_prefix}tool0" prefix="${ft_prefix}">
+        <origin xyz="0 0 -0.004" rpy="0 0 0"/>
+    </xacro:robotiq_ft300>
+    <xacro:ft_sensor_gazebo joint="${ft_prefix}measurment_joint"/>
 
     <!-- mount gripper -->
-    <xacro:robotiq_85_gripper prefix="gripper_" parent="${robot_prefix}tool0">
+    <xacro:robotiq_85_gripper prefix="${gripper_prefix}" parent="${ft_prefix}robotiq_ft_frame_id">
         <origin xyz="0 0 0" rpy="0 -1.57 0" />
     </xacro:robotiq_85_gripper>
       
@@ -38,9 +45,9 @@
     <xacro:table name="table" parent="world"/>
 
     <!-- Add the gazebo_ros_control plugin to the robot, if out commented dont forget to add in moveit generated urdf -->
-    <!-- <gazebo>
+    <gazebo>
         <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control">
         </plugin>
-    </gazebo> -->
+    </gazebo>
 
 </robot>
