@@ -6,4 +6,7 @@
     <!-- Include the MoveIt demo Gazebo launch file -->
     <include file="$(find manipulator_moveit_config)/launch/demo_gazebo.launch" />
 
+    <!-- Start hmi -->
+    <node pkg="hmi" type="hmi" name="hmi_node" output="screen" />   
+
 </launch>
