@@ -16,11 +16,27 @@ Control::Control(ros::NodeHandle& N)
 void Control::render()
 {
 
+    // Create a text input box for the planning group
+    ImGui::InputText("Planning Group", planning_group, IM_ARRAYSIZE(planning_group));
+
     ImGui::SetCursorPos(ImVec2(450, 50)); // X, Y
     if (ImGui::Button("Init Pos", button_5x5))
     {
-        ROS_WARN("Moving to init position");
-        moveInit();
+        ROS_WARN_STREAM("Moving " << planning_group << " to init position");
+
+        // Check if the planning group is not empty and not "manipulator"
+        if (std::string(planning_group).empty() || std::string(planning_group) == "manipulator")
+        {
+            // Move the robot to init position and open the gripper
+            moveInit(std::string(planning_group));
+            controlGripper("open");  // Open the gripper
+        }
+        else
+        {
+            ROS_WARN("Invalid planning group provided, skipping motion.");
+        }
+
+        return;
     }
 
     ImGui::SetCursorPos(ImVec2(150, 0)); // X, Y
@@ -58,16 +74,31 @@ void Control::render()
     {
         moveLinZNeg();
     }
+
+    // Add Gripper Control Buttons
+    ImGui::SetCursorPos(ImVec2(450, 300)); // X, Y for "Gripper Open"
+    if (ImGui::Button("Gripper Open", button_5x5))
+    {
+        ROS_WARN("Opening gripper");
+        controlGripper("open");  // Call controlGripper with "open"
+    }
+
+    ImGui::SetCursorPos(ImVec2(450, 350)); // X, Y for "Gripper Close"
+    if (ImGui::Button("Gripper Close", button_5x5))
+    {
+        ROS_WARN("Closing gripper");
+        controlGripper("close");  // Call controlGripper with "close"
+    }
 }
 
 
-void Control::moveInit(const std::string& planning_group, const std::string& reference_link)
+void Control::moveInit(const std::string& planning_group)
 {
     // Initialize MoveGroupInterface with the specified planning group
     moveit::planning_interface::MoveGroupInterface move_group(planning_group);
 
     // Set the reference frame for planning
-    move_group.setPoseReferenceFrame(reference_link);
+    move_group.setPoseReferenceFrame("base_link");
 
     // Create a target pose object
     geometry_msgs::Pose target_pose;
@@ -104,8 +135,10 @@ void Control::moveInit(const std::string& planning_group, const std::string& ref
 
 // Linear movement functions
 void Control::moveLinXPos()
-{
-    geometry_msgs::PoseStamped cp = move_group_interface.getCurrentPose();
+{   
+    std::string PLANNING_GROUP = "manipulator";
+    moveit::planning_interface::MoveGroupInterface move_group(PLANNING_GROUP);
+    geometry_msgs::PoseStamped cp = move_group.getCurrentPose();
     waypoints.clear();
     geometry_msgs::Pose target = cp.pose;
     target.position.x += 0.001 * speed;
@@ -113,13 +146,15 @@ void Control::moveLinXPos()
 
     const double jump_threshold = 0.0;
     const double eef_step = 0.01;
-    double fraction = move_group_interface.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
-    move_group_interface.asyncExecute(trajectory);
+    double fraction = move_group.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
+    move_group.asyncExecute(trajectory);
 }
 
 void Control::moveLinXNeg()
 {
-    geometry_msgs::PoseStamped cp = move_group_interface.getCurrentPose();
+    std::string PLANNING_GROUP = "manipulator";
+    moveit::planning_interface::MoveGroupInterface move_group(PLANNING_GROUP);
+    geometry_msgs::PoseStamped cp = move_group.getCurrentPose();
     waypoints.clear();
     geometry_msgs::Pose target = cp.pose;
     target.position.x -= 0.001 * speed;
@@ -127,13 +162,15 @@ void Control::moveLinXNeg()
 
     const double jump_threshold = 0.0;
     const double eef_step = 0.01;
-    double fraction = move_group_interface.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
-    move_group_interface.asyncExecute(trajectory);
+    double fraction = move_group.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
+    move_group.asyncExecute(trajectory);
 }
 
 void Control::moveLinYPos()
 {
-    geometry_msgs::PoseStamped cp = move_group_interface.getCurrentPose();
+    std::string PLANNING_GROUP = "manipulator";
+    moveit::planning_interface::MoveGroupInterface move_group(PLANNING_GROUP);
+    geometry_msgs::PoseStamped cp = move_group.getCurrentPose();
     waypoints.clear();
     geometry_msgs::Pose target = cp.pose;
     target.position.y += 0.001 * speed;
@@ -141,13 +178,15 @@ void Control::moveLinYPos()
 
     const double jump_threshold = 0.0;
     const double eef_step = 0.01;
-    double fraction = move_group_interface.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
-    move_group_interface.asyncExecute(trajectory);
+    double fraction = move_group.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
+    move_group.asyncExecute(trajectory);
 }
 
 void Control::moveLinYNeg()
 {
-    geometry_msgs::PoseStamped cp = move_group_interface.getCurrentPose();
+    std::string PLANNING_GROUP = "manipulator";
+    moveit::planning_interface::MoveGroupInterface move_group(PLANNING_GROUP);
+    geometry_msgs::PoseStamped cp = move_group.getCurrentPose();
     waypoints.clear();
     geometry_msgs::Pose target = cp.pose;
     target.position.y -= 0.001 * speed;
@@ -155,13 +194,15 @@ void Control::moveLinYNeg()
 
     const double jump_threshold = 0.0;
     const double eef_step = 0.01;
-    double fraction = move_group_interface.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
-    move_group_interface.asyncExecute(trajectory);
+    double fraction = move_group.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
+    move_group.asyncExecute(trajectory);
 }
 
 void Control::moveLinZPos()
 {
-    geometry_msgs::PoseStamped cp = move_group_interface.getCurrentPose();
+    std::string PLANNING_GROUP = "manipulator";
+    moveit::planning_interface::MoveGroupInterface move_group(PLANNING_GROUP);
+    geometry_msgs::PoseStamped cp = move_group.getCurrentPose();
     waypoints.clear();
     geometry_msgs::Pose target = cp.pose;
     target.position.z += 0.001 * speed;
@@ -169,13 +210,15 @@ void Control::moveLinZPos()
 
     const double jump_threshold = 0.0;
     const double eef_step = 0.01;
-    double fraction = move_group_interface.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
-    move_group_interface.asyncExecute(trajectory);
+    double fraction = move_group.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
+    move_group.asyncExecute(trajectory);
 }
 
 void Control::moveLinZNeg()
 {
-    geometry_msgs::PoseStamped cp = move_group_interface.getCurrentPose();
+    std::string PLANNING_GROUP = "manipulator";
+    moveit::planning_interface::MoveGroupInterface move_group(PLANNING_GROUP);
+    geometry_msgs::PoseStamped cp = move_group.getCurrentPose();
     waypoints.clear();
     geometry_msgs::Pose target = cp.pose;
     target.position.z -= 0.001 * speed;
@@ -183,8 +226,8 @@ void Control::moveLinZNeg()
 
     const double jump_threshold = 0.0;
     const double eef_step = 0.01;
-    double fraction = move_group_interface.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
-    move_group_interface.asyncExecute(trajectory);
+    double fraction = move_group.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
+    move_group.asyncExecute(trajectory);
 }
 
 void Control::moveRobotToPose(const std::string& planning_group, const geometry_msgs::Pose& target_pose)
@@ -232,4 +275,41 @@ geometry_msgs::Pose Control::handlePose(int index, const geometry_msgs::PoseArra
 {
     // Simply return the pose at the given index
     return poses.poses[index];
+}
+
+void Control::controlGripper(const std::string& action)
+{
+    // Initialize the MoveGroupInterface for the gripper
+    moveit::planning_interface::MoveGroupInterface gripper_group("gripper");
+
+    // Check whether to open or close the gripper
+    if (action == "open")
+    {
+        ROS_INFO("Opening the gripper...");
+        gripper_group.setNamedTarget("open");  // Use predefined "open" position from MoveIt Setup Assistant
+    }
+    else if (action == "close")
+    {
+        ROS_INFO("Closing the gripper...");
+        gripper_group.setNamedTarget("close"); // Use predefined "close" position from MoveIt Setup Assistant
+    }
+    else
+    {
+        ROS_WARN("Invalid action. Use 'open' or 'close'.");
+        return;
+    }
+
+    // Plan and execute the motion
+    moveit::planning_interface::MoveGroupInterface::Plan my_plan;
+    bool success = (gripper_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+
+    if (success)
+    {
+        gripper_group.move();
+        ROS_INFO("Gripper moved to the %s position.", action.c_str());
+    }
+    else
+    {
+        ROS_WARN("Failed to move the gripper to the %s position.", action.c_str());
+    }
 }
