@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   genmsg
+  message_generation
   cmake_modules
   moveit_commander 
   moveit_core
@@ -65,11 +66,10 @@ find_package(Eigen3 REQUIRED)
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+  FILES
+  trajectory_msg.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -86,10 +86,10 @@ find_package(Eigen3 REQUIRED)
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -125,7 +125,7 @@ find_package(Eigen3 REQUIRED)
 catkin_package(
 #   INCLUDE_DIRS include
 #  LIBRARIES hmi
-#  CATKIN_DEPENDS roscpp rospy std_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
 #  DEPENDS Eigen3
 )
 
@@ -133,6 +133,10 @@ catkin_package(
 ## Build ##
 ###########
 
+##########################
+## PROJECT_NAME = hmi,  ##
+## so <node> type="hmi" ##
+##########################
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
@@ -152,6 +156,9 @@ add_executable(${PROJECT_NAME}
     include/hmi/Frontend.cpp
     include/hmi/Control.cpp
 )
+# add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} hmi_generate_messages_cpp)
+add_dependencies(${PROJECT_NAME} hmi_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
+
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} glfw)
 target_link_libraries(${PROJECT_NAME} ${OPENGL_gl_LIBRARY})

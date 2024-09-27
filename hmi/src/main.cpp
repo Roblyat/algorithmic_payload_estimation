@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // app.render();
+        app.render();
 
         ImGui::Render();
         int display_w, display_h;
