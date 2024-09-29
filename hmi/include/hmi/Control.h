@@ -21,7 +21,7 @@ public:
     void render();
 
 private:
-    void moveInit(const std::string& planning_group); // Method to move to initial position
+    void moveInit(); // Method to move to initial position
     void controlGripper(const std::string& action);
 
     // Functions for linear movements
@@ -41,7 +41,6 @@ private:
     void accNeg();  // Decrease acceleration
 
     // MoveGroup constraints
-    char planning_group[128] = "manipulator"; 
     moveit_msgs::RobotTrajectory trajectory;
     std::vector<geometry_msgs::Pose> waypoints;
     int speed = 1;  // Speed factor

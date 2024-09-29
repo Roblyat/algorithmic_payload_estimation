@@ -13,124 +13,124 @@ Control::Control(ros::NodeHandle& N)
 // Button definition //
 ///////////////////////
 
+enum RobotAction {
+    ACTION_NONE,
+    ACTION_MOVE_INIT,
+    ACTION_GRIPPER_OPEN,
+    ACTION_GRIPPER_CLOSE,
+    ACTION_MOVE_LIN_Y_POS,
+    ACTION_MOVE_LIN_Y_NEG,
+    ACTION_MOVE_LIN_X_POS,
+    ACTION_MOVE_LIN_X_NEG,
+    ACTION_MOVE_LIN_Z_POS,
+    ACTION_MOVE_LIN_Z_NEG
+};
+
 void Control::render()
 {
+    static bool action_pending = false;  // A flag to prevent multiple calls
+    RobotAction action = ACTION_NONE;
 
-    // Create a text input box for the planning group
-    ImGui::InputText("Planning Group", planning_group, IM_ARRAYSIZE(planning_group));
+    // Position buttons in a row (or column) and set corresponding actions
+    ImGui::SetCursorPos(ImVec2(10, 10)); // X, Y
+    if (ImGui::Button("Init Pos", button_5x5)) action = ACTION_MOVE_INIT;
+    
+    ImGui::SetCursorPos(ImVec2(100, 10)); // X, Y
+    if (ImGui::Button("Y+", button_5x5)) action = ACTION_MOVE_LIN_Y_POS;
 
-    ImGui::SetCursorPos(ImVec2(450, 50)); // X, Y
-    if (ImGui::Button("Init Pos", button_5x5))
+    ImGui::SetCursorPos(ImVec2(100, 100)); // X, Y
+    if (ImGui::Button("Y-", button_5x5)) action = ACTION_MOVE_LIN_Y_NEG;
+
+    ImGui::SetCursorPos(ImVec2(200, 10)); // X, Y
+    if (ImGui::Button("X+", button_5x5)) action = ACTION_MOVE_LIN_X_POS;
+
+    ImGui::SetCursorPos(ImVec2(200, 100)); // X, Y
+    if (ImGui::Button("X-", button_5x5)) action = ACTION_MOVE_LIN_X_NEG;
+
+    ImGui::SetCursorPos(ImVec2(300, 10)); // X, Y
+    if (ImGui::Button("Z+", button_5x5)) action = ACTION_MOVE_LIN_Z_POS;
+
+    ImGui::SetCursorPos(ImVec2(300, 100)); // X, Y
+    if (ImGui::Button("Z-", button_5x5)) action = ACTION_MOVE_LIN_Z_NEG;
+
+    ImGui::SetCursorPos(ImVec2(400, 10)); // X, Y
+    if (ImGui::Button("Gripper Open", button_5x5)) action = ACTION_GRIPPER_OPEN;
+
+    ImGui::SetCursorPos(ImVec2(400, 100)); // X, Y
+    if (ImGui::Button("Gripper Close", button_5x5)) action = ACTION_GRIPPER_CLOSE;
+
+    // Use switch-case to handle the selected action
+    switch (action)
     {
-        ROS_WARN_STREAM("Moving " << planning_group << " to init position");
+        case ACTION_MOVE_INIT:
+            ROS_WARN("Moving to init position");
+            moveInit();
+            controlGripper("open");
+            break;
 
-        // Check if the planning group is not empty and not "manipulator"
-        if (std::string(planning_group).empty() || std::string(planning_group) == "manipulator")
-        {
-            // Move the robot to init position and open the gripper
-            moveInit(std::string(planning_group));
-            controlGripper("open");  // Open the gripper
-        }
-        else
-        {
-            ROS_WARN("Invalid planning group provided, skipping motion.");
-        }
+        case ACTION_MOVE_LIN_Y_POS:
+            moveLinYPos();
+            break;
 
-        return;
-    }
+        case ACTION_MOVE_LIN_Y_NEG:
+            moveLinYNeg();
+            break;
 
-    ImGui::SetCursorPos(ImVec2(150, 0)); // X, Y
-    if (ImGui::Button("Y+", button_5x5))
-    {
-        moveLinYPos();
-    }
+        case ACTION_MOVE_LIN_X_POS:
+            moveLinXPos();
+            break;
 
-    ImGui::SetCursorPos(ImVec2(150, 300)); // X, Y
-    if (ImGui::Button("Y-", button_5x5))
-    {
-        moveLinYNeg();
-    }
+        case ACTION_MOVE_LIN_X_NEG:
+            moveLinXNeg();
+            break;
 
-    ImGui::SetCursorPos(ImVec2(0, 150)); // X, Y
-    if (ImGui::Button("X-", button_5x5))
-    {
-        moveLinXNeg();
-    }
+        case ACTION_MOVE_LIN_Z_POS:
+            moveLinZPos();
+            break;
 
-    ImGui::SetCursorPos(ImVec2(300, 150)); // X, Y
-    if (ImGui::Button("X+", button_5x5))
-    {
-        moveLinXPos();
-    }
+        case ACTION_MOVE_LIN_Z_NEG:
+            moveLinZNeg();
+            break;
 
-    ImGui::SetCursorPos(ImVec2(150, 100)); // X, Y
-    if (ImGui::Button("Z+", button_5x5))
-    {
-        moveLinZPos();
-    }
+        case ACTION_GRIPPER_OPEN:
+            ROS_WARN("Opening gripper");
+            controlGripper("open");
+            break;
 
-    ImGui::SetCursorPos(ImVec2(150, 200)); // X, Y
-    if (ImGui::Button("Z-", button_5x5))
-    {
-        moveLinZNeg();
-    }
+        case ACTION_GRIPPER_CLOSE:
+            ROS_WARN("Closing gripper");
+            controlGripper("close");
+            break;
 
-    // Add Gripper Control Buttons
-    ImGui::SetCursorPos(ImVec2(450, 300)); // X, Y for "Gripper Open"
-    if (ImGui::Button("Gripper Open", button_5x5))
-    {
-        ROS_WARN("Opening gripper");
-        controlGripper("open");  // Call controlGripper with "open"
-    }
-
-    ImGui::SetCursorPos(ImVec2(450, 350)); // X, Y for "Gripper Close"
-    if (ImGui::Button("Gripper Close", button_5x5))
-    {
-        ROS_WARN("Closing gripper");
-        controlGripper("close");  // Call controlGripper with "close"
+        default:
+            // No action selected
+            break;
     }
 }
 
 
-void Control::moveInit(const std::string& planning_group)
+void Control::moveInit()
 {
-    // Initialize MoveGroupInterface with the specified planning group
-    moveit::planning_interface::MoveGroupInterface move_group(planning_group);
+    // Initialize Move Group Interface for the robot with the "manipulator" planning group
+    moveit::planning_interface::MoveGroupInterface move_group("manipulator");
 
-    // Set the reference frame for planning
-    move_group.setPoseReferenceFrame("base_link");
+    // Set the target pose to the home position for the specified robot
+    move_group.setNamedTarget("home");
 
-    // Create a target pose object
-    geometry_msgs::Pose target_pose;
+    // Execute the motion asynchronously (non-blocking)
+    moveit::planning_interface::MoveItErrorCode result = move_group.asyncMove();  // Non-blocking move
 
-    // Set translation values (position)
-    target_pose.position.x = 0.816;  // x from tf_echo for ur5_base_link to sensor_robotiq_ft_frame_id
-    target_pose.position.y = 0.229;  // y from tf_echo
-    target_pose.position.z = -0.014; // z from tf_echo
-
-    // Set rotation values (orientation) in Quaternion format
-    target_pose.orientation.x = -0.504; // x from tf_echo quaternion
-    target_pose.orientation.y = -0.496; // y from tf_echo quaternion
-    target_pose.orientation.z = -0.496; // z from tf_echo quaternion
-    target_pose.orientation.w = 0.504;  // w from tf_echo quaternion
-
-    // Set the target pose
-    move_group.setPoseTarget(target_pose);
-
-    // Plan and execute the motion
-    moveit::planning_interface::MoveGroupInterface::Plan my_plan;
-    bool success = (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-
-    if (success)
+    // Check if the command was successfully sent
+    if (result == moveit::planning_interface::MoveItErrorCode::SUCCESS)
     {
-        move_group.move();
-        ROS_INFO("Robot moved to the target pose.");
+        ROS_INFO("Robot is moving to the home position asynchronously.");
     }
     else
     {
-        ROS_WARN("Planning to the target pose failed.");
+        ROS_WARN("Failed to move to the home position.");
     }
 }
+
 
 
 // Linear movement functions
