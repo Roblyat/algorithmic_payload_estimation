@@ -1,22 +1,38 @@
-#include <GLFW/glfw3.h>
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include <stdio.h>
+#define GL_SILENCE_DEPRECATION
+#if defined(IMGUI_IMPL_OPENGL_ES2)
+#include <GLES2/gl2.h>
+#endif
+#include <GLFW/glfw3.h> 
+#include <iostream>
+#include <string>
+#include <regex>
+
+// ROS and MoveIt
 #include <ros/ros.h>
-#include "Frontend.h"
+#include <moveit/move_group_interface/move_group_interface.h>
+#include <moveit/planning_scene_interface/planning_scene_interface.h>
+#include <moveit_visual_tools/moveit_visual_tools.h>
+
+// Add RobotController and Plotting header files
+#include "RobotController.h"
+#include "Plotting.h"
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
-   
 
-static void glfw_error_callback(int error, const char* description)
-{
+// Error callback for GLFW
+static void glfw_error_callback(int error, const char* description) {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
+// Main code
 int main(int argc, char** argv) {
-    
+
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
         return 1;
@@ -67,196 +83,69 @@ int main(int argc, char** argv) {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
     ImVec4 clear_color = ImVec4(0.40f, 0.50f, 0.60f, 0.45f);
-
-
-    //ROS Stuff
+    
+    
+    // Initialize ROS and create node handle
     ros::init(argc, argv, "hmi");
     ros::NodeHandle nh;
     ros::AsyncSpinner spinner(1);
     spinner.start();
-    static const std::string PLANNING_GROUP = "manipulator"; //#####################################################################
-    moveit::planning_interface::MoveGroupInterface move_group_interface(PLANNING_GROUP); 
-    moveit_msgs::RobotTrajectory trajectory;
-    std::vector<geometry_msgs::Pose> waypoints;         //#####################################################################
+    // Create instances of RobotController and Plotting classes
+    RobotController robot_controller(nh, "manipulator");
+    Plotting plotting(nh);
     int speed = 1;
 
-
     // Main loop
-    while (!glfwWindowShouldClose(window))
-
-    {
+    while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
 
-        // Start the Dear ImGui frame
+        // Start new frame for ImGui
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+        // Create a window with tabs
+        ImGui::SetNextWindowSize(ImVec2(600, 600));
+        ImGui::SetNextWindowPos(ImVec2(50, 50));
+        ImGui::Begin("Robot HMI", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 
-        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-        
-			ImGui::SetNextWindowSize(ImVec2(600,600));
-			ImGui::SetNextWindowPos(ImVec2(50,50));
-			
-			//Start of the Window
-            ImGui::Begin("Example HMI" , NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | 4 | 256 | 1);
-            // Buttons return true when clicked (most widgets return true when edited/activated)
-            
-            
+        if (ImGui::BeginTabBar("Tabs")) {
+            if (ImGui::BeginTabItem("Robot Control")) {
+                ImGui::Text("Use buttons to move the robot.");
 
-            
-            //Close Button
-            ImGui::SetCursorPos(ImVec2(500,500));
-            if(ImGui::Button("CLOSE"))
-            {
-                    glfwWindowShouldClose(window);
-                    break;
-            }
-            
-            //X+ Button
-            ImGui::SetCursorPos(ImVec2(275,50));
-			if(ImGui::Button("X+", ImVec2(50.0,50.0)))
-			{
-			   geometry_msgs::PoseStamped cp = move_group_interface.getCurrentPose();
-               waypoints.clear();
-               geometry_msgs::Pose target = cp.pose;
-               target.position.x += 0.001 * speed;
-               waypoints.push_back(target);
-               moveit_msgs::RobotTrajectory trajectory;
-               const double jump_threshold = 0.0;
-               const double eef_step = 0.01;
-               double fraction = move_group_interface.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
-               move_group_interface.asyncExecute(trajectory);          
-			
-			}
-			
-			//Y- Button
-			ImGui::SetCursorPos(ImVec2(200,125)); 
-         	if(ImGui::Button("Y-", ImVec2(50.0,50.0)))
-         	{
-         	   geometry_msgs::PoseStamped cp = move_group_interface.getCurrentPose();
-               waypoints.clear();
-               geometry_msgs::Pose target = cp.pose;
-               target.position.y -= 0.001 * speed;
-               waypoints.push_back(target);
-               moveit_msgs::RobotTrajectory trajectory;
-               const double jump_threshold = 0.0;
-               const double eef_step = 0.01;
-               double fraction = move_group_interface.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
-               move_group_interface.asyncExecute(trajectory);   
-         	}
-         	                    
-            
-            //Y+ Button
-            ImGui::SameLine();
-            ImGui::SetCursorPos(ImVec2(350,125)); 
-            if(ImGui::Button("Y+", ImVec2(50.0,50.0)))
-            {
-               geometry_msgs::PoseStamped cp = move_group_interface.getCurrentPose();
-               waypoints.clear();
-               geometry_msgs::Pose target = cp.pose;
-               target.position.y += 0.001 * speed;
-               waypoints.push_back(target);
-               moveit_msgs::RobotTrajectory trajectory;
-               const double jump_threshold = 0.0;
-               const double eef_step = 0.01;
-               double fraction = move_group_interface.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
-               move_group_interface.asyncExecute(trajectory); 
-            }
-            
-            //X- Button
-            ImGui::SetCursorPos(ImVec2(275,200));
-            if(ImGui::Button("X-", ImVec2(50.0,50.0)))
-            {
-               geometry_msgs::PoseStamped cp = move_group_interface.getCurrentPose();
-               waypoints.clear();
-               geometry_msgs::Pose target = cp.pose;
-               target.position.x -= 0.001 * speed;
-               waypoints.push_back(target);
-               moveit_msgs::RobotTrajectory trajectory;
-               const double jump_threshold = 0.0;
-               const double eef_step = 0.01;
-               double fraction = move_group_interface.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
-               move_group_interface.asyncExecute(trajectory);  
-            }
-            
-            //Z+ Button
-            ImGui::SetCursorPos(ImVec2(425,75));
-            if(ImGui::Button("Z+", ImVec2(50,50)))
-            {
-               geometry_msgs::PoseStamped cp = move_group_interface.getCurrentPose();
-               waypoints.clear();
-               geometry_msgs::Pose target = cp.pose;
-               target.position.z += 0.001 * speed;
-               waypoints.push_back(target);
-               moveit_msgs::RobotTrajectory trajectory;
-               const double jump_threshold = 0.0;
-               const double eef_step = 0.01;
-               double fraction = move_group_interface.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
-               move_group_interface.asyncExecute(trajectory);  
-            }
-            
-            //Z- Button
-            ImGui::SetCursorPos(ImVec2(425,175));
-            if(ImGui::Button("Z-", ImVec2(50,50)))
-            {
-               geometry_msgs::PoseStamped cp = move_group_interface.getCurrentPose();
-               waypoints.clear();
-               geometry_msgs::Pose target = cp.pose;
-               target.position.z -= 0.001 * speed;
-               waypoints.push_back(target);
-               moveit_msgs::RobotTrajectory trajectory;
-               const double jump_threshold = 0.0;
-               const double eef_step = 0.01;
-               double fraction = move_group_interface.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
-               move_group_interface.asyncExecute(trajectory);  
-            }
-            
-            
-            //Stepsize Slider
-            ImGui::SetCursorPos(ImVec2(50,350));
-            ImGui::SliderInt("Steppsize(%)",&speed, 1,100);
+                // Cartesian movement buttons
+                if (ImGui::Button("X+")) robot_controller.moveCartesian(1, 0, 0, speed);
+                ImGui::SameLine();
+                if (ImGui::Button("X-")) robot_controller.moveCartesian(-1, 0, 0, speed);
 
-            //Init Button
-            ImGui::SetCursorPos(ImVec2(50,450));
-            if(ImGui::Button("Init", ImVec2(50,50)))
-            {
-                // Set the target pose to the home position for the specified robot
-                move_group_interface.setNamedTarget("home");
+                if (ImGui::Button("Y+")) robot_controller.moveCartesian(0, 1, 0, speed);
+                ImGui::SameLine();
+                if (ImGui::Button("Y-")) robot_controller.moveCartesian(0, -1, 0, speed);
 
-                // Execute the motion asynchronously (non-blocking)
-                moveit::planning_interface::MoveItErrorCode result = move_group_interface.asyncMove();  // Non-blocking move
+                if (ImGui::Button("Z+")) robot_controller.moveCartesian(0, 0, 1, speed);
+                ImGui::SameLine();
+                if (ImGui::Button("Z-")) robot_controller.moveCartesian(0, 0, -1, speed);
 
-                // Check if the command was successfully sent
-                if (result == moveit::planning_interface::MoveItErrorCode::SUCCESS)
-                {
-                    ROS_INFO("Robot is moving to the home position asynchronously.");
-                }
-                else
-                {
-                    ROS_WARN("Failed to move to the home position.");
+                // Speed control slider
+                ImGui::SliderInt("Speed (1-100)", &speed, 1, 100);
+                
+                ImGui::SetCursorPos(ImVec2(50, 350));  // Adjust position as per layout
+                if (ImGui::Button("Init", ImVec2(50.0, 50.0))) {
+                    robot_controller.moveToHome();
                 }
 
+                ImGui::EndTabItem();
             }
-            
-            
-            // For Grippers 
-            /*
-            ImGui::SetCursorPos(ImVec2(50,75));
-            ImGui::Button("Gripper Open", ImVec2(100,50));
-            ImGui::SetCursorPos(ImVec2(50,175));
-            ImGui::Button("Gripper Close", ImVec2(100,50));
-            */
 
-			//Framerate for HMI Window 
-			ImGui::SetCursorPos(ImVec2(5,5));
-            ImGui::Text("%.2f",ImGui::GetIO().Framerate);
-            
-             
-            ImGui::End();
-            //End of the Window
+            if (ImGui::BeginTabItem("Plotting")) {
+                plotting.renderPlot();  // Future plotting functionality
+                ImGui::EndTabItem();
+            }
 
+            ImGui::EndTabBar();
+        }
 
+        ImGui::End();
 
         // Rendering
         ImGui::Render();
@@ -266,21 +155,16 @@ int main(int argc, char** argv) {
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
         glfwSwapBuffers(window);
-        
     }
-
 
     // Cleanup
     ros::shutdown();
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-
     glfwDestroyWindow(window);
-    glfwTerminate();    
-
+    glfwTerminate();
 
     return 0;
 }

@@ -1,0 +1,27 @@
+#ifndef ROBOT_CONTROLLER_H
+#define ROBOT_CONTROLLER_H
+
+#include <ros/ros.h>
+#include <moveit/move_group_interface/move_group_interface.h>
+#include <moveit/planning_scene_interface/planning_scene_interface.h>
+#include <moveit_msgs/DisplayTrajectory.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <vector>
+
+// RobotController class handles robot movement operations
+class RobotController {
+public:
+    // Constructor
+    RobotController(ros::NodeHandle& N, const std::string& planning_group);
+
+    // Method for Cartesian movement
+    void moveCartesian(double dx, double dy, double dz, int speed);
+
+    void moveToHome();
+
+private:
+    ros::NodeHandle nh;
+    moveit::planning_interface::MoveGroupInterface move_group_interface;
+};
+
+#endif // ROBOT_CONTROLLER_H
