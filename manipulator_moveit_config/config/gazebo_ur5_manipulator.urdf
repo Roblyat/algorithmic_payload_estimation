@@ -32,7 +32,7 @@
     <joint name="ur5_attachment_to_world" type="fixed">
         <parent link="world" />
         <child link="ur5_attachment_base_link" />
-        <origin rpy="0 0 -1.5708" xyz="0 0.6 0.425" />
+        <origin rpy="0 0 -1.5708" xyz="-0.095725 0.65 0.425" />
         <!-- Lift by half the cylinder height -->
     </joint>
     <!-- Grey Cylinder Base -->
@@ -500,6 +500,9 @@
     <!-- Forces the joint to send feedback  -->
     <gazebo reference="sensor_measurment_joint">
         <provideFeedback>true</provideFeedback>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+            <robotNamespace>/</robotNamespace>
+        </plugin>
     </gazebo>
     <!-- The ft_sensor plugin  -->
     <gazebo>
@@ -782,148 +785,69 @@
             <offset>0.0</offset>
         </plugin>
     </gazebo>
-    <!-- Tabletop Link -->
-    <link name="table_top_link">
+    <!-- Base link -->
+    <link name="table_baseLink">
+        <contact>
+            <lateral_friction value="1.0" />
+            <!-- Fixed friction value -->
+        </contact>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0" />
+            <mass value="1.0" />
+            <!-- Placeholder mass -->
+            <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+        </inertial>
+        <!-- Visual for the tabletop -->
         <visual>
+            <origin rpy="0 0 0" xyz="0 0 0.6" />
             <geometry>
-                <box size="1.5 0.8 0.03" />
-                <!-- Dimensions from the SDF -->
+                <mesh filename="package://manipulator_description/urdf/table/table.obj" scale="1.5 1 0.05" />
             </geometry>
-            <material name="wood">
-                <color rgba="0.6 0.4 0.2 1.0" />
-                <!-- Material equivalent from the SDF -->
+            <material name="white">
+                <color rgba="1 1 1 1" />
             </material>
         </visual>
+        <!-- Collision geometry -->
         <collision>
+            <origin rpy="0 0 0" xyz="0 0 0.6" />
             <geometry>
-                <box size="1.5 0.8 0.03" />
-                <!-- Collision box -->
+                <box size="1.5 1 0.05" />
             </geometry>
-            <origin rpy="0 0 0" xyz="0 0 1" />
-            <!-- Positioning as per SDF -->
         </collision>
-        <inertial>
-            <mass value="0.1" />
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <inertia ixx="0.03" iyy="0.03" izz="0.03" ixy="0.0" ixz="0.0" iyz="0.0" />
-        </inertial>
-    </link>
-    <!-- Front Left Leg -->
-    <link name="table_front_left_leg">
+        <!-- Visuals for table legs -->
         <visual>
+            <origin rpy="0 0 0" xyz="-0.65 -0.4 0.29" />
             <geometry>
-                <cylinder length="0.7" radius="0.05" />
-                <!-- Example size for legs -->
+                <mesh filename="package://manipulator_description/urdf/table/table.obj" scale="0.1 0.1 0.58" />
+            </geometry>
+            <material name="white" />
+        </visual>
+        <visual>
+            <origin rpy="0 0 0" xyz="-0.65 0.4 0.29" />
+            <geometry>
+                <mesh filename="package://manipulator_description/urdf/table/table.obj" scale="0.1 0.1 0.58" />
+            </geometry>
+            <material name="white" />
+        </visual>
+        <visual>
+            <origin rpy="0 0 0" xyz="0.65 -0.4 0.29" />
+            <geometry>
+                <mesh filename="package://manipulator_description/urdf/table/table.obj" scale="0.1 0.1 0.58" />
+            </geometry>
+            <material name="white" />
+        </visual>
+        <visual>
+            <origin rpy="0 0 0" xyz="0.65 0.4 0.29" />
+            <geometry>
+                <mesh filename="package://manipulator_description/urdf/table/table.obj" scale="0.1 0.1 0.58" />
             </geometry>
         </visual>
-        <collision>
-            <geometry>
-                <cylinder length="0.7" radius="0.05" />
-                <!-- Same geometry for collision -->
-            </geometry>
-        </collision>
-        <inertial>
-            <mass value="0.1" />
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <inertia ixx="0.03" iyy="0.03" izz="0.03" ixy="0.0" ixz="0.0" iyz="0.0" />
-        </inertial>
     </link>
-    <!-- Front Right Leg -->
-    <link name="table_front_right_leg">
-        <visual>
-            <geometry>
-                <cylinder length="0.7" radius="0.05" />
-                <!-- Example size for legs -->
-            </geometry>
-        </visual>
-        <collision>
-            <geometry>
-                <cylinder length="0.7" radius="0.05" />
-                <!-- Same geometry for collision -->
-            </geometry>
-        </collision>
-        <inertial>
-            <mass value="0.1" />
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <inertia ixx="0.03" iyy="0.03" izz="0.03" ixy="0.0" ixz="0.0" iyz="0.0" />
-        </inertial>
-    </link>
-    <!-- Back Left Leg -->
-    <link name="table_back_left_leg">
-        <visual>
-            <geometry>
-                <cylinder length="0.7" radius="0.05" />
-                <!-- Example size for legs -->
-            </geometry>
-        </visual>
-        <collision>
-            <geometry>
-                <cylinder length="0.7" radius="0.05" />
-                <!-- Same geometry for collision -->
-            </geometry>
-        </collision>
-        <inertial>
-            <mass value="0.1" />
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <inertia ixx="0.03" iyy="0.03" izz="0.03" ixy="0.0" ixz="0.0" iyz="0.0" />
-        </inertial>
-    </link>
-    <!-- Back Right Leg -->
-    <link name="table_back_right_leg">
-        <visual>
-            <geometry>
-                <cylinder length="0.7" radius="0.05" />
-                <!-- Example size for legs -->
-            </geometry>
-        </visual>
-        <collision>
-            <geometry>
-                <cylinder length="0.7" radius="0.05" />
-                <!-- Same geometry for collision -->
-            </geometry>
-        </collision>
-        <inertial>
-            <mass value="0.1" />
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <inertia ixx="0.03" iyy="0.03" izz="0.03" ixy="0.0" ixz="0.0" iyz="0.0" />
-        </inertial>
-    </link>
-    <!-- Joints to connect the legs to the tabletop -->
-    <!-- Front Left Leg Joint -->
-    <joint name="table_front_left_leg_joint" type="fixed">
-        <parent link="table_top_link" />
-        <child link="table_front_left_leg" />
-        <origin rpy="0 0 0" xyz="-0.7 -0.35 -0.35" />
-        <!-- Adjust positioning -->
-    </joint>
-    <!-- Front Right Leg Joint -->
-    <joint name="table_front_right_leg_joint" type="fixed">
-        <parent link="table_top_link" />
-        <child link="table_front_right_leg" />
-        <origin rpy="0 0 0" xyz="0.7 -0.35 -0.35" />
-        <!-- Adjust positioning -->
-    </joint>
-    <!-- Back Left Leg Joint -->
-    <joint name="table_back_left_leg_joint" type="fixed">
-        <parent link="table_top_link" />
-        <child link="table_back_left_leg" />
-        <origin rpy="0 0 0" xyz="-0.7 0.35 -0.35" />
-        <!-- Adjust positioning -->
-    </joint>
-    <!-- Back Right Leg Joint -->
-    <joint name="table_back_right_leg_joint" type="fixed">
-        <parent link="table_top_link" />
-        <child link="table_back_right_leg" />
-        <origin rpy="0 0 0" xyz="0.7 0.35 -0.35" />
-        <!-- Adjust positioning -->
-    </joint>
     <!-- Main Joint to Attach the Table to the Parent (world) -->
-    <joint name="table_to_parent" type="fixed">
+    <joint name="table_to_world" type="fixed">
         <parent link="world" />
-        <child link="table_top_link" />
-        <!-- Now attaching the top_link (the root of the table) to the parent -->
-        <origin rpy="0 0 0" xyz="0 0 0.7" />
-        <!-- Lift the table by the height of the legs -->
+        <child link="table_baseLink" />
+        <origin rpy="0 0 0" xyz="0 0 0" />
     </joint>
     <!-- Add the gazebo_ros_control plugin to the robot, if out commented dont forget to add in moveit generated urdf -->
     <gazebo>
@@ -990,3 +914,4 @@
         </actuator>
     </transmission>
 </robot>
+

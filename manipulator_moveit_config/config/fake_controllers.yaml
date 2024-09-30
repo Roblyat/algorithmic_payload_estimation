@@ -15,6 +15,6 @@ controller_list:
       - gripper_finger_joint
 initial:  # Define initial robot poses per group
   - group: manipulator
-    pose: home
+    pose: Init
   - group: gripper
     pose: open

@@ -8,7 +8,7 @@
     <joint name="${name}_to_world" type="fixed">
         <parent link="${parent}"/>
         <child link="${name}_base_link"/>
-        <origin xyz="0 0.6 0.425" rpy="0 0 -1.5708"/> <!-- Lift by half the cylinder height -->
+        <origin xyz="-0.095725 0.65 0.425" rpy="0 0 -1.5708"/> <!-- Lift by half the cylinder height -->
     </joint>
 
 

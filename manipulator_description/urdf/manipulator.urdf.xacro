@@ -18,7 +18,7 @@
     <!-- include gripper -->
     <xacro:include filename="$(find robotiq_description)/urdf/robotiq_85_gripper.urdf.xacro" />
     <!-- Include the file that defines the 'table' macro -->
-    <xacro:include filename="$(find manipulator_description)/urdf/table.urdf.xacro" />
+    <xacro:include filename="$(find manipulator_description)/urdf/table/table.urdf.xacro" />
 
 
     <!-- Define the world link -->
