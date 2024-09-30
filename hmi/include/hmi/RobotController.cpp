@@ -23,9 +23,9 @@ void RobotController::moveCartesian(double dx, double dy, double dz, int speed) 
     move_group_interface.asyncExecute(trajectory);
 }
 
-void RobotController::moveToHome() {
+void RobotController::movePreDef(std::string &pose) {
     // Set the target pose to the home position for the robot
-    move_group_interface.setNamedTarget("home");
+    move_group_interface.setNamedTarget(pose);
 
     // Execute the motion asynchronously (non-blocking)
     moveit::planning_interface::MoveItErrorCode result = move_group_interface.asyncMove(); 

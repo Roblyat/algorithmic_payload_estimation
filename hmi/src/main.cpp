@@ -94,6 +94,7 @@ int main(int argc, char** argv) {
     RobotController robot_controller(nh, "manipulator");
     Plotting plotting(nh);
     int speed = 1;
+    static int current_pose_index = 0; // Variable to store the currently selected pose
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
@@ -129,9 +130,21 @@ int main(int argc, char** argv) {
                 // Speed control slider
                 ImGui::SliderInt("Speed (1-100)", &speed, 1, 100);
                 
+                // List of predefined poses
+                const char* poses[] = { "Init", "home", "up" };
+
+                // Dropdown menu
+                ImGui::SetCursorPos(ImVec2(50, 300));  // Adjust position as per layout
+                if (ImGui::Combo("Select Pose", &current_pose_index, poses, IM_ARRAYSIZE(poses))) {
+                    // If a pose is selected, current_pose_index is updated
+                }
+
+                // Button to confirm the movement to the selected pose
                 ImGui::SetCursorPos(ImVec2(50, 350));  // Adjust position as per layout
-                if (ImGui::Button("Init", ImVec2(50.0, 50.0))) {
-                    robot_controller.moveToHome();
+                if (ImGui::Button("Move", ImVec2(50.0, 50.0))) {
+                    // Move the robot to the selected pose
+                    std::string selected_pose = poses[current_pose_index];  // Get the selected pose
+                    robot_controller.movePreDef(selected_pose);  // Call the method to move the robot
                 }
 
                 ImGui::EndTabItem();

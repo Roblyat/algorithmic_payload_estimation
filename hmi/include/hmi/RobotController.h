@@ -17,7 +17,8 @@ public:
     // Method for Cartesian movement
     void moveCartesian(double dx, double dy, double dz, int speed);
 
-    void moveToHome();
+    void movePreDef(std::string &pose);
+    
 
 private:
     ros::NodeHandle nh;
