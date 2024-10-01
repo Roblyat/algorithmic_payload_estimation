@@ -121,8 +121,11 @@ void RobotController::moveRandom(int num_moves, int max_valid_attempts, double m
 
         // Try to plan a valid random goal
         while (!success && attempts < max_valid_attempts) {
+            
+             move_group_interface.setStartStateToCurrentState();
+
             // Generate random valid pose
-            geometry_msgs::Pose target_pose = move_group_interface.getRandomPose().pose;
+            geometry_msgs::Pose target_pose = move_group_interface.getRandomPose("sensor_robotiq_ft_frame_id").pose;
 
             // Set this as the target pose
             move_group_interface.setPoseTarget(target_pose);
@@ -139,6 +142,7 @@ void RobotController::moveRandom(int num_moves, int max_valid_attempts, double m
 
             // If the plan was successful, execute it asynchronously
             if (success) {
+                // plan.simplify();  // Simplifies the trajectory if applicable
                 ROS_INFO("Successfully planned random pose %d with velocity scaling %.2f and acceleration scaling %.2f", i + 1, velocity_scaling, acceleration_scaling);
                 moveit::planning_interface::MoveItErrorCode result = move_group_interface.asyncExecute(plan);
 
@@ -163,3 +167,71 @@ void RobotController::moveRandom(int num_moves, int max_valid_attempts, double m
         }
     }
 }
+
+
+void RobotController::executeJerkTrajectory(int num_moves, double max_velocity_scaling, double max_acceleration_scaling) {
+    
+    std::lock_guard<std::mutex> lock(move_group_mutex);
+
+    setPlanningGroup("manipulator");
+
+    for (int i = 0; i < num_moves; ++i) {
+        
+        // Get current pose
+        geometry_msgs::PoseStamped current_pose = move_group_interface.getCurrentPose("sensor_robotiq_ft_frame_id");
+        geometry_msgs::Pose target_pose = current_pose.pose;
+
+        // Generate small random movements (short trajectory)
+        double random_delta_x = (static_cast<double>(rand()) / RAND_MAX - 0.5) * 0.3;  // Random small movement in X
+        double random_delta_y = (static_cast<double>(rand()) / RAND_MAX - 0.5) * 0.3;  // Random small movement in Y
+        double random_delta_z = (static_cast<double>(rand()) / RAND_MAX - 0.5) * 0.3;  // Random small movement in Z
+
+        // Update target position with random deltas
+        target_pose.position.x += random_delta_x;
+        target_pose.position.y += random_delta_y;
+        target_pose.position.z += random_delta_z;
+
+        // Ensure start state matches current robot state
+        move_group_interface.setStartStateToCurrentState();
+
+        // Set the target pose
+        move_group_interface.setPoseTarget(target_pose);
+
+        // Set maximum velocity and acceleration scaling
+        move_group_interface.setMaxVelocityScalingFactor(max_velocity_scaling);
+        move_group_interface.setMaxAccelerationScalingFactor(max_acceleration_scaling);
+
+        // Plan the trajectory
+        moveit::planning_interface::MoveGroupInterface::Plan plan;
+        bool success = (move_group_interface.plan(plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+
+        // Execute the trajectory if planning was successful
+        if (success) {
+            ROS_ERROR("Successfully planned random short trajectory %d with small deltas.", i + 1);
+            moveit::planning_interface::MoveItErrorCode result = move_group_interface.asyncExecute(plan);
+            
+            // Check if the execution was successful asynchronously
+            if (result == moveit::planning_interface::MoveItErrorCode::SUCCESS) {
+                ROS_ERROR("Successfully executed short trajectory %d.", i + 1);
+
+                // Logic to wait for completion without creating a local variable for the action client
+                while (!move_group_interface.getMoveGroupClient().getState().isDone()) {
+                    ros::Duration(2.0).sleep();  // Wait for a short time before checking again
+                }
+
+                // Check if execution was successful
+                if (move_group_interface.getMoveGroupClient().getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
+                    ROS_INFO("Execution of trajectory %d completed successfully.", i + 1);
+                } else {
+                    ROS_WARN("Execution of trajectory %d failed or was preempted.", i + 1);
+                }
+
+            } else {
+                ROS_WARN("Failed to execute short trajectory %d, retrying...", i + 1);
+            }
+        } else {
+            ROS_WARN("Failed to plan short trajectory %d, skipping...", i + 1);
+        }
+    }
+}
+

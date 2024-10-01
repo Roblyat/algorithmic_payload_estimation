@@ -20,6 +20,7 @@ public:
     void execPreDef(std::string &pose);
     void moveRandom(int num_moves, int max_valid_attempts, double max_velocity_scaling, 
         double max_acceleration_scaling, int planning_attempts, double planning_time);
+    void executeJerkTrajectory(int num_moves, double max_velocity_scaling, double max_acceleration_scaling);
 
     void controlGripper(const std::string &position, double speed);
 

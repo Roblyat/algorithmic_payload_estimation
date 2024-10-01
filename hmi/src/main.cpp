@@ -264,8 +264,11 @@ int main(int argc, char** argv) {
                 ImGui::SetCursorPos(ImVec2(350, 400));  // Moved to the right side of the Random Pose settings
                 if (ImGui::Button("Move Random", ImVec2(120.0f, 40.0f))) {
                     // Launch moveRandom in a separate thread
-                    std::thread random_move_thread(&RobotController::moveRandom, &robot_controller, random_moves_amount, max_random_valid_attempts,
-                        max_velocity_scaling, max_acceleration_scaling, moveit_planning_attempts, moveit_planning_time);
+                    // std::thread random_move_thread(&RobotController::moveRandom, &robot_controller, random_moves_amount, max_random_valid_attempts,
+                    //     max_velocity_scaling, max_acceleration_scaling, moveit_planning_attempts, moveit_planning_time);
+
+                    std::thread random_move_thread(&RobotController::executeJerkTrajectory, &robot_controller, max_random_valid_attempts, max_velocity_scaling, max_acceleration_scaling);
+                    
                     random_move_thread.detach();  // Detach the thread so it runs independently
                 }
 
