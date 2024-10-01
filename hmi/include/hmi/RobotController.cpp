@@ -84,20 +84,23 @@ void RobotController::execPreDef(std::string &pose) {
     }
 }
 
-void RobotController::controlGripper(const std::string &position) {
-
+void RobotController::controlGripper(const std::string &position, double speed) {
     setPlanningGroup("gripper");
 
     // Set the target position for the gripper (either "open" or "closed")
     move_group_interface.setNamedTarget(position);
+
+    // Set gripper speed
+    move_group_interface.setMaxVelocityScalingFactor(speed);  // Adjust the speed (value between 0 and 1)
 
     // Plan and execute the movement
     moveit::planning_interface::MoveItErrorCode result = move_group_interface.asyncMove();
 
     // Provide feedback based on the execution result
     if (result == moveit::planning_interface::MoveItErrorCode::SUCCESS) {
-        ROS_INFO("Gripper moved to the %s position.", position.c_str());
+        ROS_INFO("Gripper moved to the %s position at speed %.2f.", position.c_str(), speed);
     } else {
         ROS_WARN("Failed to move the gripper to the %s position.", position.c_str());
     }
 }
+

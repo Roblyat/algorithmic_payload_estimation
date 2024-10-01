@@ -101,6 +101,7 @@ int main(int argc, char** argv) {
     // List of gripper positions
     const char* gripper_positions[] = { "open", "closed" };
     static int current_gripper_index = 0;
+    static float gripper_speed = 0.5;  // Default speed (between 0 and 1)
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
@@ -176,25 +177,40 @@ int main(int argc, char** argv) {
                     robot_controller.execPreDef(selected_pose);
                 }
 
-                //////////////////////////
-                // Gripper Control UI //
-                //////////////////////////
 
+                ///////////////////////////
+                // Gripper Control UI    //
+                ///////////////////////////
+
+                // Gripper position control dropdown
                 ImGui::SetCursorPos(ImVec2(50, 420));  // Adjust position as per layout
                 ImGui::Text("Gripper Control:");
-                ImGui::SetCursorPos(ImVec2(50, 440));
+                ImGui::SetCursorPos(ImVec2(50, 440));  // Dropdown below the label
                 ImGui::PushItemWidth(120);  // Compact width for drop-down
                 if (ImGui::Combo("##gripper_select", &current_gripper_index, gripper_positions, IM_ARRAYSIZE(gripper_positions))) {
                     // Gripper position selected
                 }
-                ImGui::PopItemWidth();
+                ImGui::PopItemWidth();  // Reset width
 
-                // Move Gripper Button
-                ImGui::SetCursorPos(ImVec2(50, 480));
+                ///////////////////////////
+                // Gripper Speed Control //
+                ///////////////////////////
+
+                // Gripper speed control slider
+                ImGui::SetCursorPos(ImVec2(50, 480));  // Adjust position after the dropdown
+                ImGui::Text("Gripper Speed:");
+                ImGui::SetCursorPos(ImVec2(50, 500));  // Slider below the text
+                ImGui::PushItemWidth(150);  // Set slider width
+                ImGui::SliderFloat("##gripper_speed_slider", &gripper_speed, 0.1f, 1.0f, "%.2f");  // Slider for speed control
+                ImGui::PopItemWidth();  // Reset width
+
+                // Button to move the gripper with the selected speed
+                ImGui::SetCursorPos(ImVec2(50, 540));  // Button position adjusted
                 if (ImGui::Button("Move Gripper", ImVec2(120.0f, 40.0f))) {
                     std::string selected_gripper_position = gripper_positions[current_gripper_index];  // Get the selected gripper position
-                    robot_controller.controlGripper(selected_gripper_position);
+                    robot_controller.controlGripper(selected_gripper_position, gripper_speed);  // Call the method to move the gripper with speed control
                 }
+                /////////////////////////////
 
                 ImGui::EndTabItem();  // End of Robot Control Tab
             }
