@@ -119,70 +119,92 @@ int main(int argc, char** argv) {
         if (ImGui::BeginTabBar("Tabs")) {
             if (ImGui::BeginTabItem("Robot Control")) {
 
-                ImGui::Text("Use buttons to move the robot."); //GUI setup
+                ImGui::Text("Use buttons to move the robot.");  // Informational text
 
-                ////////////////////
-                // move cartesian //
-                ////////////////////
-                // Cartesian movement buttons
-                if (ImGui::Button("X+")) robot_controller.moveCartesian(1, 0, 0, speed);
+                //////////////////////////
+                // Cartesian movement UI //
+                //////////////////////////
+
+                // X-axis buttons (X+ and X-)
+                ImGui::SetCursorPosX(50);
+                if (ImGui::Button("X+", ImVec2(50.0f, 50.0f))) robot_controller.moveCartesian(1, 0, 0, speed);
                 ImGui::SameLine();
-                if (ImGui::Button("X-")) robot_controller.moveCartesian(-1, 0, 0, speed);
+                ImGui::SetCursorPosX(120);
+                if (ImGui::Button("X-", ImVec2(50.0f, 50.0f))) robot_controller.moveCartesian(-1, 0, 0, speed);
 
-                if (ImGui::Button("Y+")) robot_controller.moveCartesian(0, 1, 0, speed);
+                // Y-axis buttons (Y+ and Y-)
+                ImGui::SetCursorPosX(50);
+                if (ImGui::Button("Y+", ImVec2(50.0f, 50.0f))) robot_controller.moveCartesian(0, 1, 0, speed);
                 ImGui::SameLine();
-                if (ImGui::Button("Y-")) robot_controller.moveCartesian(0, -1, 0, speed);
+                ImGui::SetCursorPosX(120);
+                if (ImGui::Button("Y-", ImVec2(50.0f, 50.0f))) robot_controller.moveCartesian(0, -1, 0, speed);
 
-                if (ImGui::Button("Z+")) robot_controller.moveCartesian(0, 0, 1, speed);
+                // Z-axis buttons (Z+ and Z-)
+                ImGui::SetCursorPosX(50);
+                if (ImGui::Button("Z+", ImVec2(50.0f, 50.0f))) robot_controller.moveCartesian(0, 0, 1, speed);
                 ImGui::SameLine();
-                if (ImGui::Button("Z-")) robot_controller.moveCartesian(0, 0, -1, speed);
+                ImGui::SetCursorPosX(120);
+                if (ImGui::Button("Z-", ImVec2(50.0f, 50.0f))) robot_controller.moveCartesian(0, 0, -1, speed);
 
-                // Speed control slider
-                ImGui::SliderInt("Speed (1-100)", &speed, 1, 100);
+                //////////////////////
+                // Speed control UI //
+                //////////////////////
+                ImGui::SetCursorPos(ImVec2(50, 240));  // Moved down from Z buttons
+                ImGui::Text("Speed Control:");
+                ImGui::SetCursorPos(ImVec2(50, 260));  // Trackbar adjusted position
+                ImGui::PushItemWidth(150);  // trackbar width
+                ImGui::SliderInt("Speed (1-100)", &speed, 1, 100, "%d");
+                ImGui::PopItemWidth();
 
-                ///////////////////////
-                // move robot predef //
-                ///////////////////////
-                // Dropdown menu
-                ImGui::SetCursorPos(ImVec2(50, 300));  // Adjust position as per layout
-                if (ImGui::Combo("Select Pose", &current_pose_index, poses, IM_ARRAYSIZE(poses))) {
-                    // If a pose is selected, current_pose_index is updated
+                ///////////////////////////
+                // Predefined Pose UI //
+                ///////////////////////////
+
+                ImGui::SetCursorPos(ImVec2(50, 310));  // Adjust position as per layout
+                ImGui::Text("Select Pose:");
+                ImGui::SetCursorPos(ImVec2(50, 330));
+                ImGui::PushItemWidth(120);  // Compact width for drop-down
+                if (ImGui::Combo("##pose_select", &current_pose_index, poses, IM_ARRAYSIZE(poses))) {
+                    // Pose selected
                 }
+                ImGui::PopItemWidth();
 
-                // Button to confirm the movement to the selected pose
-                ImGui::SetCursorPos(ImVec2(50, 350));  // Adjust position as per layout
-                if (ImGui::Button("Move", ImVec2(50.0, 50.0))) {
-                    // Move the robot to the selected pose
+                // Move Button for Pose
+                ImGui::SetCursorPos(ImVec2(50, 370));
+                if (ImGui::Button("Move", ImVec2(80.0f, 40.0f))) {
                     std::string selected_pose = poses[current_pose_index];  // Get the selected pose
                     robot_controller.execPreDef(selected_pose);
                 }
 
-                ////////////////////
-                // move gripper  ///
-                ////////////////////
-                // Dropdown for gripper control
-                ImGui::SetCursorPos(ImVec2(50, 400));  // Adjust position as per layout
-                if (ImGui::Combo("Gripper Control", &current_gripper_index, gripper_positions, IM_ARRAYSIZE(gripper_positions))) {
-                    // If a position is selected, current_gripper_index is updated
+                //////////////////////////
+                // Gripper Control UI //
+                //////////////////////////
+
+                ImGui::SetCursorPos(ImVec2(50, 420));  // Adjust position as per layout
+                ImGui::Text("Gripper Control:");
+                ImGui::SetCursorPos(ImVec2(50, 440));
+                ImGui::PushItemWidth(120);  // Compact width for drop-down
+                if (ImGui::Combo("##gripper_select", &current_gripper_index, gripper_positions, IM_ARRAYSIZE(gripper_positions))) {
+                    // Gripper position selected
+                }
+                ImGui::PopItemWidth();
+
+                // Move Gripper Button
+                ImGui::SetCursorPos(ImVec2(50, 480));
+                if (ImGui::Button("Move Gripper", ImVec2(120.0f, 40.0f))) {
+                    std::string selected_gripper_position = gripper_positions[current_gripper_index];  // Get the selected gripper position
+                    robot_controller.controlGripper(selected_gripper_position);
                 }
 
-                // Button to move the gripper to the selected position
-                ImGui::SetCursorPos(ImVec2(50, 450));  // Adjust position as per layout
-                if (ImGui::Button("Move Gripper", ImVec2(100.0, 50.0))) {
-                    // Move the gripper to the selected position
-                    std::string selected_gripper_position = gripper_positions[current_gripper_index];  // Get the selected position
-                    robot_controller.controlGripper(selected_gripper_position);  // Call the method to move the gripper
-                }
-
-                ImGui::EndTabItem(); //GUI setup
+                ImGui::EndTabItem();  // End of Robot Control Tab
             }
 
             if (ImGui::BeginTabItem("Terminal")) {
-                terminal.renderPlot();
+                terminal.renderPlot();  // Placeholder for Terminal Tab
                 ImGui::EndTabItem();
             }
 
-            ImGui::EndTabBar();
+            ImGui::EndTabBar();  // End of Tab Bar
         }
 
         ImGui::End();
