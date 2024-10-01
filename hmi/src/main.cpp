@@ -98,6 +98,10 @@ int main(int argc, char** argv) {
     // List of predefined poses
     const char* poses[] = { "Init", "home", "up" };
     static int current_pose_index = 0;
+    // Variable to store the number of random moves
+    static int random_moves_count = 5;  // Default value
+    static int max_planning_attempts = 5;  // Default value
+
     // List of gripper positions
     const char* gripper_positions[] = { "open", "closed" };
     static int current_gripper_index = 0;
@@ -147,9 +151,9 @@ int main(int argc, char** argv) {
                 ImGui::SetCursorPosX(120);
                 if (ImGui::Button("Z-", ImVec2(50.0f, 50.0f))) robot_controller.moveCartesian(0, 0, -1, speed);
 
-                //////////////////////
-                // Speed control UI //
-                //////////////////////
+                ////////////////////////////////
+                // Cartesian Speed control UI //
+                ////////////////////////////////
                 ImGui::SetCursorPos(ImVec2(50, 240));  // Moved down from Z buttons
                 ImGui::Text("Speed Control:");
                 ImGui::SetCursorPos(ImVec2(50, 260));  // Trackbar adjusted position
@@ -157,9 +161,9 @@ int main(int argc, char** argv) {
                 ImGui::SliderInt("Speed (1-100)", &speed, 1, 100, "%d");
                 ImGui::PopItemWidth();
 
-                ///////////////////////////
-                // Predefined Pose UI //
-                ///////////////////////////
+                ///////////////////
+                // Predefined UI //
+                ///////////////////
 
                 ImGui::SetCursorPos(ImVec2(50, 310));  // Adjust position as per layout
                 ImGui::Text("Select Pose:");
@@ -170,22 +174,57 @@ int main(int argc, char** argv) {
                 }
                 ImGui::PopItemWidth();
 
-                // Move Button for Pose
+                // Move Button for Predefined Pose
                 ImGui::SetCursorPos(ImVec2(50, 370));
-                if (ImGui::Button("Move", ImVec2(80.0f, 40.0f))) {
+                if (ImGui::Button("Move PreDef", ImVec2(100.0f, 40.0f))) {  // Increased width of button for better appearance
                     std::string selected_pose = poses[current_pose_index];  // Get the selected pose
                     robot_controller.execPreDef(selected_pose);
                 }
+                
+                ////////////////////
+                // Random Pose UI //
+                ////////////////////
 
+                ImGui::SetCursorPos(ImVec2(50, 420));  // Spacing adjusted for consistency
+                ImGui::Text("Random Pose Execution Settings");
+
+                // Input box for number of random moves (moves to execute)
+                ImGui::SetCursorPos(ImVec2(50, 440));
+                ImGui::PushItemWidth(100);  // Set width for the input box
+                ImGui::InputInt("Moves to Execute", &random_moves_count);
+                ImGui::PopItemWidth();  // Reset width
+
+                // Ensure the input value for moves to execute is at least 1
+                if (random_moves_count < 1) {
+                    random_moves_count = 1;
+                }
+
+                // Input box for max planning attempts (how often to retry planning)
+                ImGui::SetCursorPos(ImVec2(50, 470));
+                ImGui::PushItemWidth(100);  // Set width for the input box
+                ImGui::InputInt("Max Planning Attempts", &max_planning_attempts);
+                ImGui::PopItemWidth();  // Reset width
+
+                // Ensure the input value for planning attempts is at least 1
+                if (max_planning_attempts < 1) {
+                    max_planning_attempts = 1;
+                }
+
+                // Button to execute the random moves
+                ImGui::SetCursorPos(ImVec2(310, 440));  // Moved to the right side of the Random Pose settings
+                if (ImGui::Button("Move Random", ImVec2(120.0f, 40.0f))) {
+                    // Call moveRandom with the user-defined number of random moves and max planning attempts
+                    robot_controller.moveRandom(random_moves_count, max_planning_attempts);
+                }
 
                 ///////////////////////////
                 // Gripper Control UI    //
                 ///////////////////////////
 
                 // Gripper position control dropdown
-                ImGui::SetCursorPos(ImVec2(50, 420));  // Adjust position as per layout
+                ImGui::SetCursorPos(ImVec2(50, 510));  // Adjust position as per layout
                 ImGui::Text("Gripper Control:");
-                ImGui::SetCursorPos(ImVec2(50, 440));  // Dropdown below the label
+                ImGui::SetCursorPos(ImVec2(50, 530));  // Dropdown below the label
                 ImGui::PushItemWidth(120);  // Compact width for drop-down
                 if (ImGui::Combo("##gripper_select", &current_gripper_index, gripper_positions, IM_ARRAYSIZE(gripper_positions))) {
                     // Gripper position selected
@@ -197,15 +236,15 @@ int main(int argc, char** argv) {
                 ///////////////////////////
 
                 // Gripper speed control slider
-                ImGui::SetCursorPos(ImVec2(50, 480));  // Adjust position after the dropdown
+                ImGui::SetCursorPos(ImVec2(50, 570));  // Adjust position after the dropdown
                 ImGui::Text("Gripper Speed:");
-                ImGui::SetCursorPos(ImVec2(50, 500));  // Slider below the text
+                ImGui::SetCursorPos(ImVec2(50, 590));  // Slider below the text
                 ImGui::PushItemWidth(150);  // Set slider width
                 ImGui::SliderFloat("##gripper_speed_slider", &gripper_speed, 0.1f, 1.0f, "%.2f");  // Slider for speed control
                 ImGui::PopItemWidth();  // Reset width
 
                 // Button to move the gripper with the selected speed
-                ImGui::SetCursorPos(ImVec2(50, 540));  // Button position adjusted
+                ImGui::SetCursorPos(ImVec2(50, 620));  // Button position adjusted
                 if (ImGui::Button("Move Gripper", ImVec2(120.0f, 40.0f))) {
                     std::string selected_gripper_position = gripper_positions[current_gripper_index];  // Get the selected gripper position
                     robot_controller.controlGripper(selected_gripper_position, gripper_speed);  // Call the method to move the gripper with speed control

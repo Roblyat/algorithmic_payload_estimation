@@ -104,3 +104,58 @@ void RobotController::controlGripper(const std::string &position, double speed) 
     }
 }
 
+void RobotController::moveRandom(int num_moves, int max_attempts) {
+
+    setPlanningGroup("manipulator");
+
+    // Loop to execute random moves
+    for (int i = 0; i < num_moves; ++i) {
+        
+        bool success = false;
+        int attempts = 0;
+
+        // Try to plan a valid random goal
+        while (!success && attempts < max_attempts) {
+            // Generate random valid pose
+            geometry_msgs::Pose target_pose = move_group_interface.getRandomPose().pose;
+
+            // Set this as the target pose
+            move_group_interface.setPoseTarget(target_pose);
+
+            // Randomize velocity and acceleration scaling
+            double velocity_scaling = 0.1 + static_cast<double>(rand()) / (static_cast<double>(RAND_MAX / (0.9))); // random between 0.1 and 1.0
+            double acceleration_scaling = 0.1 + static_cast<double>(rand()) / (static_cast<double>(RAND_MAX / (0.9))); // random between 0.1 and 1.0
+            move_group_interface.setMaxVelocityScalingFactor(velocity_scaling);
+            move_group_interface.setMaxAccelerationScalingFactor(acceleration_scaling);
+
+            // Plan the motion
+            moveit::planning_interface::MoveGroupInterface::Plan plan;
+            success = (move_group_interface.plan(plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+
+            // If the plan was successful, execute it asynchronously
+            if (success) {
+                ROS_INFO("Successfully planned random pose %d with velocity scaling %.2f and acceleration scaling %.2f", i + 1, velocity_scaling, acceleration_scaling);
+                moveit::planning_interface::MoveItErrorCode result = move_group_interface.asyncExecute(plan);
+                
+                // Check if execution was successful
+                if (result == moveit::planning_interface::MoveItErrorCode::SUCCESS) {
+                    ROS_INFO("Successfully executed random pose %d.", i + 1);
+                    break;  // Exit the retry loop, move to the next random motion
+                } else {
+                    ROS_WARN("Failed to execute random pose %d, retrying...", i + 1);
+                    success = false;  // Reset success for reattempt
+                }
+            } else {
+                ROS_WARN("Failed to plan random pose %d, retrying...", i + 1);
+            }
+
+            attempts++;
+        }
+
+        // If after max attempts, we still can't plan, log it
+        if (!success) {
+            ROS_ERROR("Failed to plan a random valid pose after %d attempts.", max_attempts);
+        }
+    }
+}
+

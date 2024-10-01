@@ -18,6 +18,7 @@ public:
     void moveCartesian(double dx, double dy, double dz, int speed);
 
     void execPreDef(std::string &pose);
+    void moveRandom(int num_moves, int max_attempts);
     void controlGripper(const std::string &position, double speed);
 
     // Function to dynamically set the planning group
