@@ -19,7 +19,7 @@
 
 // Add RobotController and Plotting header files
 #include "RobotController.h"
-#include "Plotting.h"
+#include "Terminal.h"
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
 #pragma comment(lib, "legacy_stdio_definitions")
@@ -92,9 +92,15 @@ int main(int argc, char** argv) {
     spinner.start();
     // Create instances of RobotController and Plotting classes
     RobotController robot_controller(nh, "manipulator");
-    Plotting plotting(nh);
+    Terminal terminal(nh);
     int speed = 1;
-    static int current_pose_index = 0; // Variable to store the currently selected pose
+
+    // List of predefined poses
+    const char* poses[] = { "Init", "home", "up" };
+    static int current_pose_index = 0;
+    // List of gripper positions
+    const char* gripper_positions[] = { "open", "closed" };
+    static int current_gripper_index = 0;
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
@@ -112,8 +118,12 @@ int main(int argc, char** argv) {
 
         if (ImGui::BeginTabBar("Tabs")) {
             if (ImGui::BeginTabItem("Robot Control")) {
-                ImGui::Text("Use buttons to move the robot.");
 
+                ImGui::Text("Use buttons to move the robot."); //GUI setup
+
+                ////////////////////
+                // move cartesian //
+                ////////////////////
                 // Cartesian movement buttons
                 if (ImGui::Button("X+")) robot_controller.moveCartesian(1, 0, 0, speed);
                 ImGui::SameLine();
@@ -129,10 +139,10 @@ int main(int argc, char** argv) {
 
                 // Speed control slider
                 ImGui::SliderInt("Speed (1-100)", &speed, 1, 100);
-                
-                // List of predefined poses
-                const char* poses[] = { "Init", "home", "up" };
 
+                ///////////////////////
+                // move robot predef //
+                ///////////////////////
                 // Dropdown menu
                 ImGui::SetCursorPos(ImVec2(50, 300));  // Adjust position as per layout
                 if (ImGui::Combo("Select Pose", &current_pose_index, poses, IM_ARRAYSIZE(poses))) {
@@ -144,14 +154,31 @@ int main(int argc, char** argv) {
                 if (ImGui::Button("Move", ImVec2(50.0, 50.0))) {
                     // Move the robot to the selected pose
                     std::string selected_pose = poses[current_pose_index];  // Get the selected pose
-                    robot_controller.movePreDef(selected_pose);  // Call the method to move the robot
+                    robot_controller.execPreDef(selected_pose);
                 }
 
-                ImGui::EndTabItem();
+                ////////////////////
+                // move gripper  ///
+                ////////////////////
+                // Dropdown for gripper control
+                ImGui::SetCursorPos(ImVec2(50, 400));  // Adjust position as per layout
+                if (ImGui::Combo("Gripper Control", &current_gripper_index, gripper_positions, IM_ARRAYSIZE(gripper_positions))) {
+                    // If a position is selected, current_gripper_index is updated
+                }
+
+                // Button to move the gripper to the selected position
+                ImGui::SetCursorPos(ImVec2(50, 450));  // Adjust position as per layout
+                if (ImGui::Button("Move Gripper", ImVec2(100.0, 50.0))) {
+                    // Move the gripper to the selected position
+                    std::string selected_gripper_position = gripper_positions[current_gripper_index];  // Get the selected position
+                    robot_controller.controlGripper(selected_gripper_position);  // Call the method to move the gripper
+                }
+
+                ImGui::EndTabItem(); //GUI setup
             }
 
-            if (ImGui::BeginTabItem("Plotting")) {
-                plotting.renderPlot();  // Future plotting functionality
+            if (ImGui::BeginTabItem("Terminal")) {
+                terminal.renderPlot();
                 ImGui::EndTabItem();
             }
 

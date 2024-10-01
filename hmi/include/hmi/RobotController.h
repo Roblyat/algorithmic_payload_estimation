@@ -17,12 +17,16 @@ public:
     // Method for Cartesian movement
     void moveCartesian(double dx, double dy, double dz, int speed);
 
-    void movePreDef(std::string &pose);
-    
+    void execPreDef(std::string &pose);
+    void controlGripper(const std::string &position);
+
+    // Function to dynamically set the planning group
+    void setPlanningGroup(const std::string& group_name);
 
 private:
     ros::NodeHandle nh;
     moveit::planning_interface::MoveGroupInterface move_group_interface;
+    std::string current_planning_group_;
 };
 
 #endif // ROBOT_CONTROLLER_H
