@@ -27,7 +27,7 @@ public:
     void setPlanningGroup(const std::string& group_name);
 
     std::mutex move_group_mutex;  // Mutex to protect shared resources
-
+   
 private:
     ros::NodeHandle nh;
     moveit::planning_interface::MoveGroupInterface move_group_interface;

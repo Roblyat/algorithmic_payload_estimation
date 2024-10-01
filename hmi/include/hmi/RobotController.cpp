@@ -111,12 +111,11 @@ void RobotController::moveRandom(int num_moves, int max_valid_attempts, double m
     setPlanningGroup("manipulator");
 
     // Set the planning parameters: attempts and planning time
-    move_group_interface.setNumPlanningAttempts(planning_attempts);  // Number of planning attempts
-    move_group_interface.setPlanningTime(planning_time);  // Maximum allowed planning time in seconds
+    move_group_interface.setNumPlanningAttempts(planning_attempts);
+    move_group_interface.setPlanningTime(planning_time);
 
     // Loop to execute random moves
     for (int i = 0; i < num_moves; ++i) {
-        
         bool success = false;
         int attempts = 0;
 
@@ -129,8 +128,8 @@ void RobotController::moveRandom(int num_moves, int max_valid_attempts, double m
             move_group_interface.setPoseTarget(target_pose);
 
             // Randomize velocity and acceleration scaling, but cap them to the provided max values
-            double velocity_scaling = 0.1 + static_cast<double>(rand()) / (static_cast<double>(RAND_MAX / (max_velocity_scaling - 0.1))); // random between 0.1 and max_velocity_scaling
-            double acceleration_scaling = 0.1 + static_cast<double>(rand()) / (static_cast<double>(RAND_MAX / (max_acceleration_scaling - 0.1))); // random between 0.1 and max_acceleration_scaling
+            double velocity_scaling = 0.1 + static_cast<double>(rand()) / (static_cast<double>(RAND_MAX / (max_velocity_scaling - 0.1))); 
+            double acceleration_scaling = 0.1 + static_cast<double>(rand()) / (static_cast<double>(RAND_MAX / (max_acceleration_scaling - 0.1)));
             move_group_interface.setMaxVelocityScalingFactor(velocity_scaling);
             move_group_interface.setMaxAccelerationScalingFactor(acceleration_scaling);
 
@@ -142,7 +141,7 @@ void RobotController::moveRandom(int num_moves, int max_valid_attempts, double m
             if (success) {
                 ROS_INFO("Successfully planned random pose %d with velocity scaling %.2f and acceleration scaling %.2f", i + 1, velocity_scaling, acceleration_scaling);
                 moveit::planning_interface::MoveItErrorCode result = move_group_interface.asyncExecute(plan);
-                
+
                 // Check if execution was successful
                 if (result == moveit::planning_interface::MoveItErrorCode::SUCCESS) {
                     ROS_INFO("Successfully executed random pose %d.", i + 1);

@@ -135,7 +135,6 @@ int main(int argc, char** argv) {
                 //////////////////////////
                 // Cartesian movement UI //
                 //////////////////////////
-
                 // X-axis buttons (X+ and X-)
                 ImGui::SetCursorPosX(50);
                 if (ImGui::Button("X+", ImVec2(50.0f, 50.0f))) robot_controller.moveCartesian(1, 0, 0, speed);
@@ -170,7 +169,6 @@ int main(int argc, char** argv) {
                 ///////////////////
                 // Predefined UI //
                 ///////////////////
-
                 ImGui::SetCursorPos(ImVec2(50, 310));  // Adjust position as per layout
                 ImGui::Text("Select Pose:");
                 ImGui::SetCursorPos(ImVec2(50, 330));
@@ -190,7 +188,6 @@ int main(int argc, char** argv) {
                 ////////////////////
                 // Random Pose UI //
                 ////////////////////
-
                 ImGui::SetCursorPos(ImVec2(50, 420));  // Spacing adjusted for consistency
                 ImGui::Text("Random Pose Execution Settings");
 
@@ -264,7 +261,7 @@ int main(int argc, char** argv) {
                 }
 
                 // Button to execute the random moves
-                ImGui::SetCursorPos(ImVec2(350, 440));  // Moved to the right side of the Random Pose settings
+                ImGui::SetCursorPos(ImVec2(350, 400));  // Moved to the right side of the Random Pose settings
                 if (ImGui::Button("Move Random", ImVec2(120.0f, 40.0f))) {
                     // Launch moveRandom in a separate thread
                     std::thread random_move_thread(&RobotController::moveRandom, &robot_controller, random_moves_amount, max_random_valid_attempts,
@@ -272,11 +269,9 @@ int main(int argc, char** argv) {
                     random_move_thread.detach();  // Detach the thread so it runs independently
                 }
 
-
                 ///////////////////////////
                 // Gripper Control UI    //
                 ///////////////////////////
-
                 // Gripper position control dropdown
                 ImGui::SetCursorPos(ImVec2(50, 510));  // Adjust position as per layout
                 ImGui::Text("Gripper Control:");
@@ -290,7 +285,6 @@ int main(int argc, char** argv) {
                 ///////////////////////////
                 // Gripper Speed Control //
                 ///////////////////////////
-
                 // Gripper speed control slider
                 ImGui::SetCursorPos(ImVec2(50, 570));  // Adjust position after the dropdown
                 ImGui::Text("Gripper Speed:");
