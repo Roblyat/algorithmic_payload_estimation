@@ -18,11 +18,15 @@ public:
     void moveCartesian(double dx, double dy, double dz, int speed);
 
     void execPreDef(std::string &pose);
-    void moveRandom(int num_moves, int max_attempts);
+    void moveRandom(int num_moves, int max_valid_attempts, double max_velocity_scaling, 
+        double max_acceleration_scaling, int planning_attempts, double planning_time);
+
     void controlGripper(const std::string &position, double speed);
 
     // Function to dynamically set the planning group
     void setPlanningGroup(const std::string& group_name);
+
+    std::mutex move_group_mutex;  // Mutex to protect shared resources
 
 private:
     ros::NodeHandle nh;

@@ -104,9 +104,15 @@ void RobotController::controlGripper(const std::string &position, double speed) 
     }
 }
 
-void RobotController::moveRandom(int num_moves, int max_attempts) {
-
+void RobotController::moveRandom(int num_moves, int max_valid_attempts, double max_velocity_scaling, double max_acceleration_scaling, int planning_attempts, double planning_time) {
+    
+    std::lock_guard<std::mutex> lock(move_group_mutex);
+    
     setPlanningGroup("manipulator");
+
+    // Set the planning parameters: attempts and planning time
+    move_group_interface.setNumPlanningAttempts(planning_attempts);  // Number of planning attempts
+    move_group_interface.setPlanningTime(planning_time);  // Maximum allowed planning time in seconds
 
     // Loop to execute random moves
     for (int i = 0; i < num_moves; ++i) {
@@ -115,16 +121,16 @@ void RobotController::moveRandom(int num_moves, int max_attempts) {
         int attempts = 0;
 
         // Try to plan a valid random goal
-        while (!success && attempts < max_attempts) {
+        while (!success && attempts < max_valid_attempts) {
             // Generate random valid pose
             geometry_msgs::Pose target_pose = move_group_interface.getRandomPose().pose;
 
             // Set this as the target pose
             move_group_interface.setPoseTarget(target_pose);
 
-            // Randomize velocity and acceleration scaling
-            double velocity_scaling = 0.1 + static_cast<double>(rand()) / (static_cast<double>(RAND_MAX / (0.9))); // random between 0.1 and 1.0
-            double acceleration_scaling = 0.1 + static_cast<double>(rand()) / (static_cast<double>(RAND_MAX / (0.9))); // random between 0.1 and 1.0
+            // Randomize velocity and acceleration scaling, but cap them to the provided max values
+            double velocity_scaling = 0.1 + static_cast<double>(rand()) / (static_cast<double>(RAND_MAX / (max_velocity_scaling - 0.1))); // random between 0.1 and max_velocity_scaling
+            double acceleration_scaling = 0.1 + static_cast<double>(rand()) / (static_cast<double>(RAND_MAX / (max_acceleration_scaling - 0.1))); // random between 0.1 and max_acceleration_scaling
             move_group_interface.setMaxVelocityScalingFactor(velocity_scaling);
             move_group_interface.setMaxAccelerationScalingFactor(acceleration_scaling);
 
@@ -154,8 +160,7 @@ void RobotController::moveRandom(int num_moves, int max_attempts) {
 
         // If after max attempts, we still can't plan, log it
         if (!success) {
-            ROS_ERROR("Failed to plan a random valid pose after %d attempts.", max_attempts);
+            ROS_ERROR("Failed to plan a random valid pose after %d attempts.", max_valid_attempts);
         }
     }
 }
-

@@ -21,6 +21,9 @@
 #include "RobotController.h"
 #include "Terminal.h"
 
+//Thread
+#include <thread>
+
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
@@ -99,14 +102,17 @@ int main(int argc, char** argv) {
     const char* poses[] = { "Init", "home", "up" };
     static int current_pose_index = 0;
     // Variable to store the number of random moves
-    static int random_moves_count = 5;  // Default value
-    static int max_planning_attempts = 5;  // Default value
+    static int random_moves_amount = 5;  // Default value
+    static int max_random_valid_attempts = 5;  // Default value
 
     // List of gripper positions
     const char* gripper_positions[] = { "open", "closed" };
     static int current_gripper_index = 0;
     static float gripper_speed = 0.5;  // Default speed (between 0 and 1)
-
+    static double max_velocity_scaling = 0.4;  // Default value
+    static double max_acceleration_scaling = 0.4;  // Default value
+    static double moveit_planning_time = 5.0;  // Default value
+    static int moveit_planning_attempts = 10;  // Default value
     // Main loop
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -191,31 +197,81 @@ int main(int argc, char** argv) {
                 // Input box for number of random moves (moves to execute)
                 ImGui::SetCursorPos(ImVec2(50, 440));
                 ImGui::PushItemWidth(100);  // Set width for the input box
-                ImGui::InputInt("Moves to Execute", &random_moves_count);
+                ImGui::InputInt("Moves to Execute", &random_moves_amount);
                 ImGui::PopItemWidth();  // Reset width
 
                 // Ensure the input value for moves to execute is at least 1
-                if (random_moves_count < 1) {
-                    random_moves_count = 1;
+                if (random_moves_amount < 1) {
+                    random_moves_amount = 1;
                 }
 
                 // Input box for max planning attempts (how often to retry planning)
                 ImGui::SetCursorPos(ImVec2(50, 470));
                 ImGui::PushItemWidth(100);  // Set width for the input box
-                ImGui::InputInt("Max Planning Attempts", &max_planning_attempts);
+                ImGui::InputInt("Max RandValid Attempts", &max_random_valid_attempts);
                 ImGui::PopItemWidth();  // Reset width
 
                 // Ensure the input value for planning attempts is at least 1
-                if (max_planning_attempts < 1) {
-                    max_planning_attempts = 1;
+                if (max_random_valid_attempts < 1) {
+                    max_random_valid_attempts = 1;
+                }
+
+                // Input box for max velocity scaling
+                ImGui::SetCursorPos(ImVec2(350, 500));
+                ImGui::PushItemWidth(100);  // Set width for the input box
+                ImGui::InputDouble("Max Vel Scale", &max_velocity_scaling, 0.01, 0.1, "%.2f");
+                ImGui::PopItemWidth();  // Reset width
+
+                // Ensure the velocity scaling is in the range [0.1, 1.0]
+                if (max_velocity_scaling < 0.1) {
+                    max_velocity_scaling = 0.1;
+                } else if (max_velocity_scaling > 1.0) {
+                    max_velocity_scaling = 1.0;
+                }
+
+                // Input box for max acceleration scaling
+                ImGui::SetCursorPos(ImVec2(350, 530));
+                ImGui::PushItemWidth(100);  // Set width for the input box
+                ImGui::InputDouble("Max Acc Scale", &max_acceleration_scaling, 0.01, 0.1, "%.2f");
+                ImGui::PopItemWidth();  // Reset width
+
+                // Ensure the acceleration scaling is in the range [0.1, 1.0]
+                if (max_acceleration_scaling < 0.1) {
+                    max_acceleration_scaling = 0.1;
+                } else if (max_acceleration_scaling > 1.0) {
+                    max_acceleration_scaling = 1.0;
+                }
+
+                // Input box for max planning_time
+                ImGui::SetCursorPos(ImVec2(350, 560));
+                ImGui::PushItemWidth(100);  // Set width for the input box
+                ImGui::InputDouble("Planning Time (s)", &moveit_planning_time, 0.1, 0.5, "%.1f");
+                ImGui::PopItemWidth();  // Reset width
+                // Ensure the input value for planning time is at least 1
+                if (moveit_planning_time < 1.0) {
+                    moveit_planning_time = 1.0;
+                }
+
+                // Input box for number of planning attempts per move
+                ImGui::SetCursorPos(ImVec2(350, 590));
+                ImGui::PushItemWidth(100);  // Set width for the input box
+                ImGui::InputInt("Planning Attempts", &moveit_planning_attempts);
+                ImGui::PopItemWidth();  // Reset width
+
+                // Ensure the input value for planning attempts per move is at least 1
+                if (moveit_planning_attempts < 1) {
+                    moveit_planning_attempts = 1;
                 }
 
                 // Button to execute the random moves
-                ImGui::SetCursorPos(ImVec2(310, 440));  // Moved to the right side of the Random Pose settings
+                ImGui::SetCursorPos(ImVec2(350, 440));  // Moved to the right side of the Random Pose settings
                 if (ImGui::Button("Move Random", ImVec2(120.0f, 40.0f))) {
-                    // Call moveRandom with the user-defined number of random moves and max planning attempts
-                    robot_controller.moveRandom(random_moves_count, max_planning_attempts);
+                    // Launch moveRandom in a separate thread
+                    std::thread random_move_thread(&RobotController::moveRandom, &robot_controller, random_moves_amount, max_random_valid_attempts,
+                        max_velocity_scaling, max_acceleration_scaling, moveit_planning_attempts, moveit_planning_time);
+                    random_move_thread.detach();  // Detach the thread so it runs independently
                 }
+
 
                 ///////////////////////////
                 // Gripper Control UI    //
