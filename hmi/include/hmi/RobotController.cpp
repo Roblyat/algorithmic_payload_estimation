@@ -104,6 +104,7 @@ void RobotController::controlGripper(const std::string &position, double speed) 
     }
 }
 
+// Deprecated method: need to be switched to sync execution, is executed on seperate thread
 void RobotController::moveRandom(int num_moves, int max_valid_attempts, double max_velocity_scaling, double max_acceleration_scaling, int planning_attempts, double planning_time) {
     
     std::lock_guard<std::mutex> lock(move_group_mutex);
@@ -169,7 +170,7 @@ void RobotController::moveRandom(int num_moves, int max_valid_attempts, double m
 }
 
 
-void RobotController::executeJerkTrajectory(int num_moves, double max_velocity_scaling, double max_acceleration_scaling) {
+void RobotController::executeJerkTrajectory(int num_moves, double max_velocity_scaling, double max_acceleration_scaling, double offScale_x, double offScale_y, double offScale_z) {
     
     std::lock_guard<std::mutex> lock(move_group_mutex);
 
@@ -182,14 +183,20 @@ void RobotController::executeJerkTrajectory(int num_moves, double max_velocity_s
         geometry_msgs::Pose target_pose = current_pose.pose;
 
         // Generate small random movements (short trajectory)
-        double random_delta_x = (static_cast<double>(rand()) / RAND_MAX - 0.5) * 0.3;  // Random small movement in X
-        double random_delta_y = (static_cast<double>(rand()) / RAND_MAX - 0.5) * 0.3;  // Random small movement in Y
-        double random_delta_z = (static_cast<double>(rand()) / RAND_MAX - 0.5) * 0.3;  // Random small movement in Z
+        if (offScale_x != 0) {
+            double random_delta_x = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_x;  // Random small movement in X
+            target_pose.position.x += random_delta_x;
+        }
 
-        // Update target position with random deltas
-        target_pose.position.x += random_delta_x;
-        target_pose.position.y += random_delta_y;
-        target_pose.position.z += random_delta_z;
+        if (offScale_y != 0) {
+            double random_delta_y = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_y;  // Random small movement in Y
+            target_pose.position.y += random_delta_y;
+        }
+
+        if (offScale_z != 0) {
+            double random_delta_z = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_z;  // Random small movement in Z
+            target_pose.position.z += random_delta_z;
+        }
 
         // Ensure start state matches current robot state
         move_group_interface.setStartStateToCurrentState();
@@ -205,7 +212,6 @@ void RobotController::executeJerkTrajectory(int num_moves, double max_velocity_s
         moveit::planning_interface::MoveGroupInterface::Plan plan;
         bool success = (move_group_interface.plan(plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
 
-        // Inside your RobotController method
         if (success) {
             ROS_ERROR("Successfully planned random short trajectory %d with small deltas.", i + 1);
             
