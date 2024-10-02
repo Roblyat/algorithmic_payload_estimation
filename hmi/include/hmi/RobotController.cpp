@@ -205,33 +205,20 @@ void RobotController::executeJerkTrajectory(int num_moves, double max_velocity_s
         moveit::planning_interface::MoveGroupInterface::Plan plan;
         bool success = (move_group_interface.plan(plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
 
-        // Execute the trajectory if planning was successful
+        // Inside your RobotController method
         if (success) {
             ROS_ERROR("Successfully planned random short trajectory %d with small deltas.", i + 1);
-            moveit::planning_interface::MoveItErrorCode result = move_group_interface.asyncExecute(plan);
             
-            // Check if the execution was successful asynchronously
+            // Execute the trajectory synchronously
+            moveit::planning_interface::MoveItErrorCode result = move_group_interface.execute(plan);
+            
             if (result == moveit::planning_interface::MoveItErrorCode::SUCCESS) {
                 ROS_ERROR("Successfully executed short trajectory %d.", i + 1);
-
-                // Logic to wait for completion without creating a local variable for the action client
-                while (!move_group_interface.getMoveGroupClient().getState().isDone()) {
-                    ros::Duration(2.0).sleep();  // Wait for a short time before checking again
-                }
-
-                // Check if execution was successful
-                if (move_group_interface.getMoveGroupClient().getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
-                    ROS_INFO("Execution of trajectory %d completed successfully.", i + 1);
-                } else {
-                    ROS_WARN("Execution of trajectory %d failed or was preempted.", i + 1);
-                }
-
             } else {
-                ROS_WARN("Failed to execute short trajectory %d, retrying...", i + 1);
+                ROS_WARN("Failed to execute short trajectory %d.", i + 1);
             }
         } else {
             ROS_WARN("Failed to plan short trajectory %d, skipping...", i + 1);
         }
     }
 }
-
