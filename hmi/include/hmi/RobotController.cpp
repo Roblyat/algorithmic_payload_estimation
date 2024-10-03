@@ -2,7 +2,15 @@
 
 // Constructor
 RobotController::RobotController(ros::NodeHandle& N, const std::string& planning_group)
-    : nh(N), move_group_interface(planning_group), current_planning_group_(planning_group) {}
+    : nh(N), move_group_interface(planning_group), current_planning_group_(planning_group), 
+        jerk_running(false), random_move_running(false) {}
+
+// Destructor
+RobotController::~RobotController() {
+    stopJerkTrajectory();  // Ensures that jerk thread is stopped
+    stopRandomMove();      // Ensures that random move thread is stopped
+}
+
 
 // Method to dynamically set the planning group
 void RobotController::setPlanningGroup(const std::string& group_name) {
@@ -116,7 +124,14 @@ void RobotController::moveRandom(int num_moves, int max_valid_attempts, double m
     move_group_interface.setPlanningTime(planning_time);
 
     // Loop to execute random moves
-    for (int i = 0; i < num_moves; ++i) {
+    for (int i = 0; i < num_moves; ++i) { 
+        
+        //check if thread is running or stopped by user
+        if (!random_move_running.load()) {
+            ROS_INFO("Random move stopped early.");
+            return;
+        }
+
         bool success = false;
         int attempts = 0;
 
@@ -176,7 +191,12 @@ void RobotController::executeJerkTrajectory(int num_moves, double max_velocity_s
 
     setPlanningGroup("manipulator");
 
+    //check if thread is running or stopped by user
     for (int i = 0; i < num_moves; ++i) {
+        if (!jerk_running.load()) {
+            ROS_INFO("Jerk trajectory stopped early.");
+            return;
+        }
         
         // Get current pose
         geometry_msgs::PoseStamped current_pose = move_group_interface.getCurrentPose("sensor_robotiq_ft_frame_id");
@@ -227,4 +247,63 @@ void RobotController::executeJerkTrajectory(int num_moves, double max_velocity_s
             ROS_WARN("Failed to plan short trajectory %d, skipping...", i + 1);
         }
     }
+}
+
+//methods for thread start/stop handling
+void RobotController::startJerkTrajectory(int num_moves, double max_velocity_scaling, double max_acceleration_scaling, double offScale_x, double offScale_y, double offScale_z) {
+    if (jerk_running.load()) {
+        ROS_WARN("Jerk trajectory is already running.");
+        return;
+    }
+
+    jerk_running.store(true);
+
+    // Start the jerk trajectory in a new thread
+    jerk_thread = std::thread(&RobotController::executeJerkTrajectory, this, num_moves, max_velocity_scaling, max_acceleration_scaling, offScale_x, offScale_y, offScale_z);
+}
+
+void RobotController::stopJerkTrajectory() {
+    if (!jerk_running.load()) {
+        ROS_WARN("No jerk trajectory is currently running.");
+        return;
+    }
+
+    // Set the flag to false to stop the jerk trajectory
+    jerk_running.store(false);
+
+    // Join the thread to ensure it has stopped
+    if (jerk_thread.joinable()) {
+        jerk_thread.join();
+    }
+
+    ROS_INFO("Jerk trajectory stopped.");
+}
+
+void RobotController::startRandomMove(int num_moves, int max_valid_attempts, double max_velocity_scaling, double max_acceleration_scaling, int planning_attempts, double planning_time) {
+    if (random_move_running.load()) {
+        ROS_WARN("Random move is already running.");
+        return;
+    }
+
+    random_move_running.store(true);
+
+    // Start the random move in a new thread
+    random_move_thread = std::thread(&RobotController::moveRandom, this, num_moves, max_valid_attempts, max_velocity_scaling, max_acceleration_scaling, planning_attempts, planning_time);
+}
+
+void RobotController::stopRandomMove() {
+    if (!random_move_running.load()) {
+        ROS_WARN("No random move is currently running.");
+        return;
+    }
+
+    // Set the flag to false to stop the random move
+    random_move_running.store(false);
+
+    // Join the thread to ensure it has stopped
+    if (random_move_thread.joinable()) {
+        random_move_thread.join();
+    }
+
+    ROS_INFO("Random move stopped.");
 }

@@ -265,25 +265,31 @@ int main(int argc, char** argv) {
                 ImGui::PopItemWidth();  // Reset width
 
                 // Button to execute the random moves
-                ImGui::SetCursorPos(ImVec2(350, 400 - y_bRand));  // Moved to the right side of the Random Pose settings
+                ImGui::SetCursorPos(ImVec2(350, 300 - y_bRand));  // Moved to the right side of the Random Pose settings
                 if (ImGui::Button("Move Random", ImVec2(120.0f, 40.0f))) {
-                    
-                    //depricated
-                    std::thread random_move_thread(&RobotController::moveRandom, &robot_controller, random_moves_amount, max_random_valid_attempts,
-                        max_velocity_scaling, max_acceleration_scaling, moveit_planning_attempts, moveit_planning_time);
-                    
-                    random_move_thread.detach();
+                    robot_controller.startRandomMove(random_moves_amount, max_random_valid_attempts, max_velocity_scaling, max_acceleration_scaling, 
+                                                        moveit_planning_attempts, moveit_planning_time);
                 }
+
+                // Button to stop random move
+                ImGui::SetCursorPos(ImVec2(350, 360 - y_bRand));
+                if (ImGui::Button("Stop Random", ImVec2(120.0f, 40.0f))) {
+                    robot_controller.stopRandomMove();
+                }
+
 
                 // Button to execute the jerk trajectory
-                ImGui::SetCursorPos(ImVec2(350, 460 - y_bRand));  // Moved to the right side of the Random Pose settings
+                ImGui::SetCursorPos(ImVec2(350, 420 - y_bRand));  // Moved to the right side of the Random Pose settings
                 if (ImGui::Button("Move Jerk", ImVec2(120.0f, 40.0f))) {
-
-                    std::thread random_move_thread(&RobotController::executeJerkTrajectory, &robot_controller, random_moves_amount, max_velocity_scaling,
-                        max_acceleration_scaling, offScale_x, offScale_y, offScale_z);
-                    
-                    random_move_thread.detach();
+                    robot_controller.startJerkTrajectory(random_moves_amount, max_velocity_scaling, max_acceleration_scaling, offScale_x, offScale_y, offScale_z);
                 }
+
+                // Button to stop jerk trajectory
+                ImGui::SetCursorPos(ImVec2(350, 480 - y_bRand));
+                if (ImGui::Button("Stop Jerk", ImVec2(120.0f, 40.0f))) {
+                    robot_controller.stopJerkTrajectory();
+                }
+                                
 
                 ///////////////////////////
                 // Gripper Control UI    //
@@ -342,13 +348,17 @@ int main(int argc, char** argv) {
                 // Button to start rosbag recording
                 ImGui::SetCursorPos(ImVec2(450, 500));
                 if (ImGui::Button("Start Recording", ImVec2(120.0f, 40.0f))) {
-                    // Construct the full save path with the file name
-                    std::string full_save_path = std::string(save_path) + "/" + std::string(file_name);
-                    
                     // Pass the full path (directory + file name) to the recording function
-                    std::thread record_thread(&Terminal::startRosbagRecording, &terminal, full_save_path);
-                    record_thread.detach();  // Detach the thread to prevent blocking
+                    std::string full_save_path = std::string(save_path) + "/" + std::string(file_name);
+                    terminal.startRosbagRecording(full_save_path);
                 }
+
+                // Button to stop rosbag recording
+                ImGui::SetCursorPos(ImVec2(450, 550));
+                if (ImGui::Button("Stop Recording", ImVec2(120.0f, 40.0f))) {
+                    terminal.stopRosbagRecording();  // Stop the recording
+                }
+
                 
                 ImGui::EndTabItem();
             }
