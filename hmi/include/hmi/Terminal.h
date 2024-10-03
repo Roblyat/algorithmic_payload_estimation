@@ -5,6 +5,8 @@
 #include <rosgraph_msgs/Log.h>
 #include <string>
 #include <vector>
+#include <cstdlib>  // for system terminal cmd
+#include <mutex>    // For std::mutex
 
 class Terminal {
 public:
@@ -12,6 +14,11 @@ public:
 
     // Render method to display the logs
     void renderPlot();
+
+    // Start recording rosbag
+    void startRosbagRecording(const std::string& full_save_path);
+
+    std::mutex terminal_mutex;  // Mutex to protect terminal operations
 
 private:
     ros::NodeHandle nh;

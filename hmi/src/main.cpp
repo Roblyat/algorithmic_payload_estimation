@@ -118,6 +118,9 @@ int main(int argc, char** argv) {
     static double offScale_x = 0.1;
     static double offScale_y = 0.1;
     static double offScale_z = 0.1;
+    // Define static strings to hold the save path and file name
+    static char save_path[256] = "/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data";       // Default directory path
+    static char file_name[128] = "recorded_data.bag";  // Default file name
 
     //move buttons as block
     int y_bRand = 200;
@@ -137,13 +140,17 @@ int main(int argc, char** argv) {
         ImGui::Begin("Robot HMI", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 
         if (ImGui::BeginTabBar("Tabs")) {
+
+            //////////////////////////////////////////////////////////////////////////////////
+            //////////////////////////// Control Tab ////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////////
             if (ImGui::BeginTabItem("Robot Control")) {
 
                 ImGui::Text("Use buttons to move the robot.");  // Informational text
 
-                //////////////////////////
+                ///////////////////////////
                 // Cartesian movement UI //
-                //////////////////////////
+                ///////////////////////////
                 // X-axis buttons (X+ and X-)
                 ImGui::SetCursorPosX(50);
                 if (ImGui::Button("X+", ImVec2(50.0f, 50.0f))) robot_controller.moveCartesian(1, 0, 0, speed);
@@ -308,13 +315,41 @@ int main(int argc, char** argv) {
                     std::string selected_gripper_position = gripper_positions[current_gripper_index];  // Get the selected gripper position
                     robot_controller.controlGripper(selected_gripper_position, gripper_speed);  // Call the method to move the gripper with speed control
                 }
-                /////////////////////////////
+                ///////////////////////////
 
                 ImGui::EndTabItem();  // End of Robot Control Tab
             }
 
+
+            //////////////////////////////////////////////////////////////////////////////////
+            //////////////////////////// Terminal Tab ////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////////
             if (ImGui::BeginTabItem("Terminal")) {
+                
                 terminal.renderPlot();  // Placeholder for Terminal Tab
+                
+                /////////////////////////
+                // Rosbag recording UI //
+                /////////////////////////
+                ImGui::SetCursorPos(ImVec2(350, 500));
+                ImGui::Text("Save Path:");
+                ImGui::InputText("##SavePath", save_path, IM_ARRAYSIZE(save_path));  // Text input for the save path
+
+                ImGui::SetCursorPos(ImVec2(350, 525));
+                ImGui::Text("File Name:");
+                ImGui::InputText("##FileName", file_name, IM_ARRAYSIZE(file_name));  // Text input for the file name
+
+                // Button to start rosbag recording
+                ImGui::SetCursorPos(ImVec2(450, 500));
+                if (ImGui::Button("Start Recording", ImVec2(120.0f, 40.0f))) {
+                    // Construct the full save path with the file name
+                    std::string full_save_path = std::string(save_path) + "/" + std::string(file_name);
+                    
+                    // Pass the full path (directory + file name) to the recording function
+                    std::thread record_thread(&Terminal::startRosbagRecording, &terminal, full_save_path);
+                    record_thread.detach();  // Detach the thread to prevent blocking
+                }
+                
                 ImGui::EndTabItem();
             }
 

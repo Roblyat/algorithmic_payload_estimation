@@ -52,3 +52,9 @@ void Terminal::renderPlot() {
     }
     ImGui::EndChild();
 }
+
+void Terminal::startRosbagRecording(const std::string& full_save_path) {
+    std::lock_guard<std::mutex> lock(terminal_mutex);  // Locking terminal resources
+    std::string command = "rosbag record -O " + full_save_path + " /joint_states /wrench &";
+    system(command.c_str());  // Execute the command
+}
