@@ -1,9 +1,3 @@
-[submodule "universal_robot"]
-	path = universal_robot
-	url = git@github.com:ros-industrial/universal_robot.git
-[submodule "robotiq"]
-	path = robotiq
-	url = git@github.com:cambel/robotiq.git
 [submodule "hmi/include/imgui"]
 	path = hmi/include/imgui
 	url = git@github.com:ocornut/imgui.git

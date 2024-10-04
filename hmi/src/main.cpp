@@ -359,7 +359,6 @@ int main(int argc, char** argv) {
                     terminal.stopRosbagRecording();  // Stop the recording
                 }
 
-                
                 ImGui::EndTabItem();
             }
 
