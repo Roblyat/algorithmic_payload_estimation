@@ -39,7 +39,7 @@ if __name__ == "__main__":
     #######################################################################
     ## Replace with the path to your ROS bag and desired CSV output file ##
     #######################################################################
-    bag_file = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/rosbag/100_02_02_01x3.bag'
+    bag_file = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/rosbag/recorded_data.bag'
     output_csv = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/csv/output.csv'
 
     rosbag_to_csv(bag_file, output_csv)
