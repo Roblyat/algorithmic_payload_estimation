@@ -7,13 +7,16 @@
 
 Terminal::Terminal(ros::NodeHandle& N) : nh(N), recording_running(false) {
     // Subscribe to the /rosout_agg topic for aggregated ROS logs
-    log_sub = nh.subscribe("/rosout_agg", 1000, &Terminal::logCallback, this);
+    // log_sub = nh.subscribe("/rosout_agg", 1000, &Terminal::logCallback, this);
 }
 
 Terminal::~Terminal() {
     stopRosbagRecording();  // Ensure that recording is stopped
 }
 
+/////////////////////
+// Terminal Output //
+/////////////////////
 // Callback to handle log messages
 void Terminal::logCallback(const rosgraph_msgs::Log::ConstPtr& msg) {
     // Format the log message with severity and text
@@ -58,6 +61,9 @@ void Terminal::renderPlot() {
     ImGui::EndChild();
 }
 
+////////////////////////
+// Rosbag Recording   //
+////////////////////////
 // Worker method to run the rosbag recording in a separate thread
 void Terminal::rosbagRecordingWorker(const std::string& full_save_path) {
     std::lock_guard<std::mutex> lock(terminal_mutex);  // Lock terminal resources
@@ -102,5 +108,64 @@ void Terminal::stopRosbagRecording() {
         recording_thread.join();
     }
 
-    ROS_INFO("Rosbag recording stopped.");
+    ROS_WARN("Rosbag recording stopped.");
+}
+
+////////////////////////
+// Training Node Code //
+////////////////////////
+
+// Worker method to run the Python node in a separate thread
+void Terminal::pythonNodeWorker(const std::string& script_path) {
+    std::lock_guard<std::mutex> lock(terminal_mutex);  // Lock terminal resources
+
+    // Command to start the Python node
+    std::string command = "python3 " + script_path + " &";  // Use python3 for running the node
+    system(command.c_str());  // Convert std::string to const char* using c_str()
+
+    while (training_running.load()) {
+        // Keep the thread alive while training is running
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    // Stop the Python node process when the flag is set to false
+    std::string stop_command = "pkill -f '" + script_path + "'";  // Construct the stop command
+    system(stop_command.c_str());  // Convert std::string to const char* using c_str()
+}
+
+// Start the Python node in a separate thread
+void Terminal::startPythonNode(const std::string& script_path) {
+    if (training_running.load()) {
+        ROS_WARN("Training node is already running.");
+        return;
+    }
+
+    training_running.store(true);  // Set the flag to true
+
+    // Start the Python node in a separate thread
+    training_thread = std::thread(&Terminal::pythonNodeWorker, this, script_path);
+}
+
+// Stop the Python node
+void Terminal::stopPythonNode() {
+    if (!training_running.load()) {
+        ROS_WARN("No training node is currently running.");
+        return;
+    }
+
+    training_running.store(false);  // Set the flag to false to stop the node
+
+    // Join the thread to ensure it has stopped
+    if (training_thread.joinable()) {
+        training_thread.join();
+    }
+
+    ROS_INFO("Training node stopped.");
+}
+
+// Set ROS parameters on the parameter server
+void Terminal::setRosParam(const std::string& param_name, const std::string& param_value) {
+    std::string command = "rosparam set " + param_name + " " + param_value;
+    system(command.c_str());  // Execute the command to set the parameter
+    ROS_INFO_STREAM("Set ROS parameter: " << param_name << " = " << param_value);
 }

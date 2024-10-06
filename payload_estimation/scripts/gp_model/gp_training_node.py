@@ -27,8 +27,18 @@ def train_gp_model(X, Y, kernel=None):
     
     Returns the trained GP model.
     """
-    # Define the kernel if not provided
-    if kernel is None:
+    # Retrieve the kernel type from the ROS parameter server (default to 'RBF')
+    kernel_type = rospy.get_param('~kernel', 'RBF')
+
+    # Define the kernel based on the parameter or use the provided kernel
+    if kernel_type == 'RBF':
+        kernel = GPy.kern.RBF(input_dim=X.shape[1], variance=1., lengthscale=1.)
+    elif kernel_type == 'Matern52':
+        kernel = GPy.kern.Matern52(input_dim=X.shape[1], variance=1., lengthscale=1.)
+    elif kernel_type == 'Linear':
+        kernel = GPy.kern.Linear(input_dim=X.shape[1])
+    else:
+        rospy.logwarn(f"Unknown kernel type '{kernel_type}', defaulting to RBF.")
         kernel = GPy.kern.RBF(input_dim=X.shape[1], variance=1., lengthscale=1.)
 
     # Create the GP regression model
@@ -55,8 +65,10 @@ def gp_training_node():
     rospy.init_node('gp_training_node')
 
     # Parameters for the node (file paths)
-    training_csv = rospy.get_param('~training_csv', '/path/to/training_data.csv')  # Path to the processed training data CSV
-    model_output_path = rospy.get_param('~model_output', '/path/to/gp_model.pkl')  # Path to save the trained GP model
+    training_csv = rospy.get_param('~training_csv', 
+                                   '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/csv/default_train_data.csv')  # Path to the processed training data CSV
+    
+    model_output_path = rospy.get_param('~model_output', '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/gp_model.pkl')  # Path to save the trained GP model
 
     # Load the training data
     rospy.loginfo(f"Loading training data from {training_csv}")

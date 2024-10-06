@@ -96,8 +96,12 @@ int main(int argc, char** argv) {
     // Create instances of RobotController and Plotting classes
     RobotController robot_controller(nh, "manipulator");
     Terminal terminal(nh);
-    int speed = 1;
 
+    ///////////////////////
+    // Robot Control Tab //
+    ///////////////////////
+    //step size control robot cartesian movement
+    int speed = 1;
     // List of predefined poses
     const char* poses[] = { "Init", "home", "up" };
     static int current_pose_index = 0;
@@ -105,7 +109,6 @@ int main(int argc, char** argv) {
     const char* gripper_positions[] = { "open", "closed" };
     static int current_gripper_index = 0;
     static float gripper_speed = 0.5;  // Default speed (between 0 and 1)
-
     //randomMove method parameters
     static int max_random_valid_attempts = 5;  // Default value
     static double moveit_planning_time = 5.0;  // Default value
@@ -118,9 +121,21 @@ int main(int argc, char** argv) {
     static double offScale_x = 0.1;
     static double offScale_y = 0.1;
     static double offScale_z = 0.1;
+
+    ////////////////////
+    //  Terminal Tab  //
+    ////////////////////
     // Define static strings to hold the save path and file name
-    static char save_path[256] = "/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data";       // Default directory path
+    static char rosbag_path[256] = "/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/rosbag";       // Default directory path
     static char file_name[128] = "recorded_data.bag";  // Default file name
+
+    //gp model parameters
+    static char model_output_path[128] = "/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models";  // Default value
+    static char training_csv[128] = "/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/csv/default_train_data.csv";  // Default value
+    const char* kernels[] = { "RBF", "Matern52", "Linear" };  // Available kernel types
+    static int selected_kernel = 0;  // Index for the selected kernel
+
+
 
     //move buttons as block
     int y_bRand = 200;
@@ -326,37 +341,92 @@ int main(int argc, char** argv) {
                 ImGui::EndTabItem();  // End of Robot Control Tab
             }
 
-
             //////////////////////////////////////////////////////////////////////////////////
             //////////////////////////// Terminal Tab ////////////////////////////////////////
             //////////////////////////////////////////////////////////////////////////////////
             if (ImGui::BeginTabItem("Terminal")) {
-                
-                terminal.renderPlot();  // Placeholder for Terminal Tab
-                
-                /////////////////////////
-                // Rosbag recording UI //
-                /////////////////////////
-                ImGui::SetCursorPos(ImVec2(350, 500));
+
+                ///////////////////////
+                // Rosbag Recording UI
+                ///////////////////////
                 ImGui::Text("Save Path:");
-                ImGui::InputText("##SavePath", save_path, IM_ARRAYSIZE(save_path));  // Text input for the save path
+                ImGui::SameLine();
+                ImGui::InputText("##SavePath", rosbag_path, IM_ARRAYSIZE(rosbag_path));
 
-                ImGui::SetCursorPos(ImVec2(350, 525));
+                ImGui::Spacing();
+
                 ImGui::Text("File Name:");
-                ImGui::InputText("##FileName", file_name, IM_ARRAYSIZE(file_name));  // Text input for the file name
+                ImGui::SameLine();
+                ImGui::InputText("##FileName", file_name, IM_ARRAYSIZE(file_name));
 
-                // Button to start rosbag recording
-                ImGui::SetCursorPos(ImVec2(450, 500));
+                ImGui::Spacing();
+
                 if (ImGui::Button("Start Recording", ImVec2(120.0f, 40.0f))) {
-                    // Pass the full path (directory + file name) to the recording function
-                    std::string full_save_path = std::string(save_path) + "/" + std::string(file_name);
-                    terminal.startRosbagRecording(full_save_path);
+                    std::string full_rosbag_path = std::string(rosbag_path) + "/" + std::string(file_name);
+                    terminal.startRosbagRecording(full_rosbag_path);
                 }
 
-                // Button to stop rosbag recording
-                ImGui::SetCursorPos(ImVec2(450, 550));
+                ImGui::SameLine();
+
                 if (ImGui::Button("Stop Recording", ImVec2(120.0f, 40.0f))) {
-                    terminal.stopRosbagRecording();  // Stop the recording
+                    terminal.stopRosbagRecording();
+                }
+
+                /////////////////
+                // GP Training //
+                /////////////////
+                
+                ImGui::Spacing();  // Add some space between sections
+
+                // Training CSV Path
+                ImGui::Text("Training CSV:");
+                ImGui::SameLine();
+                ImGui::InputText("##TrainingCSV", training_csv, IM_ARRAYSIZE(training_csv));
+
+                if (ImGui::Button("Set Training CSV", ImVec2(120.0f, 40.0f))) {
+                    std::string training_csv_param = std::string(training_csv);
+                    terminal.setRosParam("~training_csv", training_csv_param);  // Set the parameter on the ROS parameter server
+                }
+
+                ImGui::Spacing();
+
+                // Model Output Path
+                ImGui::Text("Model Output Path:");
+                ImGui::SameLine();
+                ImGui::InputText("##ModelOutput", model_output_path, IM_ARRAYSIZE(model_output_path));
+
+                if (ImGui::Button("Set Model Output Path", ImVec2(120.0f, 40.0f))) {
+                    std::string model_output_param = std::string(model_output_path);
+                    terminal.setRosParam("~model_output", model_output_param);  // Set the parameter on the ROS parameter server
+                }
+
+                ImGui::Spacing();
+
+                // Kernel Type Combo Box (Dropdown)
+                ImGui::Text("Kernel Type:");
+                ImGui::SameLine();
+                ImGui::Combo("##KernelCombo", &selected_kernel, kernels, IM_ARRAYSIZE(kernels));  // Dropdown for kernel selection
+
+                if (ImGui::Button("Set Kernel Type", ImVec2(120.0f, 40.0f))) {
+                    std::string kernel_param = kernels[selected_kernel];  // Set the selected kernel from the dropdown
+                    terminal.setRosParam("~kernel", kernel_param);  // Set the kernel type as a parameter on the ROS parameter server
+                }
+
+                ImGui::Spacing();
+
+                /////////////////////////////////
+                // Start/ Stop Python Node Button
+                /////////////////////////////////
+                
+                if (ImGui::Button("Start Training", ImVec2(120.0f, 40.0f))) {
+                    terminal.startPythonNode("/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/scripts/gp_model/gp_training_node.py");  // Replace with actual node script path
+                }
+
+                ImGui::SameLine();
+
+                // Stop the Python node from button
+                if (ImGui::Button("Stop Training", ImVec2(120.0f, 40.0f))) {
+                    terminal.stopPythonNode();
                 }
 
                 ImGui::EndTabItem();

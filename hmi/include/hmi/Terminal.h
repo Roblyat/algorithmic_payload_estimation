@@ -22,6 +22,11 @@ public:
     void startRosbagRecording(const std::string& full_save_path);
     void stopRosbagRecording();  // Stop the rosbag recording
 
+    //training thread
+    void setRosParam(const std::string& param_name, const std::string& param_value);
+    void startPythonNode(const std::string& script_path);
+    void stopPythonNode();
+
     std::mutex terminal_mutex;  // Mutex to protect terminal operations
 
 private:
@@ -32,11 +37,17 @@ private:
     std::atomic<bool> recording_running;  // Flag to indicate if recording is running
     std::thread recording_thread;  // Thread for rosbag recording
 
+    std::thread training_thread;  // Thread for rosbag recording
+    std::atomic<bool> training_running;  // Flag to indicate if recording is running
+
     // Callback to handle log messages
     void logCallback(const rosgraph_msgs::Log::ConstPtr& msg);
 
     // Worker method for recording
     void rosbagRecordingWorker(const std::string& full_save_path);
+
+    // Worker method for the training node.py in a separate thread
+    void pythonNodeWorker(const std::string& script_path);
 };
 
 #endif // TERMINAL_H
