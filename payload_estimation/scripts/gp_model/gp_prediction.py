@@ -36,7 +36,12 @@ def predict_with_gp(gp_model, X_test):
     Returns the predicted force/torque values and the variances.
     """
     Y_pred, Y_var = gp_model.predict(X_test)
+
+    # Debug: print or log the shapes
+    rospy.loginfo(f"Y_pred shape: {Y_pred.shape}, Y_var shape: {Y_var.shape}")
+    
     return Y_pred, Y_var
+
 
 def gp_test_node():
     """
@@ -63,13 +68,14 @@ def gp_test_node():
 
     # Save the actual vs predicted results to a CSV file
     rospy.loginfo(f"Saving predictions and actual values to {results_csv}")
+    # Concatenate the test, predicted values, and single variance
     df_results = pd.DataFrame(np.hstack((Y_test, Y_pred, Y_var)),
-                              columns=['Actual Force X', 'Actual Force Y', 'Actual Force Z',
-                                       'Actual Torque X', 'Actual Torque Y', 'Actual Torque Z',
-                                       'Predicted Force X', 'Predicted Force Y', 'Predicted Force Z',
-                                       'Predicted Torque X', 'Predicted Torque Y', 'Predicted Torque Z',
-                                       'Var Force X', 'Var Force Y', 'Var Force Z',
-                                       'Var Torque X', 'Var Torque Y', 'Var Torque Z'])
+                            columns=['Actual Force X', 'Actual Force Y', 'Actual Force Z',
+                                    'Actual Torque X', 'Actual Torque Y', 'Actual Torque Z',
+                                    'Predicted Force X', 'Predicted Force Y', 'Predicted Force Z',
+                                    'Predicted Torque X', 'Predicted Torque Y', 'Predicted Torque Z',
+                                    'Variance'])  # One variance column
+
     df_results.to_csv(results_csv, index=False)
     rospy.loginfo(f"Results saved to {results_csv}")
 

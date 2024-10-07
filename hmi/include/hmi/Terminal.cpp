@@ -111,17 +111,102 @@ void Terminal::stopRosbagRecording() {
     ROS_WARN("Rosbag recording stopped.");
 }
 
+//////////////////////////
+// Rosbag to CSV Worker //
+//////////////////////////
+void Terminal::rosbagToCSVWorker() {
+    std::lock_guard<std::mutex> lock(terminal_mutex);  // Lock terminal resources
+
+    // Command to process rosbag to CSV
+    std::string command = "rosrun payload_estimation rosbag_to_csv_split.py &";  // Replace with the actual command or script
+    system(command.c_str());  // Execute the command
+
+    while (rosbag_to_csv_running.load()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    // Ensure process stops when flag is false
+    system("pkill -f 'rosbag_to_csv'");
+}
+
+void Terminal::startRosbagToCSV() {
+    if (rosbag_to_csv_running.load()) {
+        ROS_WARN("Rosbag to CSV process is already running.");
+        return;
+    }
+
+    rosbag_to_csv_running.store(true);  // Set flag to true
+    rosbag_to_csv_thread = std::thread(&Terminal::rosbagToCSVWorker, this);
+}
+
+void Terminal::stopRosbagToCSV() {
+    if (!rosbag_to_csv_running.load()) {
+        ROS_WARN("No rosbag to CSV process is currently running.");
+        return;
+    }
+
+    rosbag_to_csv_running.store(false);  // Set flag to false
+
+    if (rosbag_to_csv_thread.joinable()) {
+        rosbag_to_csv_thread.join();
+    }
+
+    ROS_INFO("Rosbag to CSV process stopped.");
+}
+
+//////////////////////////////
+// CSV Preprocessing Worker //
+//////////////////////////////
+void Terminal::csvPreprocessingWorker() {
+    std::lock_guard<std::mutex> lock(terminal_mutex);  // Lock terminal resources
+
+    // Command to run CSV preprocessing
+    std::string command = "rosrun payload_estimation csv_preprocess_data.py &";  // Replace with actual script path
+    system(command.c_str());  // Execute the command
+
+    while (csv_preprocessing_running.load()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    system("pkill -f 'preprocessing_script.py'");
+}
+
+void Terminal::startCSVPreprocessing() {
+    if (csv_preprocessing_running.load()) {
+        ROS_WARN("CSV preprocessing is already running.");
+        return;
+    }
+
+    csv_preprocessing_running.store(true);  // Set flag to true
+    csv_preprocessing_thread = std::thread(&Terminal::csvPreprocessingWorker, this);
+}
+
+void Terminal::stopCSVPreprocessing() {
+    if (!csv_preprocessing_running.load()) {
+        ROS_WARN("No CSV preprocessing is currently running.");
+        return;
+    }
+
+    csv_preprocessing_running.store(false);  // Set flag to false
+
+    if (csv_preprocessing_thread.joinable()) {
+        csv_preprocessing_thread.join();
+    }
+
+    ROS_INFO("CSV preprocessing stopped.");
+}
+
+
 ////////////////////////
 // Training Node Code //
 ////////////////////////
 
-// Worker method to run the Python node in a separate thread
-void Terminal::pythonNodeWorker(const std::string& script_path) {
+void Terminal::gpTrainingWorker() {
     std::lock_guard<std::mutex> lock(terminal_mutex);  // Lock terminal resources
 
-    // Command to start the Python node
-    std::string command = "python3 " + script_path + " &";  // Use python3 for running the node
-    system(command.c_str());  // Convert std::string to const char* using c_str()
+    // Command to start the Python node using rosrun
+    std::string command = "rosrun payload_estimation gp_training_node.py &";  // Replace with actual package and script name
+    system(command.c_str());  // Execute the command
 
     while (training_running.load()) {
         // Keep the thread alive while training is running
@@ -129,12 +214,13 @@ void Terminal::pythonNodeWorker(const std::string& script_path) {
     }
 
     // Stop the Python node process when the flag is set to false
-    std::string stop_command = "pkill -f '" + script_path + "'";  // Construct the stop command
-    system(stop_command.c_str());  // Convert std::string to const char* using c_str()
+    std::string stop_command = "pkill -f 'gp_training_node.py'";  // Construct the stop command for the specific node
+    system(stop_command.c_str());  // Execute the stop command
 }
 
+
 // Start the Python node in a separate thread
-void Terminal::startPythonNode(const std::string& script_path) {
+void Terminal::startTraining() {
     if (training_running.load()) {
         ROS_WARN("Training node is already running.");
         return;
@@ -143,11 +229,11 @@ void Terminal::startPythonNode(const std::string& script_path) {
     training_running.store(true);  // Set the flag to true
 
     // Start the Python node in a separate thread
-    training_thread = std::thread(&Terminal::pythonNodeWorker, this, script_path);
+    training_thread = std::thread(&Terminal::gpTrainingWorker, this);
 }
 
 // Stop the Python node
-void Terminal::stopPythonNode() {
+void Terminal::stopTraining() {
     if (!training_running.load()) {
         ROS_WARN("No training node is currently running.");
         return;

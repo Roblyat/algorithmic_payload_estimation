@@ -372,6 +372,37 @@ int main(int argc, char** argv) {
                     terminal.stopRosbagRecording();
                 }
 
+
+                //////////////////////////////
+                // Process Rosbag to CSV //
+                //////////////////////////////
+                ImGui::Spacing();  // Add space between sections
+
+                if (ImGui::Button("Start Rosbag to CSV", ImVec2(160.0f, 40.0f))) {
+                    terminal.startRosbagToCSV();
+                }
+
+                ImGui::SameLine();
+
+                if (ImGui::Button("Stop Rosbag to CSV", ImVec2(160.0f, 40.0f))) {
+                    terminal.stopRosbagToCSV();
+                }
+
+                //////////////////////////////
+                // Preprocess CSV to Training//
+                //////////////////////////////
+                ImGui::Spacing();  // Add space between sections
+
+                if (ImGui::Button("Start CSV Preprocessing", ImVec2(160.0f, 40.0f))) {
+                    terminal.startCSVPreprocessing();
+                }
+
+                ImGui::SameLine();
+
+                if (ImGui::Button("Stop CSV Preprocessing", ImVec2(160.0f, 40.0f))) {
+                    terminal.stopCSVPreprocessing();
+                }
+
                 /////////////////
                 // GP Training //
                 /////////////////
@@ -414,19 +445,16 @@ int main(int argc, char** argv) {
 
                 ImGui::Spacing();
 
-                /////////////////////////////////
-                // Start/ Stop Python Node Button
-                /////////////////////////////////
-                
+                // Start/Stop Python Node Buttons          
                 if (ImGui::Button("Start Training", ImVec2(120.0f, 40.0f))) {
-                    terminal.startPythonNode("/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/scripts/gp_model/gp_training_node.py");  // Replace with actual node script path
+                    terminal.startTraining();  // Replace with actual node script path
                 }
 
                 ImGui::SameLine();
 
                 // Stop the Python node from button
                 if (ImGui::Button("Stop Training", ImVec2(120.0f, 40.0f))) {
-                    terminal.stopPythonNode();
+                    terminal.stopTraining();
                 }
 
                 ImGui::EndTabItem();

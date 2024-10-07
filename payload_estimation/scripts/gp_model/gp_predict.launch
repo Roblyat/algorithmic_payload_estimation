@@ -1,6 +1,7 @@
 <launch>
-    <node pkg="payload_estimation" type="gp_prediction.py" name="gp_prediction_node" output="screen">
+    <node pkg="payload_estimation" type="gp_prediction.py" name="gp_test_node" output="screen">
+        <param name="test_csv" value="/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/csv/default_test_data.csv" />
         <param name="model_filename" value="/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/gp_model.pkl" />
-        <param name="manual_input" value="[0.5, 0.1, 0.0, -0.4, 0.2, 0.1, 1.2, -0.1, 0.3, 0.0, -0.2, 0.1, -0.3, 0.0, -0.5, 0.7, -0.1, 0.2]" />
+        <param name="results_csv" value="/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/results.csv" />
     </node>
 </launch>
