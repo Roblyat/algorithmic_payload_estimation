@@ -5,6 +5,7 @@ import pandas as pd
 import GPy
 import numpy as np
 import pickle  # Import pickle for saving/loading models
+import os  # For joining paths
 
 def load_training_data(training_csv):
     """
@@ -29,7 +30,7 @@ def train_gp_model(X, Y, kernel=None):
     Returns the trained GP model.
     """
     # Retrieve the kernel type from the ROS parameter server (default to 'RBF')
-    kernel_type = rospy.get_param('~kernel', 'RBF')
+    kernel_type = rospy.get_param('/rosparam/kernel', 'RBF')
 
     # Define the kernel based on the parameter or use the provided kernel
     if kernel_type == 'RBF':
@@ -75,23 +76,31 @@ def gp_training_node():
     rospy.init_node('gp_training_node')
 
     # Parameters for the node (file paths)
-    training_csv = rospy.get_param('~training_csv', 
-                                   '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/csv/default_train_data.csv')  # Path to the processed training data CSV
+    training_csv_path = rospy.get_param('/rosparam/train_csv_path', 
+                                   '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed')  # Path to the processed training data CSV
+    training_csv_name = rospy.get_param('/rosparam/train_csv_name', 'default_train_data.csv')
+
+    # Combine the path and name using os.path.join (recommended for paths)
+    full_train_csv_path = os.path.join(training_csv_path, training_csv_name)
     
-    model_output_path = rospy.get_param('~model_output', '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/gp_model.pkl')  # Path to save the trained GP model
+    model_output_path = rospy.get_param('rosparam/model_output', '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models')
+    model_name_param = rospy.get_param('/rosparam/model_name', 'gp_model.pkl')
+
+    # Combine the output path and model name using os.path.join (recommended for paths)
+    full_model_path = os.path.join(model_output_path, model_name_param)
 
     # Load the training data
-    rospy.loginfo(f"Loading training data from {training_csv}")
-    X, Y = load_training_data(training_csv)
+    rospy.loginfo(f"Loading training data from {full_train_csv_path}")
+    X, Y = load_training_data(full_train_csv_path)
 
     # Train the GP model
     rospy.loginfo("Training Gaussian Process model...")
     gp_model = train_gp_model(X, Y)
 
     # Save the trained model using pickle
-    save_gp_model_pickle(gp_model, model_output_path)
+    save_gp_model_pickle(gp_model, full_model_path)
 
-    rospy.loginfo("GP training complete. Node is shutting down.")
+    rospy.loginfo(f"GP training complete. Model saved at {full_model_path}. Node is shutting down.")
 
 if __name__ == '__main__':
     try:

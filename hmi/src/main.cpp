@@ -131,7 +131,9 @@ int main(int argc, char** argv) {
 
     //gp model parameters
     static char model_output_path[128] = "/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models";  // Default value
-    static char training_csv[128] = "/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/csv/default_train_data.csv";  // Default value
+    static char model_name_param[128] = "gp_model.pkl";  // Default value
+    static char train_csv_path[128] = "/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed";  // Default value
+    static char train_csv_name[128] = "default_train_data.csv";  // Default value
     const char* kernels[] = { "RBF", "Matern52", "Linear" };  // Available kernel types
     static int selected_kernel = 0;  // Index for the selected kernel
 
@@ -349,12 +351,6 @@ int main(int argc, char** argv) {
                 ///////////////////////
                 // Rosbag Recording UI
                 ///////////////////////
-                ImGui::Text("Save Path:");
-                ImGui::SameLine();
-                ImGui::InputText("##SavePath", rosbag_path, IM_ARRAYSIZE(rosbag_path));
-
-                ImGui::Spacing();
-
                 ImGui::Text("File Name:");
                 ImGui::SameLine();
                 ImGui::InputText("##FileName", file_name, IM_ARRAYSIZE(file_name));
@@ -410,25 +406,25 @@ int main(int argc, char** argv) {
                 ImGui::Spacing();  // Add some space between sections
 
                 // Training CSV Path
-                ImGui::Text("Training CSV:");
+                ImGui::Text("Train CSV name:");
                 ImGui::SameLine();
-                ImGui::InputText("##TrainingCSV", training_csv, IM_ARRAYSIZE(training_csv));
+                ImGui::InputText("##TrainingCSV", train_csv_name, IM_ARRAYSIZE(train_csv_name));
 
                 if (ImGui::Button("Set Training CSV", ImVec2(120.0f, 40.0f))) {
-                    std::string training_csv_param = std::string(training_csv);
-                    terminal.setRosParam("~training_csv", training_csv_param);  // Set the parameter on the ROS parameter server
+                    terminal.setRosParam("~train_csv_path", train_csv_path);  // Set the parameter on the ROS parameter server
+                    terminal.setRosParam("~train_csv_name", train_csv_name);
                 }
 
                 ImGui::Spacing();
 
                 // Model Output Path
-                ImGui::Text("Model Output Path:");
+                ImGui::Text("Model Name:");
                 ImGui::SameLine();
-                ImGui::InputText("##ModelOutput", model_output_path, IM_ARRAYSIZE(model_output_path));
+                ImGui::InputText("##ModelName", model_name_param, IM_ARRAYSIZE(model_name_param));
 
-                if (ImGui::Button("Set Model Output Path", ImVec2(120.0f, 40.0f))) {
-                    std::string model_output_param = std::string(model_output_path);
-                    terminal.setRosParam("~model_output", model_output_param);  // Set the parameter on the ROS parameter server
+                if (ImGui::Button("Set Model", ImVec2(120.0f, 40.0f))) {
+                    terminal.setRosParam("~model_output", model_output_path);  // Set the parameter on the ROS parameter server
+                    terminal.setRosParam("~model_name", model_name_param);  // Set the parameter on the ROS parameter server
                 }
 
                 ImGui::Spacing();
