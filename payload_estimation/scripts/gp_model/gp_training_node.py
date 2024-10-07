@@ -4,6 +4,7 @@ import rospy
 import pandas as pd
 import GPy
 import numpy as np
+import pickle  # Import pickle for saving/loading models
 
 def load_training_data(training_csv):
     """
@@ -50,12 +51,21 @@ def train_gp_model(X, Y, kernel=None):
     # Return the trained model
     return gp_model
 
-def save_gp_model(gp_model, model_filename):
+def save_gp_model_pickle(gp_model, model_filename):
     """
-    Saves the trained GP model to a file.
+    Saves the trained GP model to a file using pickle.
     """
-    gp_model.save_model(model_filename)
+    with open(model_filename, 'wb') as f:
+        pickle.dump(gp_model, f)  # Save the model using pickle
     rospy.loginfo(f"GP model saved to {model_filename}")
+
+def load_gp_model_pickle(model_filename):
+    """
+    Loads the trained GP model from a file using pickle.
+    """
+    with open(model_filename, 'rb') as f:
+        gp_model = pickle.load(f)  # Load the model using pickle
+    return gp_model
 
 def gp_training_node():
     """
@@ -78,8 +88,8 @@ def gp_training_node():
     rospy.loginfo("Training Gaussian Process model...")
     gp_model = train_gp_model(X, Y)
 
-    # Save the trained model to a file
-    save_gp_model(gp_model, model_output_path)
+    # Save the trained model using pickle
+    save_gp_model_pickle(gp_model, model_output_path)
 
     rospy.loginfo("GP training complete. Node is shutting down.")
 
