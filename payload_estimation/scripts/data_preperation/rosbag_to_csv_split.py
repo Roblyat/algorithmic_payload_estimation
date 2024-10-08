@@ -3,6 +3,7 @@
 import rosbag
 import csv
 import rospy
+import os
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import WrenchStamped
 
@@ -44,8 +45,17 @@ if __name__ == "__main__":
     #######################################################################
     ## Replace with the path to your ROS bag and desired CSV output files ##
     #######################################################################
-    bag_file = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/rosbag/recorded_data.bag'
-    joint_states_csv = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/csv/joint_states_output.csv'
-    wrench_csv = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/csv/wrench_output.csv'
+    rosbag_path = rospy.get_param('/rosparam/rosbag_path', 
+                                   '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/rosbag')  # Path to the processed training data CSV
+    rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
+    bag_file = os.path.join(rosbag_path, rosbag_name)
+    
+    # Folder path for joint states and wrench CSVs
+    raw_csv_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/csv'
+    
+    # Create filenames for joint states and wrench CSV files
+    rosbag_base_name = os.path.splitext(rosbag_name)[0]
+    joint_states_csv = os.path.join(raw_csv_folder, f"{rosbag_base_name}_jointstates.csv")
+    wrench_csv = os.path.join(raw_csv_folder, f"{rosbag_base_name}_wrench.csv")
 
     rosbag_to_csv(bag_file, joint_states_csv, wrench_csv)

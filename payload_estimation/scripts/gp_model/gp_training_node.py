@@ -76,18 +76,26 @@ def gp_training_node():
     rospy.init_node('gp_training_node')
 
     # Parameters for the node (file paths)
-    training_csv_path = rospy.get_param('/rosparam/train_csv_path', 
+    training_csv_path = rospy.get_param('/rosparam/preprocessed_csv_path', 
                                    '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed')  # Path to the processed training data CSV
-    training_csv_name = rospy.get_param('/rosparam/train_csv_name', 'default_train_data.csv')
+    
+    rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
+    rosbag_base_name = os.path.splitext(rosbag_name)[0]
+    training_csv_param = rospy.get_param('/rosparam/train_csv_name', '_train_data.csv')
+
+    # Combine the base name with the train_csv_param
+    training_csv_name = f"{rosbag_base_name}{training_csv_param}"
 
     # Combine the path and name using os.path.join (recommended for paths)
     full_train_csv_path = os.path.join(training_csv_path, training_csv_name)
     
+    ##################################################################################################   HIER GEHT WEITER, NAMESGEBUNG UND TEXTBOXEN ÜBERPRÜFEN DURCH ALLE FILES ############################
     model_output_path = rospy.get_param('rosparam/model_output', '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models')
     model_name_param = rospy.get_param('/rosparam/model_name', 'gp_model.pkl')
 
     # Combine the output path and model name using os.path.join (recommended for paths)
-    full_model_path = os.path.join(model_output_path, model_name_param)
+    #full_model_path = os.path.join(model_output_path, model_name_param)
+    full_model_path = os.path.join(model_output_path, f"{rosbag_base_name}_model.pkl")
 
     # Load the training data
     rospy.loginfo(f"Loading training data from {full_train_csv_path}")

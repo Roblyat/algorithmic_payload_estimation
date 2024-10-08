@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+
+import rospy
+import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -142,19 +146,31 @@ def split_and_standardize(training_csv, train_output_csv, test_output_csv):
     print(f"Test data saved to {test_output_csv}")
 
 if __name__ == "__main__":
+    
     # Paths to your CSV files
-    joint_states_csv = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/csv/joint_states_output.csv'
-    wrench_csv = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/csv/wrench_output.csv'
-    combined_csv = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/csv/combined_output.csv'
-    training_csv = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/csv/training_output.csv'
-    train_output_csv = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/csv/train_data.csv'
-    test_output_csv = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/csv/test_data.csv'
+    output_folder = rospy.get_param('/rosparam/preprocessed_csv_path', '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed') 
+    # Folder path for joint states and wrench CSVs
+    raw_csv_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/csv'
+    rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
+
+    rosbag_base_name = os.path.splitext(rosbag_name)[0]
+    joint_states_csv = os.path.join(raw_csv_folder, f"{rosbag_base_name}_jointstates.csv")
+    wrench_csv = os.path.join(raw_csv_folder, f"{rosbag_base_name}_wrench.csv")
+    combined_csv = os.path.join(output_folder, f"{rosbag_base_name}_combined.csv") #Matched the closest timestamp of wrench data to joint states block (6 joints)
+    raw_training_csv = os.path.join(output_folder, f"{rosbag_base_name}_raw_training.csv") #Processed joint states and wrench data
+
+    # Path to the processed training data CSV
+    train_csv_name = rospy.get_param('/rosparam/train_csv_name', '_train_data.csv')
+    train_data_csv = os.path.join(output_folder, f"{rosbag_base_name}{train_csv_name}")
+    
+    test_csv_name = rospy.get_param('/rosparam/test_csv_name', '_test_data.csv')
+    test_data_csv = os.path.join(output_folder, f"{rosbag_base_name}{test_csv_name}")
 
     # Step 1: Process joint states and wrench data
     process_joint_states(joint_states_csv, wrench_csv, combined_csv)
 
     # Step 2: Prepare the training data
-    prepare_training_data(combined_csv, training_csv)
+    prepare_training_data(combined_csv, raw_training_csv)
 
     # Step 3: Split and standardize the data
-    split_and_standardize(training_csv, train_output_csv, test_output_csv)
+    split_and_standardize(raw_training_csv, train_data_csv, test_data_csv)
