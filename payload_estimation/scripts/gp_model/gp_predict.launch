@@ -1,7 +1,7 @@
 <launch>
-    <node pkg="payload_estimation" type="gp_prediction.py" name="gp_test_node" output="screen">
-        <param name="test_csv" value="/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/100_02_02_01x3_test_data.csv" />
-        <param name="model_filename" value="/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/100_02_02_01x3_model.pkl" />
-        <param name="results_csv" value="/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/results.csv" />
+    <node pkg="payload_estimation" type="gp_effort_test_node.py" name="gp_test_node" output="screen">
+        <param name="test_csv" value="/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/100_02_02_01x3_effort__effort_test_data.csv" />
+        <param name="model_filename" value="/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/effort_model.pkl" />
+        <param name="results_csv" value="/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/effort_results.csv" />
     </node>
 </launch>

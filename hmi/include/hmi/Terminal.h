@@ -25,17 +25,22 @@ public:
     void startRosbagRecording(const std::string& full_save_path);
     void stopRosbagRecording();  // Stop the rosbag recording
 
+    // Start and stop rosbag to CSV process
+    void startRosbagToCSV();  // Start rosbag to CSV process
+    void stopRosbagToCSV();  // Stop rosbag to CSV process
+
+    // Start and stop rosbag to Wrench CSV process
+    void startWrenchPreprocessing();  // Start CSV preprocessing
+    void stopWrenchPreprocessing();  // Stop CSV preprocessing
+
+    // Start and stop rosbag to Effort CSV process
+    void startEffortPreprocessing();  // Start CSV preprocessing
+    void stopEffortPreprocessing();  // Stop CSV preprocessing
+
     // Start and stop training 
     void startTraining(); 
     void stopTraining();
 
-    // Start and stop rosbag to CSV process
-    void startCSVPreprocessing();  // Start CSV preprocessing
-    void stopCSVPreprocessing();  // Stop CSV preprocessing
-
-    // Start and stop rosbag to CSV process
-    void startRosbagToCSV();  // Start rosbag to CSV process
-    void stopRosbagToCSV();  // Stop rosbag to CSV process
 
     std::mutex terminal_mutex;  // Mutex to protect terminal operations
 
@@ -62,10 +67,15 @@ private:
     std::thread rosbag_to_csv_thread;  // Thread for rosbag to CSV process
     void rosbagToCSVWorker();  // Worker method for rosbag to CSV process
 
-    // CSV Preprocessing
-    std::atomic<bool> csv_preprocessing_running;  // Flag for CSV preprocessing
-    std::thread csv_preprocessing_thread;  // Thread for CSV preprocessing
-    void csvPreprocessingWorker();  // Worker method for CSV preprocessing
+    // Wrench CSV Preprocessing
+    std::atomic<bool> wrench_preprocessing_running;  // Flag for CSV preprocessing
+    std::thread wrench_preprocessing_thread;  // Thread for CSV preprocessing
+    void csvWrenchPreprocessingWorker();  // Worker method for CSV preprocessing
+
+    // Wrench Effort Preprocessing
+    std::atomic<bool> effort_preprocessing_running;  // Flag for CSV preprocessing
+    std::thread effort_preprocessing_thread;  // Thread for CSV preprocessing
+    void csvEffortPreprocessingWorker();  // Worker method for CSV preprocessing
 };
 
 #endif // TERMINAL_H

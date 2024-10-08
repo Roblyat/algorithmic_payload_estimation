@@ -392,19 +392,34 @@ int main(int argc, char** argv) {
                     terminal.stopRosbagToCSV();
                 }
 
-                //////////////////////////////
-                // Preprocess CSV to Training//
-                //////////////////////////////
+                //////////////////////////////////////
+                // Preprocess CSV to Wrench Training//
+                //////////////////////////////////////
                 ImGui::Spacing();  // Add space between sections
 
-                if (ImGui::Button("Start CSV Preprocessing", ImVec2(160.0f, 40.0f))) {
-                    terminal.startCSVPreprocessing();
+                if (ImGui::Button("Start Wrench Preprocessing", ImVec2(160.0f, 40.0f))) {
+                    terminal.startWrenchPreprocessing();
                 }
 
                 ImGui::SameLine();
 
-                if (ImGui::Button("Stop CSV Preprocessing", ImVec2(160.0f, 40.0f))) {
-                    terminal.stopCSVPreprocessing();
+                if (ImGui::Button("Stop Wrench Preprocessing", ImVec2(160.0f, 40.0f))) {
+                    terminal.stopWrenchPreprocessing();
+                }
+
+                //////////////////////////////////////
+                // Preprocess CSV to Effort Training//
+                //////////////////////////////////////
+                ImGui::Spacing();  // Add space between sections
+
+                if (ImGui::Button("Start Effort Preprocessing", ImVec2(160.0f, 40.0f))) {
+                    terminal.startEffortPreprocessing();
+                }
+
+                ImGui::SameLine();
+
+                if (ImGui::Button("Stop Effort Preprocessing", ImVec2(160.0f, 40.0f))) {
+                    terminal.stopEffortPreprocessing();
                 }
 
                 /////////////////

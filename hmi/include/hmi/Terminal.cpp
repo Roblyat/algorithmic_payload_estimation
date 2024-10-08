@@ -61,6 +61,16 @@ void Terminal::renderPlot() {
     ImGui::EndChild();
 }
 
+//////////////////////////
+// ROS Parameter Setter //
+//////////////////////////
+// Set ROS parameters on the parameter server
+void Terminal::setRosParam(const std::string& param_name, const std::string& param_value) {
+    std::string command = "rosparam set " + param_name + " " + param_value;
+    system(command.c_str());  // Execute the command to set the parameter
+    ROS_INFO_STREAM("Set ROS parameter: " << param_name << " = " << param_value);
+}
+
 ////////////////////////
 // Rosbag Recording   //
 ////////////////////////
@@ -154,46 +164,88 @@ void Terminal::stopRosbagToCSV() {
     ROS_INFO("Rosbag to CSV process stopped.");
 }
 
-//////////////////////////////
-// CSV Preprocessing Worker //
-//////////////////////////////
-void Terminal::csvPreprocessingWorker() {
+/////////////////////////////////////
+// CSV Wrench Preprocessing Worker //
+/////////////////////////////////////
+void Terminal::csvWrenchPreprocessingWorker() {
     std::lock_guard<std::mutex> lock(terminal_mutex);  // Lock terminal resources
 
     // Command to run CSV preprocessing
-    std::string command = "rosrun payload_estimation csv_preprocess_data.py &";  // Replace with actual script path
+    std::string command = "rosrun payload_estimation csv_preprocess_wrench_data.py &";  // Replace with actual script path
     system(command.c_str());  // Execute the command
 
-    while (csv_preprocessing_running.load()) {
+    while (wrench_preprocessing_running.load()) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
-    system("pkill -f 'preprocessing_script.py'");
+    system("pkill -f 'wrench_preprocessing_script.py'");
 }
 
-void Terminal::startCSVPreprocessing() {
-    if (csv_preprocessing_running.load()) {
-        ROS_WARN("CSV preprocessing is already running.");
+void Terminal::startWrenchPreprocessing() {
+    if (wrench_preprocessing_running.load()) {
+        ROS_WARN("CSV Wrench preprocessing is already running.");
         return;
     }
 
-    csv_preprocessing_running.store(true);  // Set flag to true
-    csv_preprocessing_thread = std::thread(&Terminal::csvPreprocessingWorker, this);
+    wrench_preprocessing_running.store(true);  // Set flag to true
+    wrench_preprocessing_thread = std::thread(&Terminal::csvWrenchPreprocessingWorker, this);
 }
 
-void Terminal::stopCSVPreprocessing() {
-    if (!csv_preprocessing_running.load()) {
-        ROS_WARN("No CSV preprocessing is currently running.");
+void Terminal::stopWrenchPreprocessing() {
+    if (!wrench_preprocessing_running.load()) {
+        ROS_WARN("No CSV Wrench preprocessing is currently running.");
         return;
     }
 
-    csv_preprocessing_running.store(false);  // Set flag to false
+    wrench_preprocessing_running.store(false);  // Set flag to false
 
-    if (csv_preprocessing_thread.joinable()) {
-        csv_preprocessing_thread.join();
+    if (wrench_preprocessing_thread.joinable()) {
+        wrench_preprocessing_thread.join();
     }
 
-    ROS_INFO("CSV preprocessing stopped.");
+    ROS_INFO("CSV Wrench preprocessing stopped.");
+}
+
+/////////////////////////////////////
+// CSV Effort Preprocessing Worker //
+/////////////////////////////////////
+void Terminal::csvEffortPreprocessingWorker() {
+    std::lock_guard<std::mutex> lock(terminal_mutex);  // Lock terminal resources
+
+    // Command to run CSV preprocessing
+    std::string command = "rosrun payload_estimation csv_preprocess_effort_data.py &";  // Replace with actual script path
+    system(command.c_str());  // Execute the command
+
+    while (effort_preprocessing_running.load()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    system("pkill -f 'effort_preprocessing_script.py'");
+}
+
+void Terminal::startEffortPreprocessing() {
+    if (effort_preprocessing_running.load()) {
+        ROS_WARN("CSV Wrench preprocessing is already running.");
+        return;
+    }
+
+    effort_preprocessing_running.store(true);  // Set flag to true
+    effort_preprocessing_thread = std::thread(&Terminal::csvEffortPreprocessingWorker, this);
+}
+
+void Terminal::stopEffortPreprocessing() {
+    if (!effort_preprocessing_running.load()) {
+        ROS_WARN("No CSV Effort preprocessing is currently running.");
+        return;
+    }
+
+    effort_preprocessing_running.store(false);  // Set flag to false
+
+    if (effort_preprocessing_thread.joinable()) {
+        effort_preprocessing_thread.join();
+    }
+
+    ROS_INFO("CSV Effort preprocessing stopped.");
 }
 
 
@@ -247,11 +299,4 @@ void Terminal::stopTraining() {
     }
 
     ROS_INFO("Training node stopped.");
-}
-
-// Set ROS parameters on the parameter server
-void Terminal::setRosParam(const std::string& param_name, const std::string& param_value) {
-    std::string command = "rosparam set " + param_name + " " + param_value;
-    system(command.c_str());  // Execute the command to set the parameter
-    ROS_INFO_STREAM("Set ROS parameter: " << param_name << " = " << param_value);
 }
