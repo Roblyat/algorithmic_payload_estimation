@@ -160,10 +160,10 @@ if __name__ == "__main__":
     raw_training_csv = os.path.join(output_folder, f"{rosbag_base_name}_wrench_raw_training.csv") #Processed joint states and wrench data
 
     train_csv_name = rospy.get_param('/rosparam/train_csv_name', '_wrench_train_data.csv')
-    train_data_csv = os.path.join(output_folder, f"{rosbag_base_name}_wrench_{train_csv_name}")
+    train_data_csv = os.path.join(output_folder, f"{rosbag_base_name}{train_csv_name}")
 
     test_csv_name = rospy.get_param('/rosparam/test_csv_name', '_wrench_test_data.csv')
-    test_data_csv = os.path.join(output_folder, f"{rosbag_base_name}_wrench_{test_csv_name}")  # Corrected: use test_csv_name here
+    test_data_csv = os.path.join(output_folder, f"{rosbag_base_name}{test_csv_name}")  # Corrected: use test_csv_name here
 
 
     # Step 1: Process joint states and wrench data

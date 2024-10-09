@@ -300,3 +300,160 @@ void Terminal::stopTraining() {
 
     ROS_INFO("Training node stopped.");
 }
+
+///////////////////////
+// Testing Node Code //
+///////////////////////
+
+void Terminal::gpTestingWorker() {
+    std::lock_guard<std::mutex> lock(terminal_mutex);  // Lock terminal resources
+
+    // Command to start the Python node using rosrun
+    std::string command = "rosrun payload_estimation gp_test_node.py &";  // Replace with actual package and script name
+    system(command.c_str());  // Execute the command
+
+    while (testing_running.load()) {
+        // Keep the thread alive while training is running
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    // Stop the Python node process when the flag is set to false
+    std::string stop_command = "pkill -f 'gp_test_node.py'";  // Construct the stop command for the specific node
+    system(stop_command.c_str());  // Execute the stop command
+}
+
+
+// Start the Python node in a separate thread
+void Terminal::startTesting() {
+    if (testing_running.load()) {
+        ROS_WARN("Testing node is already running.");
+        return;
+    }
+
+    testing_running.store(true);  // Set the flag to true
+
+    // Start the Python node in a separate thread
+    testing_thread = std::thread(&Terminal::gpTestingWorker, this);
+}
+
+// Stop the Python node
+void Terminal::stopTesting() {
+    if (!testing_running.load()) {
+        ROS_WARN("No testing node is currently running.");
+        return;
+    }
+
+    testing_running.store(false);  // Set the flag to false to stop the node
+
+    // Join the thread to ensure it has stopped
+    if (testing_thread.joinable()) {
+        testing_thread.join();
+    }
+
+    ROS_INFO("Testing node stopped.");
+}
+
+//////////////////////////
+// Plotting Effort Code //
+//////////////////////////
+
+void Terminal::gpEffortPlotWorker() {
+    std::lock_guard<std::mutex> lock(terminal_mutex);  // Lock terminal resources
+
+    // Command to start the Python node using rosrun
+    std::string command = "rosrun payload_estimation gp_effort_plots_node.py &";  // Replace with actual package and script name
+    system(command.c_str());  // Execute the command
+
+    while (effort_plot_running.load()) {
+        // Keep the thread alive while training is running
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    // Stop the Python node process when the flag is set to false
+    std::string stop_command = "pkill -f 'gp_effort_plots_node.py'";  // Construct the stop command for the specific node
+    system(stop_command.c_str());  // Execute the stop command
+}
+
+
+// Start the Python node in a separate thread
+void Terminal::startEffortPlot() {
+    if (effort_plot_running.load()) {
+        ROS_WARN("Effort plot node is already running.");
+        return;
+    }
+
+    effort_plot_running.store(true);  // Set the flag to true
+
+    // Start the Python node in a separate thread
+    effort_plot_thread = std::thread(&Terminal::gpEffortPlotWorker, this);
+}
+
+// Stop the Python node
+void Terminal::stopEffortPlot() {
+    if (!effort_plot_running.load()) {
+        ROS_WARN("No effort plot node is currently running.");
+        return;
+    }
+
+    effort_plot_running.store(false);  // Set the flag to false to stop the node
+
+    // Join the thread to ensure it has stopped
+    if (effort_plot_thread.joinable()) {
+        effort_plot_thread.join();
+    }
+
+    ROS_INFO("Effort plot node stopped.");
+}
+
+//////////////////////////
+// Wrench Effort Code //
+//////////////////////////
+
+void Terminal::gpWrenchPlotWorker() {
+    std::lock_guard<std::mutex> lock(terminal_mutex);  // Lock terminal resources
+
+    // Command to start the Python node using rosrun
+    std::string command = "rosrun payload_estimation gp_wrench_plots_node.py &";  // Replace with actual package and script name
+    system(command.c_str());  // Execute the command
+
+    while (wrench_plot_running.load()) {
+        // Keep the thread alive while training is running
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    // Stop the Python node process when the flag is set to false
+    std::string stop_command = "pkill -f 'gp_wrench_plots_node.py'";  // Construct the stop command for the specific node
+    system(stop_command.c_str());  // Execute the stop command
+}
+
+
+// Start the Python node in a separate thread
+void Terminal::startWrenchPlot() {
+    if (wrench_plot_running.load()) {
+        ROS_WARN("Wrench plot node is already running.");
+        return;
+    }
+
+    wrench_plot_running.store(true);  // Set the flag to true
+
+    // Start the Python node in a separate thread
+    wrench_plot_thread = std::thread(&Terminal::gpWrenchPlotWorker, this);
+}
+
+// Stop the Python node
+void Terminal::stopWrenchPlot() {
+    if (!wrench_plot_running.load()) {
+        ROS_WARN("No wrench plot node is currently running.");
+        return;
+    }
+
+    wrench_plot_running.store(false);  // Set the flag to false to stop the node
+
+    // Join the thread to ensure it has stopped
+    if (wrench_plot_thread.joinable()) {
+        wrench_plot_thread.join();
+    }
+
+    ROS_INFO("Wrench plot node stopped.");
+}
+

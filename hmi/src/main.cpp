@@ -130,15 +130,9 @@ int main(int argc, char** argv) {
     static char rosbag_name[128] = "recorded_data.bag";  // Default file name
 
     //gp model parameters
-    static char model_output_path[128] = "/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models";  // Default value
-    static char model_name_param[128] = "gp_model.pkl";  // Default value
-    static char preprocessed_csv_path[128] = "/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed";  // Default value
-    static char train_csv_name[128] = "_train_data.csv";  // Default value
-    static char test_csv_name[128] = "_test_data.csv";  // Default value
+    static char data_type[128] = "effort";  // Default value
     const char* kernels[] = { "RBF", "Matern52", "Linear" };  // Available kernel types
     static int selected_kernel = 0;  // Index for the selected kernel
-
-
 
     //move buttons as block
     int y_bRand = 200;
@@ -358,6 +352,13 @@ int main(int argc, char** argv) {
 
                 ImGui::Spacing();
 
+                if (ImGui::Button("Set Rosbag Name", ImVec2(160.0f, 40.0f))) {
+                    terminal.setRosParam("~rosbag_path", rosbag_path);  // Set the parameter on the ROS parameter server
+                    terminal.setRosParam("~rosbag_name", rosbag_name);
+                }
+                
+                ImGui::SameLine();
+
                 if (ImGui::Button("Start Recording", ImVec2(120.0f, 40.0f))) {
                     std::string full_rosbag_path = std::string(rosbag_path) + "/" + std::string(rosbag_name);
                     terminal.startRosbagRecording(full_rosbag_path);
@@ -374,13 +375,6 @@ int main(int argc, char** argv) {
                 // Process Rosbag to CSV //
                 //////////////////////////////
                 ImGui::Spacing();  // Add space between sections
-
-                if (ImGui::Button("Set Rosbag Name", ImVec2(160.0f, 40.0f))) {
-                    terminal.setRosParam("~rosbag_path", rosbag_path);  // Set the parameter on the ROS parameter server
-                    terminal.setRosParam("~rosbag_name", rosbag_name);
-                }
-                
-                ImGui::SameLine();
 
                 if (ImGui::Button("Start Rosbag to CSV", ImVec2(160.0f, 40.0f))) {
                     terminal.startRosbagToCSV();
@@ -428,26 +422,13 @@ int main(int argc, char** argv) {
                 
                 ImGui::Spacing();  // Add some space between sections
 
-                // Training CSV Path
-                // ImGui::Text("Train CSV name:");
-                // ImGui::SameLine();
-                // ImGui::InputText("##TrainingCSV", train_csv_name, IM_ARRAYSIZE(train_csv_name));
-
-                // if (ImGui::Button("Set Training CSV", ImVec2(120.0f, 40.0f))) {
-                //     terminal.setRosParam("~preprocessed_csv_path", preprocessed_csv_path);  // Set the parameter on the ROS parameter server
-                //     terminal.setRosParam("~train_csv_name", train_csv_name);
-                // }
-
-                // ImGui::Spacing();
-
                 // Model Output Path
-                ImGui::Text("Model Name:");
+                ImGui::Text("Data Type:");
                 ImGui::SameLine();
-                ImGui::InputText("##ModelName", model_name_param, IM_ARRAYSIZE(model_name_param));
+                ImGui::InputText("##DataType", data_type, IM_ARRAYSIZE(data_type));
 
                 if (ImGui::Button("Set Model", ImVec2(120.0f, 40.0f))) {
-                    terminal.setRosParam("~model_output", model_output_path);  // Set the parameter on the ROS parameter server
-                    terminal.setRosParam("~model_name", model_name_param);  // Set the parameter on the ROS parameter server
+                    terminal.setRosParam("~data_type", data_type);  // Set the parameter on the ROS parameter server
                 }
 
                 ImGui::Spacing();
@@ -466,8 +447,6 @@ int main(int argc, char** argv) {
 
                 // Start/Stop Python Node Buttons          
                 if (ImGui::Button("Start Training", ImVec2(120.0f, 40.0f))) {
-                    terminal.setRosParam("~preprocessed_csv_path", preprocessed_csv_path);  // Set the parameter on the ROS parameter server
-                    terminal.setRosParam("~train_csv_name", train_csv_name);
                     terminal.startTraining();  // Replace with actual node script path
                 }
 
@@ -477,6 +456,54 @@ int main(int argc, char** argv) {
                 if (ImGui::Button("Stop Training", ImVec2(120.0f, 40.0f))) {
                     terminal.stopTraining();
                 }
+
+                ImGui::Spacing();
+
+                /////////////////
+                // GP Testing  //
+                /////////////////
+                // Start/Stop Testing Node Buttons          
+                if (ImGui::Button("Start Testing", ImVec2(120.0f, 40.0f))) {
+                    terminal.startTesting();  // Replace with actual node script path
+                }
+
+                ImGui::SameLine();
+
+                // Stop the Python node from button
+                if (ImGui::Button("Stop Testing", ImVec2(120.0f, 40.0f))) {
+                    terminal.stopTesting();
+                }
+
+                ImGui::Spacing();
+
+                /////////////////
+                // GP Plotting  //
+                /////////////////
+                // Start/Stop Effort Plot Node Buttons          
+                if (ImGui::Button("Start Effort Plotting", ImVec2(120.0f, 40.0f))) {
+                    terminal.startEffortPlot();  // Replace with actual node script path
+                }
+
+                ImGui::SameLine();
+
+                // Stop the Python node from button
+                if (ImGui::Button("Stop Effort Plotting", ImVec2(120.0f, 40.0f))) {
+                    terminal.stopEffortPlot();
+                }
+                ImGui::Spacing();
+
+                // Start/Stop Wrench Plot Node Buttons          
+                if (ImGui::Button("Start Wrench Plotting", ImVec2(120.0f, 40.0f))) {
+                    terminal.startWrenchPlot();  // Replace with actual node script path
+                }
+
+                ImGui::SameLine();
+
+                // Stop the Python node from button
+                if (ImGui::Button("Stop Wrench Plotting", ImVec2(120.0f, 40.0f))) {
+                    terminal.stopWrenchPlot();
+                }
+
 
                 ImGui::EndTabItem();
             }

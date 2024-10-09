@@ -1,4 +1,5 @@
 #include "RobotController.h"
+#include <cstdlib>
 
 // Constructor
 RobotController::RobotController(ros::NodeHandle& N, const std::string& planning_group)

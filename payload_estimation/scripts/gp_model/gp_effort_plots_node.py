@@ -1,13 +1,31 @@
 #!/usr/bin/env python3
 
+import rospy
+import os
 import pandas as pd
 import numpy as np  
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error
 
-# Load data from a CSV file
-file_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/effort_results.csv'
-data = pd.read_csv(file_path)  # Changed from read_excel to read_csv
+# Get the data type (wrench or effort) from ROS parameters
+data_type = rospy.get_param('/rosparam/data_type', 'effort')  # Default to 'effort'
+
+# Check if the data_type is 'effort', if not, kill the script
+if data_type != 'effort':
+    rospy.logerr(f"Data type is '{data_type}'. This script only supports 'effort'. Shutting down.")
+    rospy.signal_shutdown("Unsupported data type")
+    exit()
+
+# Get the base paths and file names
+rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
+rosbag_base_name = os.path.splitext(rosbag_name)[0]
+
+# Update the file path dynamically based on data_type
+file_path = f'/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/{data_type}/{rosbag_base_name}_{data_type}_results.csv'
+
+# Load data from the dynamically set CSV file
+data = pd.read_csv(file_path)
+
 
 # Plot Actual vs Predicted for Efforts of All Joints
 def plot_efforts(data):

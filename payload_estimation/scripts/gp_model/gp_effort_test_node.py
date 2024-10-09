@@ -4,6 +4,7 @@ import rospy
 import pandas as pd
 import numpy as np
 import pickle
+import os
 
 def load_test_data(test_csv):
     """
@@ -50,16 +51,38 @@ def gp_test_node():
     # Initialize the ROS node
     rospy.init_node('gp_test_node')
 
-    # Parameters (file paths)
-    test_csv = rospy.get_param('~test_csv', '/path/to/test_data.csv')  # Path to the test dataset
-    model_filename = rospy.get_param('~model_filename', '/path/to/gp_model.pkl')  # Path to the trained GP model
-    results_csv = rospy.get_param('~results_csv', '/path/to/results.csv')  # Path to save the results
+    # Get the base paths and file names
+    input_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed'  # Path to save the results
+    output_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/effort'  # Path to save the results
+    rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
+    rosbag_base_name = os.path.splitext(rosbag_name)[0]
+    
+    # Get the data type (wrench or effort) from ROS parameters
+    data_type = rospy.get_param('/rosparam/data_type', 'effort')  # Default to 'effort'
+
+    # Depending on the data type, set the test_csv_name appropriately
+    if data_type == 'wrench':
+        test_csv_param = '_wrench_test_data.csv'
+    else:
+        test_csv_param = '_effort_test_data.csv'
+
+    # Combine the base name with the test_csv_param
+    test_csv_name = f"{rosbag_base_name}{test_csv_param}"
+    test_csv = os.path.join(input_folder, test_csv_name)
+
+    # Model output path, depending on data_type (effort or wrench)
+    model_output_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models', data_type)
+    model_filename = os.path.join(model_output_path, f"{rosbag_base_name}_{data_type}_model.pkl")
+
+    # Get the path to save the results
+    results_csv = rospy.get_param('~results_csv', os.path.join(output_folder, f"{rosbag_base_name}_{data_type}_test_results.csv"))
 
     # Load the test data
-    rospy.loginfo(f"Loading test data from {test_csv}")
+    rospy.loginfo(f"Loading {data_type} test data from {test_csv}")
     X_test, Y_test = load_test_data(test_csv)
 
     # Load the GP model
+    rospy.loginfo(f"Loading {data_type} GP model from {model_filename}")
     gp_model = load_gp_model(model_filename)
 
     # Make predictions on the test data
@@ -69,16 +92,15 @@ def gp_test_node():
     # Save the actual vs predicted results to a CSV file
     rospy.loginfo(f"Saving predictions and actual values to {results_csv}")
     
-    # Concatenate the test data, predicted values, and variance (one variance column per effort)
+    # Concatenate the test data, predicted values, and variance (one variance column per effort or wrench)
     df_results = pd.DataFrame(np.hstack((Y_test, Y_pred, Y_var)),
-                            columns=['Actual Effort Joint 1', 'Actual Effort Joint 2', 'Actual Effort Joint 3',
-                                     'Actual Effort Joint 4', 'Actual Effort Joint 5', 'Actual Effort Joint 6',
-                                     'Predicted Effort Joint 1', 'Predicted Effort Joint 2', 'Predicted Effort Joint 3',
-                                     'Predicted Effort Joint 4', 'Predicted Effort Joint 5', 'Predicted Effort Joint 6',
-                                    'Variance'])
+                              columns=[f'Actual {data_type.capitalize()} Joint {i+1}' for i in range(6)] + 
+                                      [f'Predicted {data_type.capitalize()} Joint {i+1}' for i in range(6)] + 
+                                      ['Variance'])
 
     df_results.to_csv(results_csv, index=False)
     rospy.loginfo(f"Results saved to {results_csv}")
+
 
 if __name__ == '__main__':
     try:

@@ -41,6 +41,17 @@ public:
     void startTraining(); 
     void stopTraining();
 
+    // Start and stop test 
+    void startTesting(); 
+    void stopTesting();
+
+    // Start and stop effort test 
+    void startEffortPlot(); 
+    void stopEffortPlot();
+
+    // Start and stop wrench test 
+    void startWrenchPlot(); 
+    void stopWrenchPlot();
 
     std::mutex terminal_mutex;  // Mutex to protect terminal operations
 
@@ -57,11 +68,6 @@ private:
     std::thread recording_thread;  // Thread for rosbag recording
     void rosbagRecordingWorker(const std::string& full_save_path);
 
-    // Worker method for the training node.py in a separate thread
-    std::thread training_thread;  // Thread for rosbag recording
-    std::atomic<bool> training_running;  // Flag to indicate if recording is running
-    void gpTrainingWorker();
-
     // Rosbag to CSV
     std::atomic<bool> rosbag_to_csv_running;  // Flag for rosbag to CSV process
     std::thread rosbag_to_csv_thread;  // Thread for rosbag to CSV process
@@ -76,6 +82,26 @@ private:
     std::atomic<bool> effort_preprocessing_running;  // Flag for CSV preprocessing
     std::thread effort_preprocessing_thread;  // Thread for CSV preprocessing
     void csvEffortPreprocessingWorker();  // Worker method for CSV preprocessing
+
+    // Worker method for the training node.py in a separate thread
+    std::thread training_thread;  // Thread for rosbag recording
+    std::atomic<bool> training_running;  // Flag to indicate if recording is running
+    void gpTrainingWorker();
+
+    // Worker method for the training node.py in a separate thread
+    std::thread testing_thread;  // Thread for rosbag recording
+    std::atomic<bool> testing_running;  // Flag to indicate if recording is running
+    void gpTestingWorker();
+
+    // Worker method for the training node.py in a separate thread
+    std::thread effort_plot_thread;  // Thread for rosbag recording
+    std::atomic<bool> effort_plot_running;  // Flag to indicate if recording is running
+    void gpEffortPlotWorker();
+
+    // Worker method for the training node.py in a separate thread
+    std::thread wrench_plot_thread;  // Thread for rosbag recording
+    std::atomic<bool> wrench_plot_running;  // Flag to indicate if recording is running
+    void gpWrenchPlotWorker();
 };
 
 #endif // TERMINAL_H
