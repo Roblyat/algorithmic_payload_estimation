@@ -6,6 +6,7 @@ import pickle
 import os
 from sensor_msgs.msg import JointState  # For /joint_states topic
 from payload_estimation.msg import PredictedEffort  # Import the custom message
+import pandas as pd
 
 # UR5 joint names to filter from the joint_states message
 UR5_JOINTS = ['ur5_elbow_joint', 'ur5_shoulder_lift_joint', 'ur5_shoulder_pan_joint', 
@@ -21,7 +22,8 @@ def load_gp_model(model_filename):
     rospy.loginfo("GP model loaded successfully.")
     return gp_model
 
-def preprocess_input(joint_state_msg):
+
+def preprocess_input(joint_state_msg, scaler, feature_names):
     """
     Extract and format the input features from the /joint_states topic message.
     This will create an input vector in the format that matches the GP model's training data.
@@ -43,7 +45,28 @@ def preprocess_input(joint_state_msg):
         input_vector.append(velocities[i])
         input_vector.append(velocities[i] / 0.025)  # Compute acceleration with delta time 40 Hz (1/40 s)
 
-    return np.array([input_vector])  # Return as a 2D array for model input
+    # Convert input_vector into a DataFrame using the feature names loaded from training
+    input_df = pd.DataFrame([input_vector], columns=feature_names)
+
+    # Standardize the input using the loaded scaler
+    input_vector_scaled = scaler.transform(input_df)
+
+    return input_vector_scaled
+
+
+def load_scaler(scaler_filename):
+    """
+    Load the StandardScaler and its feature names used during training from a file.
+    """
+    rospy.loginfo(f"Loading scaler and feature names from {scaler_filename}")
+    with open(scaler_filename, 'rb') as f:
+        scaler_data = pickle.load(f)
+    
+    scaler = scaler_data['scaler']
+    feature_names = scaler_data['columns']  # Extract the feature names
+    rospy.loginfo("Scaler and feature names loaded successfully.")
+    return scaler, feature_names
+
 
 def predict_with_gp(gp_model, input_vector):
     """
@@ -61,7 +84,7 @@ def joint_state_callback(joint_state_msg):
     preprocesses it, and uses the GP model to make predictions.
     """
     # Preprocess the incoming joint_states message to match the model input
-    input_vector = preprocess_input(joint_state_msg)
+    input_vector = preprocess_input(joint_state_msg, scaler, feature_names)
 
     # Make a prediction using the GP model
     Y_pred, Y_var = predict_with_gp(gp_model, input_vector)
@@ -81,7 +104,7 @@ def joint_state_callback(joint_state_msg):
         output_vector.append(Y_pred[0][i])                      # Predicted effort for this joint
 
     # Fill in the PredictedEffort message fields
-    output_msg.efforts = output_vector
+    output_msg.wrench_input = output_vector  # Predicted targets of effort_gp_model
     output_msg.variance = Y_var[0].tolist()  # Convert numpy array to list
     output_msg.timestamp = joint_state_msg.header.stamp  # Use the same timestamp as joint states
 
@@ -104,11 +127,16 @@ def gp_live_prediction_node():
     rosbag_base_name = os.path.splitext(rosbag_name)[0]
 
     # Load the correct GP model based on rosbag name and data type
-    model_output_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models', data_type)
-    model_filename = os.path.join(model_output_path, f"{rosbag_base_name}_{data_type}_model.pkl")
+    model_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models', data_type)
+    model_filename = os.path.join(model_path, f"{rosbag_base_name}_{data_type}_model.pkl")
+    scaler_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers', data_type)
+    scaler_filename = os.path.join(scaler_path, f"{rosbag_base_name}_{data_type}_scaler.pkl")  # Path to the saved scaler
 
     global gp_model
     gp_model = load_gp_model(model_filename)
+
+    global scaler, feature_names
+    scaler, feature_names = load_scaler(scaler_filename)
 
     # Subscribe to the /joint_states topic to get live data
     rospy.Subscriber('/joint_states', JointState, joint_state_callback)
@@ -119,6 +147,7 @@ def gp_live_prediction_node():
 
     rospy.loginfo("GP live prediction node is running...")
     rospy.spin()
+
 
 if __name__ == '__main__':
     try:

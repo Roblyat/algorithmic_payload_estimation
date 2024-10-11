@@ -5,6 +5,7 @@ import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+import pickle
 
 
 def process_joint_states(joint_states_csv, output_csv):
@@ -116,6 +117,15 @@ def split_and_standardize(training_csv, train_output_csv, test_output_csv):
     # Transform the test data using the same scaler (important)
     X_test_scaled = scaler.transform(X_test)
 
+    # Save both the scaler and the feature names to a file using pickle
+    scaler_data = {
+        'scaler': scaler,
+        'columns': X.columns.tolist()  # Save feature names as a list
+    }
+
+    with open(scaler_filename, 'wb') as f:
+        pickle.dump(scaler_data, f)
+
     # Recombine features and targets for both train and test
     df_train = pd.DataFrame(X_train_scaled, columns=X.columns)
     df_train = pd.concat([df_train, y_train.reset_index(drop=True)], axis=1)
@@ -148,6 +158,10 @@ if __name__ == "__main__":
 
     test_csv_name = rospy.get_param('/rosparam/test_csv_name', '_effort_test_data.csv')
     test_data_csv = os.path.join(output_folder, f"{rosbag_base_name}{test_csv_name}")  # Corrected: use test_csv_name
+
+    # Folder path for saving the scaler
+    scaler_output_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers/effort'
+    scaler_filename = os.path.join(scaler_output_path, f"{rosbag_base_name}_effort_scaler.pkl")
 
     # Step 1: Process joint states and wrench data
     process_joint_states(joint_states_csv, combined_csv)

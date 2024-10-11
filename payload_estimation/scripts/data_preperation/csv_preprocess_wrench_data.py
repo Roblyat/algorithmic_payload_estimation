@@ -5,6 +5,7 @@ import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+import pickle
 
 def process_joint_states(joint_states_csv, wrench_csv, output_csv):
     # Load the joint states CSV file
@@ -111,7 +112,7 @@ def prepare_training_data(combined_csv, output_csv):
     print(f"Training data saved to {output_csv}")
 
 # New method to split and standardize the data
-def split_and_standardize(training_csv, train_output_csv, test_output_csv):
+def split_and_standardize(training_csv, train_output_csv, test_output_csv, scaler_filename):
     # Load the training data
     df_training = pd.read_csv(training_csv)
     
@@ -130,6 +131,10 @@ def split_and_standardize(training_csv, train_output_csv, test_output_csv):
 
     # Transform the test data using the same scaler (important)
     X_test_scaled = scaler.transform(X_test)
+
+    # Save the scaler to a file using pickle
+    with open(scaler_filename, 'wb') as f:
+        pickle.dump(scaler, f)
 
     # Recombine features and targets for both train and test
     df_train = pd.DataFrame(X_train_scaled, columns=X.columns)
@@ -165,6 +170,10 @@ if __name__ == "__main__":
     test_csv_name = rospy.get_param('/rosparam/test_csv_name', '_wrench_test_data.csv')
     test_data_csv = os.path.join(output_folder, f"{rosbag_base_name}{test_csv_name}")  # Corrected: use test_csv_name here
 
+    # Folder path for saving the scaler
+    scaler_output_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers/wrench'
+    scaler_filename = os.path.join(scaler_output_path, f"{rosbag_base_name}_wrench_scaler.pkl")
+
 
     # Step 1: Process joint states and wrench data
     process_joint_states(joint_states_csv, wrench_csv, combined_csv)
@@ -173,4 +182,4 @@ if __name__ == "__main__":
     prepare_training_data(combined_csv, raw_training_csv)
 
     # Step 3: Split and standardize the data
-    split_and_standardize(raw_training_csv, train_data_csv, test_data_csv)
+    split_and_standardize(raw_training_csv, train_data_csv, test_data_csv, scaler_filename)
