@@ -23,6 +23,20 @@ def load_gp_model(model_filename):
     return gp_model
 
 
+def load_scaler(scaler_filename):
+    """
+    Load the StandardScaler and its feature names used during training from a file.
+    """
+    rospy.loginfo(f"Loading scaler and feature names from {scaler_filename}")
+    with open(scaler_filename, 'rb') as f:
+        scaler_data = pickle.load(f)
+    
+    scaler = scaler_data['scaler']
+    feature_names = scaler_data['columns']  # Extract the feature names
+    rospy.loginfo("Scaler and feature names loaded successfully.")
+    return scaler, feature_names
+
+
 def preprocess_input(joint_state_msg, scaler, feature_names):
     """
     Extract and format the input features from the /joint_states topic message.
@@ -52,20 +66,6 @@ def preprocess_input(joint_state_msg, scaler, feature_names):
     input_vector_scaled = scaler.transform(input_df)
 
     return input_vector_scaled
-
-
-def load_scaler(scaler_filename):
-    """
-    Load the StandardScaler and its feature names used during training from a file.
-    """
-    rospy.loginfo(f"Loading scaler and feature names from {scaler_filename}")
-    with open(scaler_filename, 'rb') as f:
-        scaler_data = pickle.load(f)
-    
-    scaler = scaler_data['scaler']
-    feature_names = scaler_data['columns']  # Extract the feature names
-    rospy.loginfo("Scaler and feature names loaded successfully.")
-    return scaler, feature_names
 
 
 def predict_with_gp(gp_model, input_vector):
