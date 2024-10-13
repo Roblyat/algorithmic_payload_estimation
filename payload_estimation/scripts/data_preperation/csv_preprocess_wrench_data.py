@@ -132,9 +132,15 @@ def split_and_standardize(training_csv, train_output_csv, test_output_csv, scale
     # Transform the test data using the same scaler (important)
     X_test_scaled = scaler.transform(X_test)
 
-    # Save the scaler to a file using pickle
+    # Save both the scaler and the feature names to a file using pickle
+    scaler_data = {
+        'scaler': scaler,
+        'columns': X.columns.tolist()  # Save feature names as a list
+    }
+
     with open(scaler_filename, 'wb') as f:
-        pickle.dump(scaler, f)
+        pickle.dump(scaler_data, f)
+
 
     # Recombine features and targets for both train and test
     df_train = pd.DataFrame(X_train_scaled, columns=X.columns)
