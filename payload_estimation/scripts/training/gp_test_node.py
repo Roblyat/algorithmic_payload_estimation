@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import pickle
 import os
+import GPy
 
 def load_test_data(test_csv, data_type):
     """
@@ -21,13 +22,13 @@ def load_test_data(test_csv, data_type):
 
 def load_gp_model(model_filename):
     """
-    Load the trained GP model from file using pickle.
+    Load the trained GP model using GPy's internal load_model function.
     """
     rospy.loginfo(f"Loading GP model from {model_filename}")
-    with open(model_filename, 'rb') as f:
-        gp_model = pickle.load(f)  # Load the model using pickle
+    gp_model = GPy.core.GP.load_model(model_filename)
     rospy.loginfo("GP model loaded successfully.")
     return gp_model
+
 
 def predict_with_gp(gp_model, X_test):
     """
@@ -81,7 +82,7 @@ def gp_test_node():
 
     # Model output path, depending on data_type (effort or wrench)
     model_output_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models', data_type)
-    model_filename = os.path.join(model_output_path, f"{rosbag_base_name}_{data_type}_model.pkl")
+    model_filename = os.path.join(model_output_path, f"{rosbag_base_name}_{data_type}_model.pkl.zip")
 
     # Get the path to save the results
     results_csv = rospy.get_param('~results_csv', os.path.join(output_folder, f"{rosbag_base_name}_{data_type}_results.csv"))

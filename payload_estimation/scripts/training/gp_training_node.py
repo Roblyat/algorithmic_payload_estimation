@@ -57,13 +57,13 @@ def train_gp_model(X, Y, kernel=None):
     # Return the trained model
     return gp_model
 
-def save_gp_model_pickle(gp_model, model_filename):
+def save_gp_model(gp_model, model_filename):
     """
-    Saves the trained GP model to a file using pickle.
+    Saves the trained GP model using GPy's internal save_model function.
     """
-    with open(model_filename, 'wb') as f:
-        pickle.dump(gp_model, f)  # Save the model using pickle
+    gp_model.save_model(model_filename)
     rospy.loginfo(f"GP model saved to {model_filename}")
+
 
 
 def gp_training_node():
@@ -112,8 +112,9 @@ def gp_training_node():
     rospy.loginfo(f"Training Gaussian Process model for {data_type}...")
     gp_model = train_gp_model(X, Y)
 
-    # Save the trained model using pickle
-    save_gp_model_pickle(gp_model, full_model_path)
+    # Save the trained model using GPy's internal method
+    save_gp_model(gp_model, full_model_path)
+
 
     rospy.loginfo(f"GP training complete. {data_type.capitalize()} model saved at {full_model_path}. Node is shutting down.")
 

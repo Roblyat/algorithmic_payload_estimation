@@ -7,6 +7,7 @@ import os
 from sensor_msgs.msg import JointState  # For /joint_states topic
 from payload_estimation.msg import PredictedEffort  # Import the custom message
 import pandas as pd
+import GPy
 
 # UR5 joint names to filter from the joint_states message
 UR5_JOINTS = ['ur5_elbow_joint', 'ur5_shoulder_lift_joint', 'ur5_shoulder_pan_joint', 
@@ -14,13 +15,13 @@ UR5_JOINTS = ['ur5_elbow_joint', 'ur5_shoulder_lift_joint', 'ur5_shoulder_pan_jo
 
 def load_gp_model(model_filename):
     """
-    Load the trained GP model from file using pickle.
+    Load the trained GP model using GPy's internal load_model function.
     """
     rospy.loginfo(f"Loading GP model from {model_filename}")
-    with open(model_filename, 'rb') as f:
-        gp_model = pickle.load(f)
+    gp_model = GPy.core.GP.load_model(model_filename)
     rospy.loginfo("GP model loaded successfully.")
     return gp_model
+
 
 
 def load_scaler(scaler_filename):
@@ -149,7 +150,7 @@ def gp_live_prediction_node():
 
     # Load the correct GP model based on rosbag name and data type
     model_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models', data_type)
-    model_filename = os.path.join(model_path, f"{rosbag_base_name}_{data_type}_model.pkl")
+    model_filename = os.path.join(model_path, f"{rosbag_base_name}_{data_type}_k_model.pkl.zip")
     scaler_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers', data_type)
     scaler_filename = os.path.join(scaler_path, f"{rosbag_base_name}_{data_type}_scaler.pkl")  # Path to the saved scaler
 
