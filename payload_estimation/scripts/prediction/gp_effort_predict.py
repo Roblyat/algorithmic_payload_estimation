@@ -54,10 +54,26 @@ def preprocess_input(joint_state_msg, scaler, feature_names):
 
     # Build the input vector based on positions and velocities
     input_vector = []
-    for i in range(len(positions)):  # Assuming 6 joints for the UR5
-        input_vector.append(positions[i])
-        input_vector.append(velocities[i])
-        input_vector.append(velocities[i] / 0.025)  # Compute acceleration with delta time 40 Hz (1/40 s)
+    rospy.loginfo("Joint States for UR5 Joints:")
+    for i, joint_name in enumerate(UR5_JOINTS):  # Assuming 6 joints for the UR5
+        position = positions[i]
+        velocity = velocities[i]
+        acceleration = velocity / 0.025  # Compute acceleration with delta time 40 Hz (1/40 s)
+        
+        # Print/log the joint states for each joint
+        rospy.loginfo(f"Joint {joint_name}: Position={position}, Velocity={velocity}, Acceleration={acceleration}")
+        
+        # Append the values to the input vector
+        input_vector.append(position)
+        input_vector.append(velocity)
+        input_vector.append(acceleration)
+
+    # Print/log the complete input vector before scaling
+    rospy.loginfo(f"Input vector before scaling: {input_vector}")
+
+    # Print the scaler's mean and scale values
+    rospy.loginfo(f"Scaler mean: {scaler.mean_}")
+    rospy.loginfo(f"Scaler scale (std): {scaler.scale_}")
 
     # Convert input_vector into a DataFrame using the feature names loaded from training
     input_df = pd.DataFrame([input_vector], columns=feature_names)
@@ -65,7 +81,12 @@ def preprocess_input(joint_state_msg, scaler, feature_names):
     # Standardize the input using the loaded scaler
     input_vector_scaled = scaler.transform(input_df)
 
+    # Print/log the input vector after scaling
+    rospy.loginfo(f"Input vector after scaling: {input_vector_scaled}")
+
     return input_vector_scaled
+
+
 
 
 def predict_with_gp(gp_model, input_vector):

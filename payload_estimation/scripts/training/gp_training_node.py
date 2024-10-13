@@ -7,15 +7,16 @@ import numpy as np
 import pickle  # Import pickle for saving/loading models
 import os  # For joining paths
 
-def load_training_data(training_csv, subsample_size=5000):
+def load_training_data(training_csv, subsample_size):
     """
     Loads the training data from a CSV file.
     Assumes the last 6 columns are the target (Force/Torque), and the rest are the features.
     """
     df_training = pd.read_csv(training_csv)
 
-        # If the dataset is larger than subsample_size, randomly select a subset of the rows
+    # If the dataset is larger than subsample_size, randomly select a subset of the rows
     if len(df_training) > subsample_size:
+        rospy.loginfo(f"Subsampling {subsample_size} from a dataset of size {len(df_training)}")
         df_training = df_training.sample(n=subsample_size, random_state=42)
     
     # Split features and targets
@@ -64,13 +65,6 @@ def save_gp_model_pickle(gp_model, model_filename):
         pickle.dump(gp_model, f)  # Save the model using pickle
     rospy.loginfo(f"GP model saved to {model_filename}")
 
-def load_gp_model_pickle(model_filename):
-    """
-    Loads the trained GP model from a file using pickle.
-    """
-    with open(model_filename, 'rb') as f:
-        gp_model = pickle.load(f)  # Load the model using pickle
-    return gp_model
 
 def gp_training_node():
     """
@@ -87,6 +81,9 @@ def gp_training_node():
     
     # Get the data type (wrench or effort) from ROS parameters
     data_type = rospy.get_param('/rosparam/data_type', 'effort')  # Default to 'effort'
+
+    # Get the subsample size from ROS parameters
+    subsample_size = rospy.get_param('/rosparam/subsample_size', 5000)  # Default to 5000 if not set
     
     # Depending on the data type, set the train_csv_name appropriately
     if data_type == 'wrench':
@@ -108,8 +105,8 @@ def gp_training_node():
 
 
     # Load the training data
-    rospy.loginfo(f"Loading {data_type} training data from {full_train_csv_path}")
-    X, Y = load_training_data(full_train_csv_path)
+    rospy.loginfo(f"Loading {data_type} training data from {full_train_csv_path} with subsample size {subsample_size}")
+    X, Y = load_training_data(full_train_csv_path, subsample_size)
 
     # Train the GP model
     rospy.loginfo(f"Training Gaussian Process model for {data_type}...")

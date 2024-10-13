@@ -133,6 +133,7 @@ int main(int argc, char** argv) {
     static char data_type[128] = "effort";  // Default value
     const char* kernels[] = { "RBF", "Matern52", "Linear" };  // Available kernel types
     static int selected_kernel = 0;  // Index for the selected kernel
+    static int subsample_size = 5000;  // Default value
 
     //move buttons as block
     int y_bRand = 200;
@@ -441,6 +442,15 @@ int main(int argc, char** argv) {
                 if (ImGui::Button("Set Kernel Type", ImVec2(120.0f, 40.0f))) {
                     std::string kernel_param = kernels[selected_kernel];  // Set the selected kernel from the dropdown
                     terminal.setRosParam("~kernel", kernel_param);  // Set the kernel type as a parameter on the ROS parameter server
+                }
+
+                // Subsample Size Input
+                ImGui::Text("Subsample Size:");
+                ImGui::SameLine();
+                ImGui::InputInt("##SubsampleSize", &subsample_size);  // Input for subsample size (integer)
+
+                if (ImGui::Button("Set Subsample Size", ImVec2(120.0f, 40.0f))) {
+                    terminal.setRosParam("~subsample_size", std::to_string(subsample_size));  // Convert int to string and set the ROS parameter
                 }
 
                 ImGui::Spacing();
