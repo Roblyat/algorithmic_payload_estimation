@@ -389,6 +389,9 @@ void Terminal::gpEffortPlotWorker() {
     // Stop the Python node process when the flag is set to false
     std::string stop_command = "pkill -f 'gp_effort_plots_node.py'";  // Construct the stop command for the specific node
     system(stop_command.c_str());  // Execute the stop command
+
+    // Ensure to close any open plots
+    // system("pkill -f 'matplotlib'");  // Forcefully close matplotlib windows if they remain open
 }
 
 
@@ -473,4 +476,3 @@ void Terminal::stopWrenchPlot() {
 
     ROS_INFO("Wrench plot node stopped.");
 }
-
