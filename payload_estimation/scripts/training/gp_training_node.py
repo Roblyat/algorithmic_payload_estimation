@@ -73,15 +73,17 @@ def gp_training_node():
     # Initialize the ROS node
     rospy.init_node('gp_training_node')
 
-    # Parameters for the node (file paths)
-    training_csv_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed'  # Path to the processed training data CSV
+    # Get the data type (wrench or effort) from ROS parameters
+    data_type = rospy.get_param('/rosparam/data_type', 'wrench')  # Default to 'effort'
+
+    if data_type == 'wrench':
+        training_csv_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/wrench'
+    else:
+        training_csv_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/effort'  # Path to the processed training data CSV
     
     rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
     rosbag_base_name = os.path.splitext(rosbag_name)[0]
     
-    # Get the data type (wrench or effort) from ROS parameters
-    data_type = rospy.get_param('/rosparam/data_type', 'effort')  # Default to 'effort'
-
     # Get the subsample size from ROS parameters
     subsample_size = rospy.get_param('/rosparam/subsample_size', 5000)  # Default to 5000 if not set
     

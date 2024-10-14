@@ -134,18 +134,34 @@ def gp_live_prediction_node():
     """
     ROS node for live prediction of wrench (force and torque) using Gaussian Process models.
     """
-    rospy.init_node('gp_live_prediction_node')
+    rospy.init_node('gp_wrench_prediction_node')
 
     # Load parameters: rosbag name and data type (wrench)
     rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
     data_type = rospy.get_param('/rosparam/data_type', 'wrench')  # Default to 'wrench'
 
+    # Check if the data_type is 'wrench', if not, kill the script
+    if data_type != 'wrench':
+        rospy.logerr(f"Data type is '{data_type}'. This script only supports 'wrench'. Shutting down.")
+        rospy.signal_shutdown("Unsupported data type")
+        return  # Return immediately to stop the node
+
     rosbag_base_name = os.path.splitext(rosbag_name)[0]
+
+    # Load the K-Fold parameter as a boolean (default is False)
+    use_kfold = rospy.get_param('/rosparam/use_kfold', False)  # Default is False
 
     # Load the correct GP model based on rosbag name and data type
     model_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models', data_type)
-    model_filename = os.path.join(model_path, f"{rosbag_base_name}_{data_type}_k_model.pkl.zip")
     scaler_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers', data_type)
+
+    # Construct the model file name conditionally
+    if use_kfold:
+        model_filename = os.path.join(model_path, f"{rosbag_base_name}_{data_type}_k_model.pkl.zip")
+    else:
+        model_filename = os.path.join(model_path, f"{rosbag_base_name}_{data_type}_model.pkl.zip")
+
+    # Construct the scaler file name conditionally
     scaler_filename = os.path.join(scaler_path, f"{rosbag_base_name}_{data_type}_scaler.pkl")  # Path to the saved scaler
 
     global gp_model

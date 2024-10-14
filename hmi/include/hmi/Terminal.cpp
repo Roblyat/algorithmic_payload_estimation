@@ -253,11 +253,17 @@ void Terminal::stopEffortPreprocessing() {
 // Training Node Code //
 ////////////////////////
 
-void Terminal::gpTrainingWorker() {
+void Terminal::gpTrainingWorker(bool use_kfold) {
     std::lock_guard<std::mutex> lock(terminal_mutex);  // Lock terminal resources
 
-    // Command to start the Python node using rosrun
-    std::string command = "rosrun payload_estimation gp_training_node.py &";  // Replace with actual package and script name
+    // Command to start the appropriate Python node using rosrun
+    std::string command;
+    if (use_kfold) {
+        command = "rosrun payload_estimation gp_kfold_training_node.py &";  // KFold training node
+    } else {
+        command = "rosrun payload_estimation gp_training_node.py &";  // Regular training node
+    }
+
     system(command.c_str());  // Execute the command
 
     while (training_running.load()) {
@@ -266,22 +272,33 @@ void Terminal::gpTrainingWorker() {
     }
 
     // Stop the Python node process when the flag is set to false
-    std::string stop_command = "pkill -f 'gp_training_node.py'";  // Construct the stop command for the specific node
-    system(stop_command.c_str());  // Execute the stop command
+    std::string stop_command = "pkill -f 'gp_training_node.py'";  // Stop both nodes
+    system(stop_command.c_str());
+    
+    // Also ensure kfold node is killed if it was running
+    std::string stop_kfold_command = "pkill -f 'gp_kfold_training_node.py'";
+    system(stop_kfold_command.c_str());
 }
 
-
-// Start the Python node in a separate thread
+// start the python node
 void Terminal::startTraining() {
     if (training_running.load()) {
         ROS_WARN("Training node is already running.");
         return;
     }
 
+    // Retrieve the 'use_kfold' ROS parameter
+    bool use_kfold = false;
+    if (ros::param::get("/rosparam/use_kfold", use_kfold)) {
+        ROS_INFO("Retrieved 'use_kfold' parameter: %s", use_kfold ? "true" : "false");
+    } else {
+        ROS_WARN("Failed to retrieve 'use_kfold' parameter. Using default: false");
+    }
+
     training_running.store(true);  // Set the flag to true
 
-    // Start the Python node in a separate thread
-    training_thread = std::thread(&Terminal::gpTrainingWorker, this);
+    // Start the Python node in a separate thread, passing the `use_kfold` flag
+    training_thread = std::thread(&Terminal::gpTrainingWorker, this, use_kfold);
 }
 
 // Stop the Python node

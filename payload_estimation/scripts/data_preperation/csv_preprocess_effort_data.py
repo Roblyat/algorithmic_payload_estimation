@@ -8,6 +8,18 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import pickle
 
+# Initialize the ROS node first
+rospy.init_node('effort_data_preprocessing_node')
+
+# Get the data type (wrench or effort) from ROS parameters
+data_type = rospy.get_param('/rosparam/data_type', 'effort')  # Default to 'effort'
+
+# Check if the data_type is 'effort', if not, kill the script
+if data_type != 'effort':
+    rospy.logerr(f"Data type is '{data_type}'. This script only supports 'effort'. Shutting down.")
+    rospy.signal_shutdown("Unsupported data type")
+    exit()
+
 
 def process_joint_states(joint_states_csv, output_csv):
     # Load the joint states CSV file
@@ -161,24 +173,23 @@ def split_and_standardize(training_csv, train_output_csv, test_output_csv):
 if __name__ == "__main__":
     
     # Paths to your CSV files
-    output_folder = rospy.get_param('/rosparam/preprocessed_csv_path', '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed') 
-    # Folder path for joint states and wrench CSVs
+    output_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/effort'
     raw_csv_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/csv'
     rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
 
     rosbag_base_name = os.path.splitext(rosbag_name)[0]
     joint_states_csv = os.path.join(raw_csv_folder, f"{rosbag_base_name}_jointstates.csv")
-    combined_csv = os.path.join(output_folder, f"{rosbag_base_name}_effort_combined.csv") #Matched the closest timestamp of wrench data to joint states block (6 joints)
-    raw_training_csv = os.path.join(output_folder, f"{rosbag_base_name}_effort_raw_training.csv") #Processed joint states and wrench data
+    combined_csv = os.path.join(output_folder, f"{rosbag_base_name}_effort_combined.csv") 
+    raw_training_csv = os.path.join(output_folder, f"{rosbag_base_name}_effort_raw_training.csv")
 
-    train_csv_name = rospy.get_param('/rosparam/train_csv_name', '_effort_train_data.csv')
-    train_data_csv = os.path.join(output_folder, f"{rosbag_base_name}{train_csv_name}")
+    train_data_csv = os.path.join(output_folder, f"{rosbag_base_name}_effort_train_data.csv")
 
-    test_csv_name = rospy.get_param('/rosparam/test_csv_name', '_effort_test_data.csv')
-    test_data_csv = os.path.join(output_folder, f"{rosbag_base_name}{test_csv_name}")  # Corrected: use test_csv_name
+    test_data_csv = os.path.join(output_folder, f"{rosbag_base_name}_effort_test_data.csv")  # Corrected: use test_csv_name
 
     # Folder path for saving the scaler
     scaler_output_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers/effort'
+
+    # Construct the scaler file name conditionally
     scaler_filename = os.path.join(scaler_output_path, f"{rosbag_base_name}_effort_scaler.pkl")
 
     # Step 1: Process joint states and wrench data

@@ -126,14 +126,15 @@ int main(int argc, char** argv) {
     //  Terminal Tab  //
     ////////////////////
     // Define static strings to hold the save path and file name
-    static char rosbag_path[256] = "/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/rosbag";       // Default directory path
+    static char rosbag_path[256] = "/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/rosbag";
     static char rosbag_name[128] = "recorded_data.bag";  // Default file name
 
     //gp model parameters
     static char data_type[128] = "effort";  // Default value
     const char* kernels[] = { "RBF", "Matern52", "Linear" };  // Available kernel types
     static int selected_kernel = 0;  // Index for the selected kernel
-    static int subsample_size = 5000;  // Default value
+    static int subsample_size = 5000;  // Default value            
+    static bool use_kfold = false;  // Default heckbox state
 
     //move buttons as block
     int y_bRand = 200;
@@ -354,7 +355,6 @@ int main(int argc, char** argv) {
                 ImGui::Spacing();
 
                 if (ImGui::Button("Set Rosbag Name", ImVec2(160.0f, 40.0f))) {
-                    terminal.setRosParam("~rosbag_path", rosbag_path);  // Set the parameter on the ROS parameter server
                     terminal.setRosParam("~rosbag_name", rosbag_name);
                 }
                 
@@ -420,7 +420,7 @@ int main(int argc, char** argv) {
                 /////////////////
                 // GP Training //
                 /////////////////
-                
+
                 ImGui::Spacing();  // Add some space between sections
 
                 // Model Output Path
@@ -444,12 +444,29 @@ int main(int argc, char** argv) {
                     terminal.setRosParam("~kernel", kernel_param);  // Set the kernel type as a parameter on the ROS parameter server
                 }
 
-                // Subsample Size Input
+                ImGui::Spacing();
+
+                if (ImGui::Checkbox("Use KFold", &use_kfold)) {
+                    terminal.setRosParam("~use_kfold", use_kfold ? "true" : "false");  // Set the ROS parameter based on checkbox
+                }
+
+                ImGui::Spacing();
+
+                // Subsample Size Input with step size adjustment
                 ImGui::Text("Subsample Size:");
                 ImGui::SameLine();
-                ImGui::InputInt("##SubsampleSize", &subsample_size);  // Input for subsample size (integer)
+                ImGui::PushItemWidth(100);  // Set the width for the input box
 
-                if (ImGui::Button("Set Subsample Size", ImVec2(120.0f, 40.0f))) {
+                // Adjust the subsample size in increments of 1000
+                if (ImGui::InputInt("##SubsampleSize", &subsample_size, 1000)) {
+                    if (subsample_size < 0) {
+                        subsample_size = 0;  // Ensure subsample size is not negative
+                    }
+                }
+
+                ImGui::PopItemWidth();
+
+                if (ImGui::Button("Set Size", ImVec2(120.0f, 40.0f))) {
                     terminal.setRosParam("~subsample_size", std::to_string(subsample_size));  // Convert int to string and set the ROS parameter
                 }
 

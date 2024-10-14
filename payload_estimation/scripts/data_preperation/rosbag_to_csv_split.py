@@ -42,11 +42,8 @@ def rosbag_to_csv(bag_file, joint_states_csv, wrench_csv):
 
 if __name__ == "__main__":
 
-    #######################################################################
-    ## Replace with the path to your ROS bag and desired CSV output files ##
-    #######################################################################
-    rosbag_path = rospy.get_param('/rosparam/rosbag_path', 
-                                   '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/rosbag')  # Path to the processed training data CSV
+    #rosbag path
+    rosbag_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/rosbag'  # Path to the raw training data CSV
     rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
     bag_file = os.path.join(rosbag_path, rosbag_name)
     

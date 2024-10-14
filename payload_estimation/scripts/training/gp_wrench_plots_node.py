@@ -6,6 +6,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error
 
+rospy.init_node('wrench_plot_node')
+
 # Get the data type (wrench or effort) from ROS parameters
 data_type = rospy.get_param('/rosparam/data_type', 'wrench')  # Default to 'effort'
 
@@ -19,8 +21,13 @@ if data_type != 'wrench':
 rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
 rosbag_base_name = os.path.splitext(rosbag_name)[0]
 
-# Update the file path dynamically based on data_type
-file_path = f'/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/{data_type}/{rosbag_base_name}_{data_type}_results.csv'
+# Load the K-Fold parameter as a boolean (default is False)
+use_kfold = rospy.get_param('/rosparam/use_kfold', False)  # Default is False
+# Update the file path dynamically based on data_type & kfold
+if use_kfold:
+    file_path = f'/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/{data_type}/{rosbag_base_name}_{data_type}_k_results.csv'
+else:
+    file_path = f'/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/{data_type}/{rosbag_base_name}_{data_type}_results.csv'
 
 # Load data from the dynamically set CSV file
 data = pd.read_csv(file_path)

@@ -86,7 +86,7 @@ private:
     // Worker method for the training node.py in a separate thread
     std::thread training_thread;  // Thread for rosbag recording
     std::atomic<bool> training_running;  // Flag to indicate if recording is running
-    void gpTrainingWorker();
+    void gpTrainingWorker(bool use_kfold);
 
     // Worker method for the training node.py in a separate thread
     std::thread testing_thread;  // Thread for rosbag recording

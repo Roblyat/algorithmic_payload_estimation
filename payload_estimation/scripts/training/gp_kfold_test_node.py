@@ -49,16 +49,20 @@ def gp_test_node():
     ROS node for testing the Gaussian Process model using a test dataset (wrench or effort).
     """
     # Initialize the ROS node
-    rospy.init_node('gp_test_node')
-
-    # Get the base paths and file names
-    input_folder = rospy.get_param('/rosparam/preprocessed_csv_path', 
-                                    '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed') 
-    rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
-    rosbag_base_name = os.path.splitext(rosbag_name)[0]
+    rospy.init_node('gp_kfold_test_node')
 
     # Get the data type (wrench or effort) from ROS parameters
-    data_type = rospy.get_param('/rosparam/data_type', 'effort')  # Default to 'effort'
+    data_type = rospy.get_param('/rosparam/data_type', 'wrench')  # Default to 'effort'
+
+    # Get the base paths and file names
+    if data_type == 'wrench':
+        input_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/wrench'
+    else:
+        input_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/effort'
+
+    #rosbag name parameter
+    rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
+    rosbag_base_name = os.path.splitext(rosbag_name)[0]
 
     # Depending on the data type, set the test_csv_name and columns appropriately
     if data_type == 'wrench':
@@ -85,7 +89,7 @@ def gp_test_node():
     model_filename = os.path.join(model_output_path, f"{rosbag_base_name}_{data_type}_k_model.pkl.zip")
 
     # Get the path to save the results
-    results_csv = rospy.get_param('~results_csv', os.path.join(output_folder, f"{rosbag_base_name}_{data_type}_results.csv"))
+    results_csv = os.path.join(output_folder, f"{rosbag_base_name}_{data_type}_k_results.csv")
 
     # Load the test data
     rospy.loginfo(f"Loading {data_type} test data from {test_csv}")

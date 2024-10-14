@@ -51,14 +51,18 @@ def gp_test_node():
     # Initialize the ROS node
     rospy.init_node('gp_test_node')
 
+    # Get the data type (wrench or effort) from ROS parameters
+    data_type = rospy.get_param('/rosparam/data_type', 'wrench')  # Default to 'effort'
+
     # Get the base paths and file names
-    input_folder = rospy.get_param('/rosparam/preprocessed_csv_path', 
-                                    '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed') 
+    if data_type == 'wrench':
+        input_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/wrench'
+    else:
+        input_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/effort'
+    
+    #rosbag name parameter
     rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
     rosbag_base_name = os.path.splitext(rosbag_name)[0]
-
-    # Get the data type (wrench or effort) from ROS parameters
-    data_type = rospy.get_param('/rosparam/data_type', 'effort')  # Default to 'effort'
 
     # Depending on the data type, set the test_csv_name and columns appropriately
     if data_type == 'wrench':
@@ -80,12 +84,21 @@ def gp_test_node():
     test_csv_name = f"{rosbag_base_name}{test_csv_param}"
     test_csv = os.path.join(input_folder, test_csv_name)
 
+    # Load the K-Fold parameter as a boolean (default is False)
+    use_kfold = rospy.get_param('/rosparam/use_kfold', False)  # Default is False
+
     # Model output path, depending on data_type (effort or wrench)
     model_output_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models', data_type)
-    model_filename = os.path.join(model_output_path, f"{rosbag_base_name}_{data_type}_model.pkl.zip")
 
-    # Get the path to save the results
-    results_csv = rospy.get_param('~results_csv', os.path.join(output_folder, f"{rosbag_base_name}_{data_type}_results.csv"))
+    if use_kfold:
+        # Get the path to the K-Fold model
+        model_filename = os.path.join(model_output_path, f"{rosbag_base_name}_{data_type}_k_model.pkl.zip")
+        # Get the path to save the results
+        results_csv = os.path.join(output_folder, f"{rosbag_base_name}_{data_type}_k_results.csv")
+    else:
+        #Get the path to the model
+        model_filename = os.path.join(model_output_path, f"{rosbag_base_name}_{data_type}_model.pkl.zip")
+        results_csv = os.path.join(output_folder, f"{rosbag_base_name}_{data_type}_results.csv")
 
     # Load the test data
     rospy.loginfo(f"Loading {data_type} test data from {test_csv}")
