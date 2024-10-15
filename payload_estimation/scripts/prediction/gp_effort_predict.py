@@ -6,6 +6,7 @@ import pickle
 import os
 from sensor_msgs.msg import JointState  # For /joint_states topic
 from payload_estimation.msg import PredictedEffort  # Import the custom message
+from std_msgs.msg import Float64MultiArray
 import pandas as pd
 import GPy
 
@@ -118,6 +119,7 @@ def joint_state_callback(joint_state_msg):
     output_msg = PredictedEffort()
 
     # Fill the output vector (combining joint positions, velocities, and predicted efforts)
+    # ['position', 'velocity'] <----- ['effort'] based on !this!     
     output_vector = []
     for i, joint_name in enumerate(UR5_JOINTS):
         index = joint_state_msg.name.index(joint_name)
@@ -133,8 +135,11 @@ def joint_state_callback(joint_state_msg):
     # Log the output vector
     rospy.loginfo(f"Output: {output_msg}")
 
+    wrench_input = Float64MultiArray()
+    wrench_input.data = output_vector
+
     # Publish the predictions
-    prediction_pub.publish(output_msg)
+    prediction_pub.publish(wrench_input)
 
 def gp_live_prediction_node():
     """
@@ -181,7 +186,7 @@ def gp_live_prediction_node():
 
     # Publisher for predictions
     global prediction_pub
-    prediction_pub = rospy.Publisher('/predicted_effort', PredictedEffort, queue_size=10)
+    prediction_pub = rospy.Publisher('/predicted_effort', Float64MultiArray, queue_size=10)
 
     rospy.loginfo("GP live prediction node is running...")
     rospy.spin()

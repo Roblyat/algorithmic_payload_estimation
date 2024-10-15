@@ -142,6 +142,8 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
   include/hmi
+  include/implot
+  include/imgui
 )
 
 add_executable(${PROJECT_NAME} 
@@ -152,9 +154,13 @@ add_executable(${PROJECT_NAME}
     include/imgui/imgui_widgets.cpp
     include/imgui/backends/imgui_impl_glfw.cpp
     include/imgui/backends/imgui_impl_opengl3.cpp
-    # roblyat
+    # ImPlot sources
+    include/implot/implot.cpp
+    include/implot/implot_items.cpp
+    # Your application-specific code
     include/hmi/Terminal.cpp
     include/hmi/RobotController.cpp
+    include/hmi/Plotting.cpp
 )
 # add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} hmi_generate_messages_cpp)
 add_dependencies(${PROJECT_NAME} hmi_generate_messages_cpp ${catkin_EXPORTED_TARGETS})

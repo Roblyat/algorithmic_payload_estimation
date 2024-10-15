@@ -20,6 +20,7 @@
 // Add RobotController and Plotting header files
 #include "RobotController.h"
 #include "Terminal.h"
+#include "Plotting.h"
 
 //Thread
 #include <thread>
@@ -74,6 +75,10 @@ int main(int argc, char** argv) {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+
+    // Create ImPlot context // roblyat plots
+    ImPlot::CreateContext(); 
+
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
@@ -135,6 +140,12 @@ int main(int argc, char** argv) {
     static int selected_kernel = 0;  // Index for the selected kernel
     static int subsample_size = 5000;  // Default value            
     static bool use_kfold = false;  // Default heckbox state
+
+    ////////////////////
+    //  Plotting Tab  //
+    ////////////////////
+    static Plotting plotter;  // Create a static instance of Plotting outside the loop
+
 
     //move buttons as block
     int y_bRand = 200;
@@ -535,6 +546,23 @@ int main(int argc, char** argv) {
                 ImGui::EndTabItem();
             }
 
+            //////////////////////////////////////////////////////////////////////////////////
+            //////////////////////////// Plotting Tab ////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////////
+            if (ImGui::BeginTabItem("Plotting")) {
+
+                // Start the plotting in the background if it's not already running
+                if (!plotter.plot_running.load()) {
+                    plotter.startPlotting();
+                }
+
+                // Render live plots in the current frame
+                plotter.renderPlot();
+
+                ImGui::EndTabItem();  // End of Plotting Tab
+            }
+
+
             ImGui::EndTabBar();  // End of Tab Bar
         }
 
@@ -552,7 +580,16 @@ int main(int argc, char** argv) {
     }
 
     // Cleanup
+
+    // Stop the Plotting class's thread and clean up resources
+    plotter.stopPlotting(); 
+    // Destroy ImPlot context
+    ImPlot::DestroyContext();
+
+    //ROS
     ros::shutdown();
+
+    //GUI
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();

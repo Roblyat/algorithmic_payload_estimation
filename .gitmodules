@@ -7,3 +7,6 @@
 [submodule "robotiq"]
 	path = robotiq
 	url = git@github.com:Roblyat/robotiq.git
+[submodule "hmi/include/implot"]
+	path = hmi/include/implot
+	url = https://github.com/epezent/implot.git
