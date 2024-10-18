@@ -48,7 +48,7 @@ void Plotting::plotWorker() {
         time_series.push_back(current_time);
 
         // Limit the size of the data vectors to avoid overflow (500 points max)
-        const size_t max_size = 500;
+        const size_t max_size = 50;
         if (time_series.size() > max_size) {
             time_series.erase(time_series.begin());
             wrench_force_x.erase(wrench_force_x.begin());
@@ -89,69 +89,39 @@ void Plotting::predictedWrenchCallback(const geometry_msgs::WrenchStamped::Const
     predicted_torque_z.push_back(msg->wrench.torque.z);
 }
 
-// Render the ImGui/ImPlot UI for live plotting
 void Plotting::renderPlot() {
-    // Combined plot for Wrench Forces (X, Y, Z) - Keep as is for future use
-    if (ImPlot::BeginPlot("Combined Wrench Forces")) {
-        ImPlot::PlotLine("Wrench Force X", time_series.data(), wrench_force_x.data(), time_series.size());
-        ImPlot::PlotLine("Predicted Force X", time_series.data(), predicted_force_x.data(), time_series.size());
-        ImPlot::PlotLine("Wrench Force Y", time_series.data(), wrench_force_y.data(), time_series.size());
-        ImPlot::PlotLine("Predicted Force Y", time_series.data(), predicted_force_y.data(), time_series.size());
-        ImPlot::PlotLine("Wrench Force Z", time_series.data(), wrench_force_z.data(), time_series.size());
-        ImPlot::PlotLine("Predicted Force Z", time_series.data(), predicted_force_z.data(), time_series.size());
-        ImPlot::EndPlot();
+    std::lock_guard<std::mutex> lock(data_mutex);  // Ensure thread-safe access to data
+
+    // Convert vectors to float vectors for ImGui
+    std::vector<float> floatTimeSeries(time_series.begin(), time_series.end());
+
+    // Ensure predicted data vectors are not larger than actual data
+    std::vector<float> floatPredictedForceX(predicted_force_x.begin(), predicted_force_x.end());
+    std::vector<float> floatPredictedForceY(predicted_force_y.begin(), predicted_force_y.end());
+    std::vector<float> floatPredictedForceZ(predicted_force_z.begin(), predicted_force_z.end());
+    std::vector<float> floatPredictedTorqueX(predicted_torque_x.begin(), predicted_torque_x.end());
+    std::vector<float> floatPredictedTorqueY(predicted_torque_y.begin(), predicted_torque_y.end());
+    std::vector<float> floatPredictedTorqueZ(predicted_torque_z.begin(), predicted_torque_z.end());
+
+    // Force plot
+    if (ImGui::CollapsingHeader("Force")) {
+        ImGui::PlotLines("Force X (Wrench)", wrench_force_x.data(), wrench_force_x.size(), 0, nullptr, FLT_MIN, FLT_MAX, ImVec2(0, 80));
+        ImGui::PlotLines("Force Y (Wrench)", wrench_force_y.data(), wrench_force_y.size(), 0, nullptr, FLT_MIN, FLT_MAX, ImVec2(0, 80));
+        ImGui::PlotLines("Force Z (Wrench)", wrench_force_z.data(), wrench_force_z.size(), 0, nullptr, FLT_MIN, FLT_MAX, ImVec2(0, 80));
+
+        ImGui::PlotLines("Predicted Force X", floatPredictedForceX.data(), floatPredictedForceX.size(), 0, nullptr, FLT_MIN, FLT_MAX, ImVec2(0, 80));
+        ImGui::PlotLines("Predicted Force Y", floatPredictedForceY.data(), floatPredictedForceY.size(), 0, nullptr, FLT_MIN, FLT_MAX, ImVec2(0, 80));
+        ImGui::PlotLines("Predicted Force Z", floatPredictedForceZ.data(), floatPredictedForceZ.size(), 0, nullptr, FLT_MIN, FLT_MAX, ImVec2(0, 80));
     }
 
-    // Combined plot for Wrench Torques (X, Y, Z) - Keep as is for future use
-    if (ImPlot::BeginPlot("Combined Wrench Torques")) {
-        ImPlot::PlotLine("Wrench Torque X", time_series.data(), wrench_torque_x.data(), time_series.size());
-        ImPlot::PlotLine("Predicted Torque X", time_series.data(), predicted_torque_x.data(), time_series.size());
-        ImPlot::PlotLine("Wrench Torque Y", time_series.data(), wrench_torque_y.data(), time_series.size());
-        ImPlot::PlotLine("Predicted Torque Y", time_series.data(), predicted_torque_y.data(), time_series.size());
-        ImPlot::PlotLine("Wrench Torque Z", time_series.data(), wrench_torque_z.data(), time_series.size());
-        ImPlot::PlotLine("Predicted Torque Z", time_series.data(), predicted_torque_z.data(), time_series.size());
-        ImPlot::EndPlot();
-    }
+    // Torque plot
+    if (ImGui::CollapsingHeader("Torque")) {
+        ImGui::PlotLines("Torque X (Wrench)", wrench_torque_x.data(), wrench_torque_x.size(), 0, nullptr, FLT_MIN, FLT_MAX, ImVec2(0, 80));
+        ImGui::PlotLines("Torque Y (Wrench)", wrench_torque_y.data(), wrench_torque_y.size(), 0, nullptr, FLT_MIN, FLT_MAX, ImVec2(0, 80));
+        ImGui::PlotLines("Torque Z (Wrench)", wrench_torque_z.data(), wrench_torque_z.size(), 0, nullptr, FLT_MIN, FLT_MAX, ImVec2(0, 80));
 
-    // Separate plot for Force X
-    if (ImPlot::BeginPlot("Force X (Wrench vs Predicted)")) {
-        ImPlot::PlotLine("Wrench Force X", time_series.data(), wrench_force_x.data(), time_series.size());
-        ImPlot::PlotLine("Predicted Force X", time_series.data(), predicted_force_x.data(), time_series.size());
-        ImPlot::EndPlot();
-    }
-
-    // Separate plot for Force Y
-    if (ImPlot::BeginPlot("Force Y (Wrench vs Predicted)")) {
-        ImPlot::PlotLine("Wrench Force Y", time_series.data(), wrench_force_y.data(), time_series.size());
-        ImPlot::PlotLine("Predicted Force Y", time_series.data(), predicted_force_y.data(), time_series.size());
-        ImPlot::EndPlot();
-    }
-
-    // Separate plot for Force Z
-    if (ImPlot::BeginPlot("Force Z (Wrench vs Predicted)")) {
-        ImPlot::PlotLine("Wrench Force Z", time_series.data(), wrench_force_z.data(), time_series.size());
-        ImPlot::PlotLine("Predicted Force Z", time_series.data(), predicted_force_z.data(), time_series.size());
-        ImPlot::EndPlot();
-    }
-
-    // Separate plot for Torque X
-    if (ImPlot::BeginPlot("Torque X (Wrench vs Predicted)")) {
-        ImPlot::PlotLine("Wrench Torque X", time_series.data(), wrench_torque_x.data(), time_series.size());
-        ImPlot::PlotLine("Predicted Torque X", time_series.data(), predicted_torque_x.data(), time_series.size());
-        ImPlot::EndPlot();
-    }
-
-    // Separate plot for Torque Y
-    if (ImPlot::BeginPlot("Torque Y (Wrench vs Predicted)")) {
-        ImPlot::PlotLine("Wrench Torque Y", time_series.data(), wrench_torque_y.data(), time_series.size());
-        ImPlot::PlotLine("Predicted Torque Y", time_series.data(), predicted_torque_y.data(), time_series.size());
-        ImPlot::EndPlot();
-    }
-
-    // Separate plot for Torque Z
-    if (ImPlot::BeginPlot("Torque Z (Wrench vs Predicted)")) {
-        ImPlot::PlotLine("Wrench Torque Z", time_series.data(), wrench_torque_z.data(), time_series.size());
-        ImPlot::PlotLine("Predicted Torque Z", time_series.data(), predicted_torque_z.data(), time_series.size());
-        ImPlot::EndPlot();
+        ImGui::PlotLines("Predicted Torque X", floatPredictedTorqueX.data(), floatPredictedTorqueX.size(), 0, nullptr, FLT_MIN, FLT_MAX, ImVec2(0, 80));
+        ImGui::PlotLines("Predicted Torque Y", floatPredictedTorqueY.data(), floatPredictedTorqueY.size(), 0, nullptr, FLT_MIN, FLT_MAX, ImVec2(0, 80));
+        ImGui::PlotLines("Predicted Torque Z", floatPredictedTorqueZ.data(), floatPredictedTorqueZ.size(), 0, nullptr, FLT_MIN, FLT_MAX, ImVec2(0, 80));
     }
 }

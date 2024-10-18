@@ -306,13 +306,13 @@ int main(int argc, char** argv) {
                 // Button to execute the jerk trajectory
                 ImGui::SetCursorPos(ImVec2(350, 420 - y_bRand));  // Moved to the right side of the Random Pose settings
                 if (ImGui::Button("Move Jerk", ImVec2(120.0f, 40.0f))) {
-                    robot_controller.startJerkTrajectory(random_moves_amount, max_velocity_scaling, max_acceleration_scaling, offScale_x, offScale_y, offScale_z);
+                    robot_controller.startCartesian(random_moves_amount, max_velocity_scaling, max_acceleration_scaling, offScale_x, offScale_y, offScale_z);
                 }
 
                 // Button to stop jerk trajectory
                 ImGui::SetCursorPos(ImVec2(350, 480 - y_bRand));
                 if (ImGui::Button("Stop Jerk", ImVec2(120.0f, 40.0f))) {
-                    robot_controller.stopJerkTrajectory();
+                    robot_controller.stopCartesian();
                 }
                                 
 
@@ -556,11 +556,28 @@ int main(int argc, char** argv) {
                     plotter.startPlotting();
                 }
 
-                // Render live plots in the current frame
-                plotter.renderPlot();
+                // Open a new window for the plots
+                if (ImGui::Button("Open Plotting Window")) {
+                    ImGui::OpenPopup("Plotting Window");  // Open a new window for plotting
+                }
+
+                // If the plotting window is open, render it as a separate window
+                if (ImGui::BeginPopupModal("Plotting Window", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+                    ImGui::Text("Live Plotting Data:");
+
+                    // Render live plots in the new window
+                    plotter.renderPlot();
+
+                    if (ImGui::Button("Close", ImVec2(120, 0))) {
+                        ImGui::CloseCurrentPopup();
+                    }
+
+                    ImGui::EndPopup();  // End of the new plotting window
+                }
 
                 ImGui::EndTabItem();  // End of Plotting Tab
             }
+
 
 
             ImGui::EndTabBar();  // End of Tab Bar

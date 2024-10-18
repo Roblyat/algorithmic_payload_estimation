@@ -127,8 +127,8 @@ def gp_live_prediction_node():
     global scaler, feature_names
     scaler, feature_names = load_scaler(scaler_filename)
 
-    # rospy.Subscriber('/joint_states', JointState, joint_state_callback)
-    rospy.Subscriber('/predicted_effort', Float64MultiArray, predicted_effort_callback)  # New subscriber for predicted effort
+    rospy.Subscriber('/joint_states', JointState, joint_state_callback)
+    # rospy.Subscriber('/predicted_effort', Float64MultiArray, predicted_effort_callback)  # New subscriber for predicted effort
 
     global prediction_pub
     prediction_pub = rospy.Publisher('/predicted_wrench', WrenchStamped, queue_size=10)

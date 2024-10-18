@@ -507,7 +507,7 @@
     <!-- The ft_sensor plugin  -->
     <gazebo>
         <plugin filename="libgazebo_ros_ft_sensor.so" name="sensor_measurment_joint_ft_sensor">
-            <updateRate>41.667</updateRate>
+            <updateRate>40</updateRate>
             <topicName>/wrench</topicName>
             <jointName>sensor_measurment_joint</jointName>
             <noise>

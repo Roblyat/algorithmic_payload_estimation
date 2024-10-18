@@ -185,7 +185,7 @@ void RobotController::moveRandom(int num_moves, int max_valid_attempts, double m
     }
 }
 
-
+//  Deprecated method:
 void RobotController::executeJerkTrajectory(int num_moves, double max_velocity_scaling, double max_acceleration_scaling, double offScale_x, double offScale_y, double offScale_z) {
     
     std::lock_guard<std::mutex> lock(move_group_mutex);
@@ -250,6 +250,113 @@ void RobotController::executeJerkTrajectory(int num_moves, double max_velocity_s
     }
 }
 
+//move rand cartesian
+void RobotController::executeCartesianJerkTrajectory(int num_moves, double max_velocity_scaling, double max_acceleration_scaling, double offScale_x, double offScale_y, double offScale_z) {
+
+    std::lock_guard<std::mutex> lock(move_group_mutex);
+
+    setPlanningGroup("manipulator");
+
+    for (int i = 0; i < num_moves; ++i) {
+        if (!cartesian_running.load()) {
+            ROS_INFO("Cartesian jerk trajectory stopped early.");
+            return;
+        }
+        
+        // Get the current pose
+        geometry_msgs::PoseStamped current_pose = move_group_interface.getCurrentPose("sensor_robotiq_ft_frame_id");
+        geometry_msgs::Pose target_pose = current_pose.pose;
+
+        // Generate small random movements (short trajectory)
+        if (offScale_x != 0) {
+            double random_delta_x = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_x;  // Random small movement in X
+            target_pose.position.x += random_delta_x;
+        }
+
+        if (offScale_y != 0) {
+            double random_delta_y = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_y;  // Random small movement in Y
+            target_pose.position.y += random_delta_y;
+        }
+
+        if (offScale_z != 0) {
+            double random_delta_z = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_z;  // Random small movement in Z
+            target_pose.position.z += random_delta_z;
+        }
+
+        // Ensure the start state matches the current robot state
+        move_group_interface.setStartStateToCurrentState();
+
+        // Cartesian path planning using waypoints
+        std::vector<geometry_msgs::Pose> waypoints;
+        waypoints.push_back(current_pose.pose);  // Start from the current pose
+        waypoints.push_back(target_pose);  // Move to the target pose
+
+        // Plan a Cartesian path
+        moveit_msgs::RobotTrajectory trajectory_msg;
+        const double eef_step = 0.01;  // Step size in meters
+        const double jump_threshold = 0.0;  // Disable jump threshold
+
+        double fraction = move_group_interface.computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory_msg);
+
+        if (fraction > 0.95) {
+            ROS_INFO("Successfully computed Cartesian path %d.", i + 1);
+
+            // Convert moveit_msgs::RobotTrajectory to robot_trajectory::RobotTrajectory
+            robot_trajectory::RobotTrajectory robot_trajectory(move_group_interface.getRobotModel(), "manipulator");
+            robot_trajectory.setRobotTrajectoryMsg(*move_group_interface.getCurrentState(), trajectory_msg);
+
+            // Apply time parameterization to the trajectory
+            trajectory_processing::IterativeParabolicTimeParameterization time_param;
+            bool success = time_param.computeTimeStamps(robot_trajectory, max_velocity_scaling, max_acceleration_scaling);
+            if (!success) {
+                ROS_WARN("Failed to apply time parameterization.");
+                continue;
+            }
+
+            // Convert back to moveit_msgs::RobotTrajectory
+            robot_trajectory.getRobotTrajectoryMsg(trajectory_msg);
+
+            // Verify that the time is strictly increasing between waypoints
+            if (!isTrajectoryTimeIncreasing(trajectory_msg)) {
+                ROS_ERROR("Trajectory time is not strictly increasing. Aborting execution.");
+                continue;
+            }
+
+            // Create a new plan with the parameterized trajectory
+            moveit::planning_interface::MoveGroupInterface::Plan cartesian_plan;
+            cartesian_plan.trajectory_ = trajectory_msg;
+
+            // Execute the Cartesian trajectory synchronously
+            moveit::planning_interface::MoveItErrorCode result = move_group_interface.execute(cartesian_plan);
+            
+            if (result == moveit::planning_interface::MoveItErrorCode::SUCCESS) {
+                ROS_INFO("Successfully executed Cartesian trajectory %d.", i + 1);
+            } else {
+                ROS_WARN("Failed to execute Cartesian trajectory %d.", i + 1);
+            }
+        } else {
+            ROS_WARN("Failed to compute Cartesian path for trajectory %d, skipping...", i + 1);
+        }
+    }
+}
+
+// Helper function to ensure time is strictly increasing
+bool RobotController::isTrajectoryTimeIncreasing(moveit_msgs::RobotTrajectory &trajectory) {
+    // Minimum time difference to ensure strict increasing time
+    const double min_time_increment = 1e-4;  // 0.1 ms minimum increment between waypoints
+
+    for (size_t i = 1; i < trajectory.joint_trajectory.points.size(); ++i) {
+        // Check if current time is less than or equal to the previous time
+        if (trajectory.joint_trajectory.points[i].time_from_start <= trajectory.joint_trajectory.points[i - 1].time_from_start) {
+            // If time is not strictly increasing, adjust it by a small increment
+            trajectory.joint_trajectory.points[i].time_from_start = trajectory.joint_trajectory.points[i - 1].time_from_start + ros::Duration(min_time_increment);
+        }
+    }
+    return true;
+}
+
+
+
 //methods for thread start/stop handling
 void RobotController::startJerkTrajectory(int num_moves, double max_velocity_scaling, double max_acceleration_scaling, double offScale_x, double offScale_y, double offScale_z) {
     if (jerk_running.load()) {
@@ -307,4 +414,33 @@ void RobotController::stopRandomMove() {
     }
 
     ROS_INFO("Random move stopped.");
+}
+
+void RobotController::startCartesian(int num_moves, double max_velocity_scaling, double max_acceleration_scaling, double offScale_x, double offScale_y, double offScale_z) {
+    if (cartesian_running.load()) {
+        ROS_WARN("Cartesian trajectory is already running.");
+        return;
+    }
+
+    cartesian_running.store(true);
+
+    // Start the jerk trajectory in a new thread
+    cartesian_thread = std::thread(&RobotController::executeCartesianJerkTrajectory, this, num_moves, max_velocity_scaling, max_acceleration_scaling, offScale_x, offScale_y, offScale_z);
+}
+
+void RobotController::stopCartesian() {
+    if (!cartesian_running.load()) {
+        ROS_WARN("No Cartesian trajectory is currently running.");
+        return;
+    }
+
+    // Set the flag to false to stop the jerk trajectory
+    cartesian_running.store(false);
+
+    // Join the thread to ensure it has stopped
+    if (cartesian_thread.joinable()) {
+        cartesian_thread.join();
+    }
+
+    ROS_INFO("Cartesian trajectory stopped.");
 }
