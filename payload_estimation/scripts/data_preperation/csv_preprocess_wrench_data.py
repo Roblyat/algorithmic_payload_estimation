@@ -3,6 +3,7 @@
 import rospy
 import os
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import pickle
@@ -123,8 +124,9 @@ def prepare_training_data(combined_csv, output_csv):
 
     print(f"Training data saved to {output_csv}")
 
+
 # New method to split and standardize the data
-def split_and_standardize(training_csv, train_output_csv, test_output_csv, scaler_filename):
+def split_and_standardize(training_csv, train_output_csv, test_output_csv):
     # Load the training data
     df_training = pd.read_csv(training_csv)
     
@@ -144,6 +146,14 @@ def split_and_standardize(training_csv, train_output_csv, test_output_csv, scale
     # Transform the test data using the same scaler (important)
     X_test_scaled = scaler.transform(X_test)
 
+    # Print the scaler's mean and scale values that were learned from the training data
+    print(f"Scaler learned mean (before scaling): {scaler.mean_}")
+    print(f"Scaler learned standard deviation (before scaling): {scaler.scale_}")
+
+    # After scaling, check the mean and stddev of the scaled training data
+    print(f"Mean after scaling: {np.mean(X_train_scaled, axis=0)}")  # Should be approximately 0
+    print(f"Standard deviation after scaling: {np.std(X_train_scaled, axis=0)}")  # Should be approximately 1
+
     # Save both the scaler and the feature names to a file using pickle
     scaler_data = {
         'scaler': scaler,
@@ -152,7 +162,6 @@ def split_and_standardize(training_csv, train_output_csv, test_output_csv, scale
 
     with open(scaler_filename, 'wb') as f:
         pickle.dump(scaler_data, f)
-
 
     # Recombine features and targets for both train and test
     df_train = pd.DataFrame(X_train_scaled, columns=X.columns)
@@ -199,4 +208,4 @@ if __name__ == "__main__":
     prepare_training_data(combined_csv, raw_training_csv)
 
     # Step 3: Split and standardize the data
-    split_and_standardize(raw_training_csv, train_data_csv, test_data_csv, scaler_filename)
+    split_and_standardize(raw_training_csv, train_data_csv, test_data_csv)

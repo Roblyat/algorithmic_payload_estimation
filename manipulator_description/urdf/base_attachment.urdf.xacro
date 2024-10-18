@@ -25,7 +25,7 @@
       </visual>
       <collision>
         <geometry>
-          <cylinder radius="0.3" length="0.5"/>
+          <cylinder radius="0.1" length="0.85"/>
         </geometry>
         <origin xyz="0 0 0" rpy="0 0 0"/>
       </collision>

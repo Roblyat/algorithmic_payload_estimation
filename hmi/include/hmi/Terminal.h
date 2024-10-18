@@ -41,7 +41,7 @@ public:
     void startTraining(); 
     void stopTraining();
 
-    // Start and stop test 
+    // Start and stop test
     void startTesting(); 
     void stopTesting();
 
