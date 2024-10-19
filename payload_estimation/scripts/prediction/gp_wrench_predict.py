@@ -20,16 +20,25 @@ def load_gp_model(model_filename):
     rospy.loginfo("GP model loaded successfully.")
     return gp_model
 
-def load_scaler(scaler_filename):
-    rospy.loginfo(f"Loading scaler and feature names from {scaler_filename}")
-    with open(scaler_filename, 'rb') as f:
+def load_X_scaler(X_scaler_filename):
+    rospy.loginfo(f"Loading scaler and feature names from {X_scaler_filename}")
+    with open(X_scaler_filename, 'rb') as f:
         scaler_data = pickle.load(f)
     scaler = scaler_data['scaler']
     feature_names = scaler_data['columns']  # Extract the feature names
     rospy.loginfo("Scaler and feature names loaded successfully.")
     return scaler, feature_names
 
-def preprocess_input(joint_state_msg, scaler, feature_names):
+def load_Y_scaler(Y_scaler_filename):
+    rospy.loginfo(f"Loading scaler and target names from {Y_scaler_filename}")
+    with open(Y_scaler_filename, 'rb') as f:
+        scaler_data = pickle.load(f)
+    scaler = scaler_data['scaler']
+    feature_names = scaler_data['columns']  # Extract the target names
+    rospy.loginfo("Scaler and targets names loaded successfully.")
+    return scaler, feature_names
+
+def preprocess_input(joint_state_msg, X_scaler, X_feature_names):
     positions = []
     velocities = []
     efforts = []
@@ -51,17 +60,17 @@ def preprocess_input(joint_state_msg, scaler, feature_names):
         input_vector.append(velocity)
         input_vector.append(effort)
 
-    input_df = pd.DataFrame([input_vector], columns=feature_names)
-    input_vector_scaled = scaler.transform(input_df)
+    input_df = pd.DataFrame([input_vector], columns=X_feature_names)
+    input_vector_scaled = X_scaler.transform(input_df)
     return input_vector_scaled
 
-def preprocess_predicted_effort(effort_msg, scaler, feature_names):
+def preprocess_predicted_effort(effort_msg, X_scaler, X_feature_names):
     """
     Process the /predicted_effort message which is a Float64MultiArray and contains joint positions, velocities, and efforts.
     """
     input_vector = np.array(effort_msg.data).reshape(1, -1)  # Convert to a 2D array for prediction
-    input_df = pd.DataFrame(input_vector, columns=feature_names)
-    input_vector_scaled = scaler.transform(input_df)
+    input_df = pd.DataFrame(input_vector, columns=X_feature_names)
+    input_vector_scaled = X_scaler.transform(input_df)
     return input_vector_scaled
 
 def predict_with_gp(gp_model, input_vector):
@@ -69,17 +78,23 @@ def predict_with_gp(gp_model, input_vector):
     return Y_pred, Y_var
 
 def joint_state_callback(joint_state_msg):
-    input_vector = preprocess_input(joint_state_msg, scaler, feature_names)
+    input_vector = preprocess_input(joint_state_msg, X_scaler, X_feature_names)
     Y_pred, Y_var = predict_with_gp(gp_model, input_vector)
-    publish_wrench_prediction(Y_pred)
+
+    Y_pred_original = Y_scaler.inverse_transform(Y_pred)  # Inverse scale the predicted values
+
+    publish_wrench_prediction(Y_pred_original)
 
 def predicted_effort_callback(effort_msg):
     """
     Callback for the /predicted_effort topic.
     """
-    input_vector = preprocess_predicted_effort(effort_msg, scaler, feature_names)
+    input_vector = preprocess_predicted_effort(effort_msg, X_scaler, X_feature_names)
     Y_pred, Y_var = predict_with_gp(gp_model, input_vector)
-    publish_wrench_prediction(Y_pred)
+
+    Y_pred_original = Y_scaler.inverse_transform(Y_pred)  # Inverse scale the predicted values
+
+    publish_wrench_prediction(Y_pred_original)
 
 def publish_wrench_prediction(Y_pred):
     """
@@ -119,13 +134,17 @@ def gp_live_prediction_node():
     else:
         model_filename = os.path.join(model_path, f"{rosbag_base_name}_{data_type}_model.pkl.zip")
 
-    scaler_filename = os.path.join(scaler_path, f"{rosbag_base_name}_{data_type}_scaler.pkl")
+    X_scaler_filename = os.path.join(scaler_path, f"{rosbag_base_name}_{data_type}_feature_scaler.pkl")
+    Y_scaler_filename = os.path.join(scaler_path, f"{rosbag_base_name}_{data_type}_target_scaler.pkl")
 
     global gp_model
     gp_model = load_gp_model(model_filename)
 
-    global scaler, feature_names
-    scaler, feature_names = load_scaler(scaler_filename)
+    global X_scaler, X_feature_names
+    X_scaler, X_feature_names = load_X_scaler(X_scaler_filename)
+
+    global Y_scaler, Y_feature_names
+    Y_scaler, Y_feature_names = load_Y_scaler(Y_scaler_filename)
 
     rospy.Subscriber('/joint_states', JointState, joint_state_callback)
     # rospy.Subscriber('/predicted_effort', Float64MultiArray, predicted_effort_callback)  # New subscriber for predicted effort

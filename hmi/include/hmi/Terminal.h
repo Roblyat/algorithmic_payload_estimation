@@ -22,12 +22,18 @@ public:
     void setRosParam(const std::string& param_name, const std::string& param_value);
 
     // Start and stop rosbag recording
-    void startRosbagRecording(const std::string& full_save_path);
-    void stopRosbagRecording();  // Stop the rosbag recording
+    void startTrainRosbagRecording(const std::string& full_save_path);
+    void stopTrainRosbagRecording();  // Stop the rosbag recording
+
+    void startTestRosbagRecording(const std::string& full_save_path);
+    void stopTestRosbagRecording();  // Stop the rosbag recording
 
     // Start and stop rosbag to CSV process
-    void startRosbagToCSV();  // Start rosbag to CSV process
-    void stopRosbagToCSV();  // Stop rosbag to CSV process
+    void startTrainRosbagToCSV();  // Start rosbag to CSV process
+    void stopTrainRosbagToCSV();  // Stop rosbag to CSV process
+
+    void startTestRosbagToCSV();  // Start rosbag to CSV process
+    void stopTestRosbagToCSV();  // Stop rosbag to CSV process
 
     // Start and stop rosbag to Wrench CSV process
     void startWrenchPreprocessing();  // Start CSV preprocessing
@@ -64,14 +70,22 @@ private:
     void logCallback(const rosgraph_msgs::Log::ConstPtr& msg);
 
     // Worker method for recording
-    std::atomic<bool> recording_running;  // Flag to indicate if recording is running
-    std::thread recording_thread;  // Thread for rosbag recording
-    void rosbagRecordingWorker(const std::string& full_save_path);
+    std::atomic<bool> train_recording_running;  // Flag to indicate if recording is running
+    std::thread train_recording_thread;  // Thread for rosbag recording
+    void trainRosbagRecordingWorker(const std::string& full_save_path);
+
+    std::atomic<bool> test_recording_running;  // Flag to indicate if recording is running
+    std::thread test_recording_thread;  // Thread for rosbag recording
+    void testRosbagRecordingWorker(const std::string& full_save_path);
 
     // Rosbag to CSV
-    std::atomic<bool> rosbag_to_csv_running;  // Flag for rosbag to CSV process
-    std::thread rosbag_to_csv_thread;  // Thread for rosbag to CSV process
-    void rosbagToCSVWorker();  // Worker method for rosbag to CSV process
+    std::atomic<bool> train_rosbag_to_csv_running;  // Flag for rosbag to CSV process
+    std::thread train_rosbag_to_csv_thread;  // Thread for rosbag to CSV process
+    void trainRosbagToCSVWorker();  // Worker method for rosbag to CSV process
+
+    std::atomic<bool> test_rosbag_to_csv_running;  // Flag for rosbag to CSV process
+    std::thread test_rosbag_to_csv_thread;  // Thread for rosbag to CSV process
+    void testRosbagToCSVWorker();  // Worker method for rosbag to CSV process
 
     // Wrench CSV Preprocessing
     std::atomic<bool> wrench_preprocessing_running;  // Flag for CSV preprocessing

@@ -25,12 +25,12 @@ def load_gp_model(model_filename):
 
 
 
-def load_scaler(scaler_filename):
+def load_X_scaler(X_scaler_filename):
     """
     Load the StandardScaler and its feature names used during training from a file.
     """
-    rospy.loginfo(f"Loading scaler and feature names from {scaler_filename}")
-    with open(scaler_filename, 'rb') as f:
+    rospy.loginfo(f"Loading scaler and feature names from {X_scaler_filename}")
+    with open(X_scaler_filename, 'rb') as f:
         scaler_data = pickle.load(f)
     
     scaler = scaler_data['scaler']
@@ -38,8 +38,21 @@ def load_scaler(scaler_filename):
     rospy.loginfo("Scaler and feature names loaded successfully.")
     return scaler, feature_names
 
+def load_Y_scaler(Y_scaler_filename):
+    """
+    Load the StandardScaler and its target names used during training from a file.
+    """
+    rospy.loginfo(f"Loading scaler and target names from {Y_scaler_filename}")
+    with open(Y_scaler_filename, 'rb') as f:
+        scaler_data = pickle.load(f)
+    
+    scaler = scaler_data['scaler']
+    feature_names = scaler_data['columns']  # Extract the target names
+    rospy.loginfo("Scaler and targets names loaded successfully.")
+    return scaler, feature_names
 
-def preprocess_input(joint_state_msg, scaler, feature_names):
+
+def preprocess_input(joint_state_msg, X_scaler, X_feature_names):
     """
     Extract and format the input features from the /joint_states topic message.
     This will create an input vector in the format that matches the GP model's training data.
@@ -74,21 +87,19 @@ def preprocess_input(joint_state_msg, scaler, feature_names):
     rospy.loginfo(f"Input vector before scaling: {input_vector}")
 
     # Print the scaler's mean and scale values
-    rospy.loginfo(f"Scaler mean: {scaler.mean_}")
-    rospy.loginfo(f"Scaler scale (std): {scaler.scale_}")
+    rospy.loginfo(f"Scaler mean: {X_scaler.mean_}")
+    rospy.loginfo(f"Scaler scale (std): {X_scaler.scale_}")
 
     # Convert input_vector into a DataFrame using the feature names loaded from training
-    input_df = pd.DataFrame([input_vector], columns=feature_names)
+    input_df = pd.DataFrame([input_vector], columns=X_feature_names)
 
     # Standardize the input using the loaded scaler
-    input_vector_scaled = scaler.transform(input_df)
+    input_vector_scaled = X_scaler.transform(input_df)
 
     # Print/log the input vector after scaling
     rospy.loginfo(f"Input vector after scaling: {input_vector_scaled}")
 
     return input_vector_scaled
-
-
 
 
 def predict_with_gp(gp_model, input_vector):
@@ -107,13 +118,16 @@ def joint_state_callback(joint_state_msg):
     preprocesses it, and uses the GP model to make predictions.
     """
     # Preprocess the incoming joint_states message to match the model input
-    input_vector = preprocess_input(joint_state_msg, scaler, feature_names)
+    input_vector = preprocess_input(joint_state_msg, X_scaler, X_feature_names)
 
     # Make a prediction using the GP model
     Y_pred, Y_var = predict_with_gp(gp_model, input_vector)
 
+    # inverse transform the predicted effort
+    Y_pred_original = Y_scaler.inverse_transform(Y_pred)
+
     # Log or publish the predictions (e.g., efforts or wrench data)
-    rospy.loginfo(f"Predicted: {Y_pred}, Variance: {Y_var}")
+    rospy.loginfo(f"Predicted: {Y_pred_original}, Variance: {Y_var}")
 
     # Prepare the output message (PredictedEffort)
     output_msg = PredictedEffort()
@@ -125,7 +139,7 @@ def joint_state_callback(joint_state_msg):
         index = joint_state_msg.name.index(joint_name)
         output_vector.append(joint_state_msg.position[index])   # Joint position
         output_vector.append(joint_state_msg.velocity[index])   # Joint velocity
-        output_vector.append(Y_pred[0][i])                      # Predicted effort for this joint
+        output_vector.append(Y_pred_original[0][i])                      # Predicted effort for this joint
 
     # Fill in the PredictedEffort message fields
     output_msg.wrench_input = output_vector  # Predicted targets of effort_gp_model
@@ -136,7 +150,7 @@ def joint_state_callback(joint_state_msg):
     rospy.loginfo(f"Output: {output_msg}")
 
     wrench_input = Float64MultiArray()
-    wrench_input.data = output_vector
+    wrench_input.data = Y_pred_original.flatten().tolist() #output_vector
 
     # Publish the predictions
     prediction_pub.publish(wrench_input)
@@ -173,13 +187,17 @@ def gp_live_prediction_node():
         model_filename = os.path.join(model_path, f"{rosbag_base_name}_{data_type}_model.pkl.zip")
 
     # Construct the scaler file name conditionally
-    scaler_filename = os.path.join(scaler_path, f"{rosbag_base_name}_{data_type}_scaler.pkl")  # Path to the saved scaler
+    X_scaler_filename = os.path.join(scaler_path, f"{rosbag_base_name}_{data_type}_feature_scaler.pkl")
+    Y_scaler_filename = os.path.join(scaler_path, f"{rosbag_base_name}_{data_type}_target_scaler.pkl")  # Path to the saved scaler
 
     global gp_model
     gp_model = load_gp_model(model_filename)
 
-    global scaler, feature_names
-    scaler, feature_names = load_scaler(scaler_filename)
+    global X_scaler, X_feature_names
+    X_scaler, X_feature_names = load_X_scaler(X_scaler_filename)
+
+    global Y_scaler, Y_feature_names
+    Y_scaler, Y_feature_names = load_Y_scaler(Y_scaler_filename)
 
     # Subscribe to the /joint_states topic to get live data
     rospy.Subscriber('/joint_states', JointState, joint_state_callback)

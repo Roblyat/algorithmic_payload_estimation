@@ -5,13 +5,13 @@
 #include <string>
 #include <thread>
 
-Terminal::Terminal(ros::NodeHandle& N) : nh(N), recording_running(false) {
+Terminal::Terminal(ros::NodeHandle& N) : nh(N), train_recording_running(false), test_recording_running(false) {
     // Subscribe to the /rosout_agg topic for aggregated ROS logs
     // log_sub = nh.subscribe("/rosout_agg", 1000, &Terminal::logCallback, this);
 }
 
 Terminal::~Terminal() {
-    stopRosbagRecording();  // Ensure that recording is stopped
+    stopTrainRosbagRecording();  // Ensure that recording is stopped
 }
 
 /////////////////////
@@ -71,18 +71,18 @@ void Terminal::setRosParam(const std::string& param_name, const std::string& par
     ROS_INFO_STREAM("Set ROS parameter: " << param_name << " = " << param_value);
 }
 
-////////////////////////
-// Rosbag Recording   //
-////////////////////////
+////////////////////////////
+// Rosbag Train Recording //
+////////////////////////////
 // Worker method to run the rosbag recording in a separate thread
-void Terminal::rosbagRecordingWorker(const std::string& full_save_path) {
+void Terminal::trainRosbagRecordingWorker(const std::string& full_save_path) {
     std::lock_guard<std::mutex> lock(terminal_mutex);  // Lock terminal resources
 
     // Construct the rosbag recording command
     std::string command = "rosbag record -O " + full_save_path + " /joint_states /wrench &";
     system(command.c_str());  // Execute the command
 
-    while (recording_running.load()) {
+    while (train_recording_running.load()) {
         // Keep the thread alive while recording is active
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
@@ -92,46 +92,96 @@ void Terminal::rosbagRecordingWorker(const std::string& full_save_path) {
 }
 
 // Start rosbag recording
-void Terminal::startRosbagRecording(const std::string& full_save_path) {
-    if (recording_running.load()) {
-        ROS_WARN("Rosbag recording is already running.");
+void Terminal::startTrainRosbagRecording(const std::string& full_save_path) {
+    if (train_recording_running.load()) {
+        ROS_WARN("Rosbag train recording is already running.");
         return;
     }
 
-    recording_running.store(true);  // Set the flag to true
+    train_recording_running.store(true);  // Set the flag to true
 
     // Start the recording in a separate thread
-    recording_thread = std::thread(&Terminal::rosbagRecordingWorker, this, full_save_path);
+    train_recording_thread = std::thread(&Terminal::trainRosbagRecordingWorker, this, full_save_path);
 }
 
 // Stop rosbag recording
-void Terminal::stopRosbagRecording() {
-    if (!recording_running.load()) {
-        ROS_WARN("No rosbag recording is currently running.");
+void Terminal::stopTrainRosbagRecording() {
+    if (!train_recording_running.load()) {
+        ROS_WARN("No train rosbag recording is currently running.");
         return;
     }
 
-    recording_running.store(false);  // Set the flag to false to stop the recording
+    train_recording_running.store(false);  // Set the flag to false to stop the recording
 
     // Join the thread to ensure it has stopped
-    if (recording_thread.joinable()) {
-        recording_thread.join();
+    if (train_recording_thread.joinable()) {
+        train_recording_thread.join();
     }
 
-    ROS_WARN("Rosbag recording stopped.");
+    ROS_WARN("Rosbag train recording stopped.");
+}
+
+////////////////////////////
+// Rosbag Test Recording //
+////////////////////////////
+// Worker method to run the rosbag recording in a separate thread
+void Terminal::testRosbagRecordingWorker(const std::string& full_save_path) {
+    std::lock_guard<std::mutex> lock(terminal_mutex);  // Lock terminal resources
+
+    // Construct the rosbag recording command
+    std::string command = "rosbag record -O " + full_save_path + " /predicted_effort /predicted_wrench /wrench /joint_states &";
+    system(command.c_str());  // Execute the command
+
+    while (test_recording_running.load()) {
+        // Keep the thread alive while recording is active
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    // Stop the recording process when the flag is set to false
+    system("pkill -f 'rosbag record'");  // Stop the rosbag recording
+}
+
+// Start rosbag recording
+void Terminal::startTestRosbagRecording(const std::string& full_save_path) {
+    if (test_recording_running.load()) {
+        ROS_WARN("Rosbag test recording is already running.");
+        return;
+    }
+
+    test_recording_running.store(true);  // Set the flag to true
+
+    // Start the recording in a separate thread
+    test_recording_thread = std::thread(&Terminal::testRosbagRecordingWorker, this, full_save_path);
+}
+
+// Stop rosbag recording
+void Terminal::stopTestRosbagRecording() {
+    if (!test_recording_running.load()) {
+        ROS_WARN("No test rosbag recording is currently running.");
+        return;
+    }
+
+    test_recording_running.store(false);  // Set the flag to false to stop the recording
+
+    // Join the thread to ensure it has stopped
+    if (test_recording_thread.joinable()) {
+        test_recording_thread.join();
+    }
+
+    ROS_WARN("Rosbag test recording stopped.");
 }
 
 //////////////////////////
 // Rosbag to CSV Worker //
 //////////////////////////
-void Terminal::rosbagToCSVWorker() {
+void Terminal::trainRosbagToCSVWorker() {
     std::lock_guard<std::mutex> lock(terminal_mutex);  // Lock terminal resources
 
     // Command to process rosbag to CSV
-    std::string command = "rosrun payload_estimation rosbag_to_csv_split.py &";  // Replace with the actual command or script
+    std::string command = "rosrun payload_estimation train_rosbag_to_csv_split.py &";  // Replace with the actual command or script
     system(command.c_str());  // Execute the command
 
-    while (rosbag_to_csv_running.load()) {
+    while (train_rosbag_to_csv_running.load()) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
@@ -139,29 +189,72 @@ void Terminal::rosbagToCSVWorker() {
     system("pkill -f 'rosbag_to_csv'");
 }
 
-void Terminal::startRosbagToCSV() {
-    if (rosbag_to_csv_running.load()) {
-        ROS_WARN("Rosbag to CSV process is already running.");
+void Terminal::startTrainRosbagToCSV() {
+    if (train_rosbag_to_csv_running.load()) {
+        ROS_WARN("Train rosbag to CSV process is already running.");
         return;
     }
 
-    rosbag_to_csv_running.store(true);  // Set flag to true
-    rosbag_to_csv_thread = std::thread(&Terminal::rosbagToCSVWorker, this);
+    train_rosbag_to_csv_running.store(true);  // Set flag to true
+    train_rosbag_to_csv_thread = std::thread(&Terminal::trainRosbagToCSVWorker, this);
 }
 
-void Terminal::stopRosbagToCSV() {
-    if (!rosbag_to_csv_running.load()) {
-        ROS_WARN("No rosbag to CSV process is currently running.");
+void Terminal::stopTrainRosbagToCSV() {
+    if (!train_rosbag_to_csv_running.load()) {
+        ROS_WARN("No train rosbag to CSV process is currently running.");
         return;
     }
 
-    rosbag_to_csv_running.store(false);  // Set flag to false
+    train_rosbag_to_csv_running.store(false);  // Set flag to false
 
-    if (rosbag_to_csv_thread.joinable()) {
-        rosbag_to_csv_thread.join();
+    if (train_rosbag_to_csv_thread.joinable()) {
+        train_rosbag_to_csv_thread.join();
     }
 
-    ROS_INFO("Rosbag to CSV process stopped.");
+    ROS_INFO("Train rosbag to CSV process stopped.");
+}
+
+//////////////////////////
+// Rosbag to CSV Worker //
+//////////////////////////
+void Terminal::testRosbagToCSVWorker() {
+    std::lock_guard<std::mutex> lock(terminal_mutex);  // Lock terminal resources
+
+    // Command to process rosbag to CSV
+    std::string command = "rosrun payload_estimation test_rosbag_to_csv_split.py &";  // Replace with the actual command or script
+    system(command.c_str());  // Execute the command
+
+    while (test_rosbag_to_csv_running.load()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    // Ensure process stops when flag is false
+    system("pkill -f 'rosbag_to_csv'");
+}
+
+void Terminal::startTestRosbagToCSV() {
+    if (test_rosbag_to_csv_running.load()) {
+        ROS_WARN("Test rosbag to CSV process is already running.");
+        return;
+    }
+
+    test_rosbag_to_csv_running.store(true);  // Set flag to true
+    test_rosbag_to_csv_thread = std::thread(&Terminal::testRosbagToCSVWorker, this);
+}
+
+void Terminal::stopTestRosbagToCSV() {
+    if (!test_rosbag_to_csv_running.load()) {
+        ROS_WARN("No test rosbag to CSV process is currently running.");
+        return;
+    }
+
+    test_rosbag_to_csv_running.store(false);  // Set flag to false
+
+    if (test_rosbag_to_csv_thread.joinable()) {
+        test_rosbag_to_csv_thread.join();
+    }
+
+    ROS_INFO("Test rosbag to CSV process stopped.");
 }
 
 /////////////////////////////////////

@@ -131,7 +131,8 @@ int main(int argc, char** argv) {
     //  Terminal Tab  //
     ////////////////////
     // Define static strings to hold the save path and file name
-    static char rosbag_path[256] = "/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/rosbag";
+    static char rosbag_path_train[256] = "/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/rosbag/train";
+    static char rosbag_path_test[256] = "/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/rosbag/test";
     static char rosbag_name[128] = "recorded_data.bag";  // Default file name
 
     //gp model parameters
@@ -356,9 +357,9 @@ int main(int argc, char** argv) {
             //////////////////////////////////////////////////////////////////////////////////
             if (ImGui::BeginTabItem("Terminal")) {
 
-                ///////////////////////
-                // Rosbag Recording UI
-                ///////////////////////
+                ///////////////////////////////
+                // Rosbag Train Recording UI //
+                ///////////////////////////////
                 ImGui::Text("Rosbag Name:");
                 ImGui::SameLine();
                 ImGui::InputText("##Rosbag", rosbag_name, IM_ARRAYSIZE(rosbag_name));
@@ -371,31 +372,62 @@ int main(int argc, char** argv) {
                 
                 ImGui::SameLine();
 
-                if (ImGui::Button("Start Recording", ImVec2(120.0f, 40.0f))) {
-                    std::string full_rosbag_path = std::string(rosbag_path) + "/" + std::string(rosbag_name);
-                    terminal.startRosbagRecording(full_rosbag_path);
+                if (ImGui::Button("Start Train Recording", ImVec2(120.0f, 40.0f))) {
+                    std::string full_rosbag_path = std::string(rosbag_path_train) + "/" + std::string(rosbag_name);
+                    terminal.startTrainRosbagRecording(full_rosbag_path);
                 }
 
                 ImGui::SameLine();
 
-                if (ImGui::Button("Stop Recording", ImVec2(120.0f, 40.0f))) {
-                    terminal.stopRosbagRecording();
+                if (ImGui::Button("Stop Train Recording", ImVec2(120.0f, 40.0f))) {
+                    terminal.stopTrainRosbagRecording();
+                }
+
+                ///////////////////////////////
+                // Rosbag Test Recording UI //
+                ///////////////////////////////
+                ImGui::Spacing();
+
+                if (ImGui::Button("Start Test Recording", ImVec2(120.0f, 40.0f))) {
+                    std::string full_rosbag_path = std::string(rosbag_path_test) + "/" + std::string(rosbag_name);
+                    terminal.startTestRosbagRecording(full_rosbag_path);
+                }
+
+                ImGui::SameLine();
+
+                if (ImGui::Button("Stop Test Recording", ImVec2(120.0f, 40.0f))) {
+                    terminal.stopTestRosbagRecording();
                 }
 
 
-                //////////////////////////////
-                // Process Rosbag to CSV //
-                //////////////////////////////
+                /////////////////////////////////
+                // Process Train Rosbag to CSV //
+                /////////////////////////////////
                 ImGui::Spacing();  // Add space between sections
 
-                if (ImGui::Button("Start Rosbag to CSV", ImVec2(160.0f, 40.0f))) {
-                    terminal.startRosbagToCSV();
+                if (ImGui::Button("Start Train Rosbag to CSV", ImVec2(160.0f, 40.0f))) {
+                    terminal.startTrainRosbagToCSV();
                 }
 
                 ImGui::SameLine();
 
-                if (ImGui::Button("Stop Rosbag to CSV", ImVec2(160.0f, 40.0f))) {
-                    terminal.stopRosbagToCSV();
+                if (ImGui::Button("Stop Train Rosbag to CSV", ImVec2(160.0f, 40.0f))) {
+                    terminal.stopTrainRosbagToCSV();
+                }
+
+                ////////////////////////////////
+                // Process Test Rosbag to CSV //
+                ////////////////////////////////
+                ImGui::Spacing();  // Add space between sections
+
+                if (ImGui::Button("Start Test Rosbag to CSV", ImVec2(160.0f, 40.0f))) {
+                    terminal.startTestRosbagToCSV();
+                }
+
+                ImGui::SameLine();
+
+                if (ImGui::Button("Stop Test Rosbag to CSV", ImVec2(160.0f, 40.0f))) {
+                    terminal.stopTestRosbagToCSV();
                 }
 
                 //////////////////////////////////////

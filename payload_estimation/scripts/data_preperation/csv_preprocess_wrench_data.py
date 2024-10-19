@@ -138,37 +138,31 @@ def split_and_standardize(training_csv, train_output_csv, test_output_csv):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Standardize the features using StandardScaler
-    scaler = StandardScaler()
+    X_scaler = StandardScaler()
+    X_train_scaled = X_scaler.fit_transform(X_train)
+    X_test_scaled = X_scaler.transform(X_test)
 
-    # Fit on training data and transform the training data
-    X_train_scaled = scaler.fit_transform(X_train)
+    y_scaler = StandardScaler()
+    y_train_scaled = y_scaler.fit_transform(y_train)
+    y_test_scaled = y_scaler.transform(y_test)
 
-    # Transform the test data using the same scaler (important)
-    X_test_scaled = scaler.transform(X_test)
+    # Save both scalers and their corresponding feature/target names to files
+    X_scaler_data = {'scaler': X_scaler, 'columns': X.columns.tolist()}
+    y_scaler_data = {'scaler': y_scaler, 'columns': y.columns.tolist()}
 
-    # Print the scaler's mean and scale values that were learned from the training data
-    print(f"Scaler learned mean (before scaling): {scaler.mean_}")
-    print(f"Scaler learned standard deviation (before scaling): {scaler.scale_}")
+    with open(X_scaler_filename, 'wb') as f:
+        pickle.dump(X_scaler_data, f)
 
-    # After scaling, check the mean and stddev of the scaled training data
-    print(f"Mean after scaling: {np.mean(X_train_scaled, axis=0)}")  # Should be approximately 0
-    print(f"Standard deviation after scaling: {np.std(X_train_scaled, axis=0)}")  # Should be approximately 1
-
-    # Save both the scaler and the feature names to a file using pickle
-    scaler_data = {
-        'scaler': scaler,
-        'columns': X.columns.tolist()  # Save feature names as a list
-    }
-
-    with open(scaler_filename, 'wb') as f:
-        pickle.dump(scaler_data, f)
+    with open(y_scaler_filename, 'wb') as f:
+        pickle.dump(y_scaler_data, f)
 
     # Recombine features and targets for both train and test
     df_train = pd.DataFrame(X_train_scaled, columns=X.columns)
-    df_train = pd.concat([df_train, y_train.reset_index(drop=True)], axis=1)
-    
+    df_train = pd.concat([df_train, pd.DataFrame(y_train_scaled, columns=y.columns)], axis=1)
+
     df_test = pd.DataFrame(X_test_scaled, columns=X.columns)
-    df_test = pd.concat([df_test, y_test.reset_index(drop=True)], axis=1)
+    df_test = pd.concat([df_test, pd.DataFrame(y_test_scaled, columns=y.columns)], axis=1)
+
 
     # Save the training and testing datasets to CSV
     df_train.to_csv(train_output_csv, index=False)
@@ -177,12 +171,20 @@ def split_and_standardize(training_csv, train_output_csv, test_output_csv):
     print(f"Train data saved to {train_output_csv}")
     print(f"Test data saved to {test_output_csv}")
 
+    # # Print the scaler's mean and scale values that were learned from the training data
+    # print(f"Scaler learned mean (before scaling): {X_scaler.mean_}")
+    # print(f"Scaler learned standard deviation (before scaling): {X_scaler.scale_}")
+
+    # # After scaling, check the mean and stddev of the scaled training data
+    # print(f"Mean after scaling: {np.mean(X_train_scaled, axis=0)}")  # Should be approximately 0
+    # print(f"Standard deviation after scaling: {np.std(X_train_scaled, axis=0)}")  # Should be approximately 1
+
 if __name__ == "__main__":
     
     # Paths to your CSV files
     output_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/wrench'
     # Folder path for joint states and wrench CSVs
-    raw_csv_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/csv'
+    raw_csv_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/csv/train'
     rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
 
     rosbag_base_name = os.path.splitext(rosbag_name)[0]
@@ -199,7 +201,8 @@ if __name__ == "__main__":
     scaler_output_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers/wrench'
 
     # Construct the scaler file name conditionally
-    scaler_filename = os.path.join(scaler_output_path, f"{rosbag_base_name}_wrench_scaler.pkl")
+    X_scaler_filename = os.path.join(scaler_output_path, f"{rosbag_base_name}_wrench_feature_scaler.pkl")
+    y_scaler_filename = os.path.join(scaler_output_path, f"{rosbag_base_name}_wrench_target_scaler.pkl")
     
     # Step 1: Process joint states and wrench data
     process_joint_states(joint_states_csv, wrench_csv, combined_csv)
