@@ -207,6 +207,16 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-add_executable(ft_extractor_node src/ft_extractor.cpp src/main.cpp)
-target_link_libraries(ft_extractor_node ${catkin_LIBRARIES})
+# Add the executable for your node
+add_executable(ft_extractor src/ft_extract.cpp include/payload_estimation/ftExtractor.cpp)
+
+# Link against ROS and any other required libraries
+target_link_libraries(ft_extractor ${catkin_LIBRARIES})
+
+# Specify include directories for the project
+target_include_directories(ft_extractor PRIVATE
+    ${catkin_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/payload_estimation  # Ensure your custom include directory is included
+)
+
 

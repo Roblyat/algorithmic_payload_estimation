@@ -285,29 +285,49 @@ void RobotController::executeCartesianJerkTrajectory(int num_moves, double max_v
         // Ensure minimum displacement (at least 20 cm) for each axis that is active (non-zero offset)
 
         // Generate small random movements for X-axis
+        // if (offScale_x != 0) {
+        //     double random_delta_x;
+        //     do {
+        //         random_delta_x = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_x;  // Random small movement in X
+        //     } while (fabs(random_delta_x) < 0.2);  // Ensure movement is at least 0.2 meters
+        //     target_pose.position.x += random_delta_x;
+        // }
+
+        // // Generate small random movements for Y-axis
+        // if (offScale_y != 0) {
+        //     double random_delta_y;
+        //     do {
+        //         random_delta_y = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_y;  // Random small movement in Y
+        //     } while (fabs(random_delta_y) < 0.2);  // Ensure movement is at least 0.2 meters
+        //     target_pose.position.y += random_delta_y;
+        // }
+
+        // // Generate small random movements for Z-axis
+        // if (offScale_z != 0) {
+        //     double random_delta_z;
+        //     do {
+        //         random_delta_z = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_z;  // Random small movement in Z
+        //     } while (fabs(random_delta_z) < 0.2);  // Ensure movement is at least 0.2 meters
+        //     target_pose.position.z += random_delta_z;
+
+        //     // Update the flag to track if this movement is negative in Z
+        //     previous_z_negative = (random_delta_z < 0);
+        // }
+        // Generate small random movements for X-axis
         if (offScale_x != 0) {
-            double random_delta_x;
-            do {
-                random_delta_x = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_x;  // Random small movement in X
-            } while (fabs(random_delta_x) < 0.2);  // Ensure movement is at least 0.2 meters
+            double random_delta_x = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_x;  // Random movement in X
             target_pose.position.x += random_delta_x;
         }
 
         // Generate small random movements for Y-axis
         if (offScale_y != 0) {
-            double random_delta_y;
-            do {
-                random_delta_y = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_y;  // Random small movement in Y
-            } while (fabs(random_delta_y) < 0.2);  // Ensure movement is at least 0.2 meters
+            double random_delta_y = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_y;  // Random movement in Y
             target_pose.position.y += random_delta_y;
         }
 
         // Generate small random movements for Z-axis
         if (offScale_z != 0) {
-            double random_delta_z;
-            do {
-                random_delta_z = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_z;  // Random small movement in Z
-            } while (fabs(random_delta_z) < 0.2);  // Ensure movement is at least 0.2 meters
+            double random_delta_z = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_z;  // Random movement in Z
             target_pose.position.z += random_delta_z;
 
             // Update the flag to track if this movement is negative in Z
