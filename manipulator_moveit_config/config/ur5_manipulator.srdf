@@ -43,6 +43,16 @@
         <joint name="ur5_wrist_2_joint" value="1.5708"/>
         <joint name="ur5_wrist_3_joint" value="0"/>
     </group_state>
+    <!-- 241020_roblyat: manually new predefined position "parallel"-->
+    <group_state name="parallel" group="manipulator">
+        <joint name="sensor_measurment_joint" value="0"/>
+        <joint name="ur5_elbow_joint" value="1.5708"/>
+        <joint name="ur5_shoulder_lift_joint" value="-1.5708"/>
+        <joint name="ur5_shoulder_pan_joint" value="0"/>
+        <joint name="ur5_wrist_1_joint" value="-1.5708"/>
+        <joint name="ur5_wrist_2_joint" value="-1.5708"/>
+        <joint name="ur5_wrist_3_joint" value="0"/>
+    </group_state>
     <group_state name="open" group="gripper">
         <joint name="gripper_finger_joint" value="0"/>
     </group_state>

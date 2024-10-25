@@ -2,4 +2,5 @@ build
 devel
 .vscode
 payload_estimation/gp_models/
+payload_estimation/data/raw
 ~lock*

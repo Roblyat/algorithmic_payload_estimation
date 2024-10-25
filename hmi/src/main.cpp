@@ -106,9 +106,9 @@ int main(int argc, char** argv) {
     // Robot Control Tab //
     ///////////////////////
     //step size control robot cartesian movement
-    int speed = 1;
+    int speed = 100;
     // List of predefined poses
-    const char* poses[] = { "Init", "home", "up" };
+    const char* poses[] = { "Init", "home", "up", "parallel" };
     static int current_pose_index = 0;
     // List of gripper positions
     const char* gripper_positions[] = { "open", "closed" };
@@ -126,6 +126,7 @@ int main(int argc, char** argv) {
     static double offScale_x = 0.1;
     static double offScale_y = 0.1;
     static double offScale_z = 0.1;
+    static bool use_sampling = false;  // Default checkbox state
 
     ////////////////////
     //  Terminal Tab  //
@@ -137,10 +138,14 @@ int main(int argc, char** argv) {
 
     //gp model parameters
     static char data_type[128] = "effort";  // Default value
-    const char* kernels[] = { "RBF", "Matern52", "Linear" };  // Available kernel types
+    const char* kernels[] = { "RBF", "Matern52", "Linear", "RBF_White"};  // Available kernel types
     static int selected_kernel = 0;  // Index for the selected kernel
     static int subsample_size = 5000;  // Default value            
     static bool use_kfold = false;  // Default heckbox state
+    static bool use_gplvm = false;  // Default checkbox state
+    static bool use_sparse = false;  // Default checkbox state
+    static char latent_dim_input[10] = "";  // Buffer for user input
+    static char num_inducing_input[10] = "";  // Buffer for user input
 
     ////////////////////
     //  Plotting Tab  //
@@ -224,7 +229,7 @@ int main(int argc, char** argv) {
                 ImGui::SetCursorPos(ImVec2(50, 370));
                 if (ImGui::Button("Move PreDef", ImVec2(100.0f, 40.0f))) {  // Increased width of button for better appearance
                     std::string selected_pose = poses[current_pose_index];  // Get the selected pose
-                    robot_controller.execPreDef(selected_pose);
+                    robot_controller.execPreDef(selected_pose, max_velocity_scaling, max_acceleration_scaling);
                 }
                 
                 ////////////////////
@@ -290,6 +295,12 @@ int main(int argc, char** argv) {
                 ImGui::InputDouble("offScale_z", &offScale_z);
                 ImGui::PopItemWidth();  // Reset width
 
+                // Checkbox to enable sampling
+                ImGui::SetCursorPos(ImVec2(350, 740 - y_bRand));  // Adjust y to control spacing
+                if (ImGui::Checkbox("Use sampling", &use_sampling)) {
+                    terminal.setRosParam("~use_sampling", use_sampling ? "true" : "false");  // Set the ROS parameter based on checkbox
+                }
+
                 // Button to execute the random moves
                 ImGui::SetCursorPos(ImVec2(350, 300 - y_bRand));  // Moved to the right side of the Random Pose settings
                 if (ImGui::Button("Move Random", ImVec2(120.0f, 40.0f))) {
@@ -307,7 +318,7 @@ int main(int argc, char** argv) {
                 // Button to execute the jerk trajectory
                 ImGui::SetCursorPos(ImVec2(350, 420 - y_bRand));  // Moved to the right side of the Random Pose settings
                 if (ImGui::Button("Move Jerk", ImVec2(120.0f, 40.0f))) {
-                    robot_controller.startCartesian(random_moves_amount, max_velocity_scaling, max_acceleration_scaling, offScale_x, offScale_y, offScale_z);
+                    robot_controller.startCartesian(random_moves_amount, max_velocity_scaling, max_acceleration_scaling, offScale_x, offScale_y, offScale_z, use_sampling);
                 }
 
                 // Button to stop jerk trajectory
@@ -493,7 +504,65 @@ int main(int argc, char** argv) {
                     terminal.setRosParam("~use_kfold", use_kfold ? "true" : "false");  // Set the ROS parameter based on checkbox
                 }
 
+                ImGui::SameLine();
+
+                if (ImGui::Checkbox("Use gplvm", &use_gplvm)) {
+                    terminal.setRosParam("~use_gplvm", use_gplvm ? "true" : "false");  // Set the ROS parameter based on checkbox
+                }
+
+                ImGui::SameLine();
+
+                if (ImGui::Checkbox("Use sparse", &use_sparse)) {
+                    terminal.setRosParam("~use_sparse", use_sparse ? "true" : "false");  // Set the ROS parameter based on checkbox
+                }
+
                 ImGui::Spacing();
+
+                // Set a smaller width for the input boxes (adjust the width as needed)
+                ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.25f);  // Set the input box to 1/4th of the window width
+
+                // Add a text box for setting "latent_dim" parameter
+                ImGui::Text("Latent Dimension:");
+                ImGui::SameLine();
+                ImGui::InputText("##LatentDim", latent_dim_input, IM_ARRAYSIZE(latent_dim_input), ImGuiInputTextFlags_CharsDecimal);
+
+                ImGui::SameLine();  // Ensure the next input is on the same line
+
+                // Add a text box for setting "num_inducing" parameter
+                ImGui::Text("Num Inducing:");
+                ImGui::SameLine();
+                ImGui::InputText("##NumInducing", num_inducing_input, IM_ARRAYSIZE(num_inducing_input), ImGuiInputTextFlags_CharsDecimal);
+
+                // Reset the item width to default after the input boxes
+                ImGui::PopItemWidth();  // Reset the width back to default
+
+                ImGui::Spacing();
+
+                // Add the buttons to set both parameters in the same line
+                if (ImGui::Button("Set Latent Dim", ImVec2(120.0f, 40.0f))) {
+                    // Convert the user input string to integer and set the ROS parameter for latent_dim
+                    int latent_dim = atoi(latent_dim_input);  // Convert input to an integer
+                    if (latent_dim > 0) {  // Ensure it's a valid positive integer
+                        terminal.setRosParam("~latent_dim", std::to_string(latent_dim));  // Set the ROS parameter for latent_dim
+                    } else {
+                        ROS_WARN("Invalid Latent Dimension input, please input a valid positive integer.");
+                    }
+                }
+
+                ImGui::SameLine();  // Place the next button on the same line
+
+                if (ImGui::Button("Set Num Inducing", ImVec2(120.0f, 40.0f))) {
+                    // Convert the user input string to integer and set the ROS parameter for num_inducing
+                    int num_inducing = atoi(num_inducing_input);  // Convert input to an integer
+                    if (num_inducing > 0) {  // Ensure it's a valid positive integer
+                        terminal.setRosParam("~num_inducing", std::to_string(num_inducing));  // Set the ROS parameter for num_inducing
+                    } else {
+                        ROS_WARN("Invalid Num Inducing input, please input a valid positive integer.");
+                    }
+                }
+
+                ImGui::Spacing();
+
 
                 // Subsample Size Input with step size adjustment
                 ImGui::Text("Subsample Size:");

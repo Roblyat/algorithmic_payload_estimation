@@ -206,3 +206,7 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+add_executable(ft_extractor_node src/ft_extractor.cpp src/main.cpp)
+target_link_libraries(ft_extractor_node ${catkin_LIBRARIES})
+

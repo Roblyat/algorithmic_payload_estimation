@@ -27,7 +27,7 @@ def load_training_data(training_csv, subsample_size):
     
     return X, Y
 
-def train_gp_model(X_train, Y_train, X_test, Y_test, kernel):
+def train_gp_model(X_train, Y_train, X_test, Y_test, kernel, use_sparse, model_filename):
     """
     Train a Gaussian Process (GP) model using GPy library.
     - X_train: Features for training
@@ -35,21 +35,41 @@ def train_gp_model(X_train, Y_train, X_test, Y_test, kernel):
     - X_test: Features for testing/validation
     - Y_test: Targets for testing/validation
     - kernel: Kernel for the GP model.
+    - use_sparse: Boolean to determine if sparse GP should be used.
+    - model_filename: Path to save model info as a txt file.
     
     Returns the trained GP model and the test metrics (MSE, RMSE, MAE, R^2).
     """
     # Create the GP regression model
-    gp_model = GPy.models.GPRegression(X_train, Y_train, kernel)
-    
-    # Train the model by optimizing the hyperparameters
-    gp_model.optimize(messages=False)
+    if use_sparse:
+        inducing_points = X_train[np.random.choice(X_train.shape[0], min(500, X_train.shape[0]), replace=False)]
+        gp_model = GPy.models.SparseGPRegression(X_train, Y_train, kernel, Z=inducing_points)
+        rospy.loginfo("Using sparse GP model...")
+    else:
+        gp_model = GPy.models.GPRegression(X_train, Y_train, kernel)
+        rospy.loginfo("Using full GP model...")
+
+    rospy.loginfo("Optimizing the GP model...")
+    gp_model.optimize(messages=True)
+
+    gp_model.optimize_restarts(num_restarts=10, verbose=True)
+
+    # Capture model and kernel print output
+    model_info = f"Optimized GP model structure:\n{gp_model}\n\nKernel structure:\n{gp_model.kern}"
+
+    # Save the model info into a text file
+    info_filename = model_filename.replace('.pkl', '_info.txt')
+    with open(info_filename, 'w') as f:
+        f.write(model_info)
+
+    rospy.loginfo(f"Model information saved to {info_filename}")
 
     # Predict the output for the test set
     Y_pred, _ = gp_model.predict(X_test)
 
     # Calculate the test metrics
     mse = mean_squared_error(Y_test, Y_pred)
-    rmse = np.sqrt(mse)  # Root Mean Squared Error
+    rmse = np.sqrt(mse)
     mae = mean_absolute_error(Y_test, Y_pred)
     r2 = r2_score(Y_test, Y_pred)
 
@@ -58,20 +78,22 @@ def train_gp_model(X_train, Y_train, X_test, Y_test, kernel):
 
     return gp_model, mse, rmse, mae, r2
 
-def kfold_train_gp_model(X, Y, kernel, k=5):
+
+def kfold_train_gp_model(X, Y, kernel, use_sparse, k=5):
     """
     Perform K-Fold Cross-Validation for Gaussian Process models.
     - X: Features (input joint states)
     - Y: Targets (output force/torque)
     - kernel: The GP kernel to use
+    - use_sparse: Boolean to determine if sparse GP should be used
     - k: Number of folds for K-Fold CV
     
-    Returns the best GP model based on the lowest RMSE.
+    Returns the best GP model based on the highest R² score.
     """
     kf = KFold(n_splits=k, shuffle=True, random_state=42)
     fold = 1
     best_model = None
-    best_rmse = float('inf')
+    best_r2 = -float('inf')  # Initialize best R² to a very low value
 
     all_mse = []
     all_rmse = []
@@ -86,7 +108,7 @@ def kfold_train_gp_model(X, Y, kernel, k=5):
         rospy.loginfo(f"Training on fold {fold}/{k}...")
         
         # Train GP model on this fold
-        gp_model, mse, rmse, mae, r2 = train_gp_model(X_train, Y_train, X_test, Y_test, kernel)
+        gp_model, mse, rmse, mae, r2 = train_gp_model(X_train, Y_train, X_test, Y_test, kernel, use_sparse)
 
         rospy.loginfo(f"Fold {fold} Metrics: MSE={mse}, RMSE={rmse}, MAE={mae}, R^2={r2}")
 
@@ -96,10 +118,10 @@ def kfold_train_gp_model(X, Y, kernel, k=5):
         all_mae.append(mae)
         all_r2.append(r2)
 
-        # Update the best model if current model has a lower RMSE
-        if rmse < best_rmse:
+        # Update the best model if current model has a higher R² score
+        if r2 > best_r2:
             best_model = gp_model
-            best_rmse = rmse
+            best_r2 = r2
 
         fold += 1
 
@@ -109,17 +131,22 @@ def kfold_train_gp_model(X, Y, kernel, k=5):
     avg_mae = np.mean(all_mae)
     avg_r2 = np.mean(all_r2)
     rospy.loginfo(f"Average Metrics Across Folds: MSE={avg_mse}, RMSE={avg_rmse}, MAE={avg_mae}, R^2={avg_r2}")
-    rospy.loginfo(f"Best model achieved with RMSE: {best_rmse}")
+    rospy.loginfo(f"Best model achieved with R²: {best_r2}")
 
     return best_model
 
 
 def save_gp_model(gp_model, model_filename):
     """
-    Saves the trained GP model using GPy's internal save_model function.
+    Saves the trained GP model using pickle.
     """
-    gp_model.save_model(model_filename)
-    rospy.loginfo(f"GP model saved to {model_filename}")
+    try:
+        rospy.loginfo(f"Saving model using pickle to {model_filename}")
+        with open(model_filename, 'wb') as file:
+            pickle.dump(gp_model, file)
+        rospy.loginfo(f"GP model saved to {model_filename}")
+    except Exception as e:
+        rospy.logerr(f"Failed to save model to {model_filename}: {str(e)}")
 
 
 def gp_training_node():
@@ -130,12 +157,12 @@ def gp_training_node():
     rospy.init_node('gp_kfold_training_node')
 
     # Get the data type (wrench or effort) from ROS parameters
-    data_type = rospy.get_param('/rosparam/data_type', 'wrench')  # Default to 'effort'
+    data_type = rospy.get_param('/rosparam/data_type', 'wrench')  # Default to 'wrench'
 
     if data_type == 'wrench':
         training_csv_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/wrench'
     else:
-        training_csv_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/effort'  # Path to the processed training data CSV
+        training_csv_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/effort'
     
     rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
     rosbag_base_name = os.path.splitext(rosbag_name)[0]
@@ -158,8 +185,12 @@ def gp_training_node():
     # Model output path, depending on data_type (effort or wrench)
     model_output_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models', data_type)
 
+    # Check if sparse GP models are being used
+    use_sparse = rospy.get_param('/rosparam/use_sparse', False)
+    suffix = "_k_s" if use_sparse else "_k"
+
     # Combine the output path and model name using os.path.join (recommended for paths)
-    full_model_path = os.path.join(model_output_path, f"{rosbag_base_name}_{data_type}_k_model.pkl")
+    full_model_path = os.path.join(model_output_path, f"{rosbag_base_name}_{data_type}{suffix}_model.pkl")
 
     # Load the training data
     rospy.loginfo(f"Loading {data_type} training data from {full_train_csv_path} with subsample size {subsample_size}")
@@ -173,13 +204,18 @@ def gp_training_node():
         kernel = GPy.kern.Matern52(input_dim=X.shape[1], variance=1., lengthscale=1.)
     elif kernel_type == 'Linear':
         kernel = GPy.kern.Linear(input_dim=X.shape[1])
+    elif kernel_type == 'RBF_White':
+        # Create a combination of RBF and White noise kernels
+        rbf_kernel = GPy.kern.RBF(input_dim=X.shape[1], variance=1., lengthscale=1.)
+        white_kernel = GPy.kern.White(input_dim=X.shape[1], variance=1e-5)  # A small default variance for noise
+        kernel = rbf_kernel + white_kernel
     else:
         rospy.logwarn(f"Unknown kernel type '{kernel_type}', defaulting to RBF.")
         kernel = GPy.kern.RBF(input_dim=X.shape[1], variance=1., lengthscale=1.)
 
     # Perform K-Fold cross-validation to train the GP model
-    rospy.loginfo(f"Training Gaussian Process model for {data_type} with K-Fold CV...")
-    best_gp_model = kfold_train_gp_model(X, Y, kernel, k=5)
+    rospy.loginfo(f"Training Gaussian Process model for {data_type} with K-Fold CV (Sparse: {use_sparse})...")
+    best_gp_model = kfold_train_gp_model(X, Y, kernel, use_sparse, k=5)
 
     # Save the best trained model using pickle
     save_gp_model(best_gp_model, full_model_path)

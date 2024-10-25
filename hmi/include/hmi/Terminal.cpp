@@ -346,12 +346,14 @@ void Terminal::stopEffortPreprocessing() {
 // Training Node Code //
 ////////////////////////
 
-void Terminal::gpTrainingWorker(bool use_kfold) {
+void Terminal::gpTrainingWorker(bool use_kfold, bool use_gplvm) {
     std::lock_guard<std::mutex> lock(terminal_mutex);  // Lock terminal resources
 
     // Command to start the appropriate Python node using rosrun
     std::string command;
-    if (use_kfold) {
+    if (use_gplvm) {
+        command = "rosrun payload_estimation gplvm_kfold_training_node.py &";  // GPLVM training node
+    } else if (use_kfold) {
         command = "rosrun payload_estimation gp_kfold_training_node.py &";  // KFold training node
     } else {
         command = "rosrun payload_estimation gp_training_node.py &";  // Regular training node
@@ -365,12 +367,15 @@ void Terminal::gpTrainingWorker(bool use_kfold) {
     }
 
     // Stop the Python node process when the flag is set to false
-    std::string stop_command = "pkill -f 'gp_training_node.py'";  // Stop both nodes
+    std::string stop_command = "pkill -f 'gp_training_node.py'";  // Stop regular node
     system(stop_command.c_str());
-    
-    // Also ensure kfold node is killed if it was running
+
+    // Ensure kfold and gplvm nodes are killed if they were running
     std::string stop_kfold_command = "pkill -f 'gp_kfold_training_node.py'";
+    std::string stop_gplvm_command = "pkill -f 'gplvm_kfold_training_node.py'";
+
     system(stop_kfold_command.c_str());
+    system(stop_gplvm_command.c_str());
 }
 
 // start the python node
@@ -388,10 +393,18 @@ void Terminal::startTraining() {
         ROS_WARN("Failed to retrieve 'use_kfold' parameter. Using default: false");
     }
 
+    // Retrieve the 'use_gplvm' ROS parameter
+    bool use_gplvm = false;
+    if (ros::param::get("/rosparam/use_gplvm", use_gplvm)) {
+        ROS_INFO("Retrieved 'use_gplvm' parameter: %s", use_gplvm ? "true" : "false");
+    } else {
+        ROS_WARN("Failed to retrieve 'use_gplvm' parameter. Using default: false");
+    }
+
     training_running.store(true);  // Set the flag to true
 
-    // Start the Python node in a separate thread, passing the `use_kfold` flag
-    training_thread = std::thread(&Terminal::gpTrainingWorker, this, use_kfold);
+    // Start the Python node in a separate thread, passing the `use_kfold` and `use_gplvm` flags
+    training_thread = std::thread(&Terminal::gpTrainingWorker, this, use_kfold, use_gplvm);
 }
 
 // Stop the Python node
@@ -410,6 +423,7 @@ void Terminal::stopTraining() {
 
     ROS_INFO("Training node stopped.");
 }
+
 
 ///////////////////////
 // Testing Node Code //

@@ -15,10 +15,18 @@ UR5_JOINTS = ['ur5_elbow_joint', 'ur5_shoulder_lift_joint', 'ur5_shoulder_pan_jo
               'ur5_wrist_1_joint', 'ur5_wrist_2_joint', 'ur5_wrist_3_joint']
 
 def load_gp_model(model_filename):
-    rospy.loginfo(f"Loading GP model from {model_filename}")
-    gp_model = GPy.core.GP.load_model(model_filename)
-    rospy.loginfo("GP model loaded successfully.")
-    return gp_model
+    """
+    Load the trained GP model using pickle.
+    """
+    try:
+        rospy.loginfo(f"Loading GP model from {model_filename}")
+        with open(model_filename, 'rb') as file:
+            gp_model = pickle.load(file)
+        rospy.loginfo("GP model loaded successfully.")
+        return gp_model
+    except Exception as e:
+        rospy.logerr(f"Failed to load model from {model_filename}: {str(e)}")
+        return None
 
 def load_X_scaler(X_scaler_filename):
     rospy.loginfo(f"Loading scaler and feature names from {X_scaler_filename}")
@@ -125,17 +133,31 @@ def gp_live_prediction_node():
         return
 
     rosbag_base_name = os.path.splitext(rosbag_name)[0]
-    use_kfold = rospy.get_param('/rosparam/use_kfold', False)
+
+    # Load the GPLVM parameter as a boolean (default is False)
+    use_sparse = rospy.get_param('/rosparam/use_sparse', False)  # Default is False
+    # Load the K-Fold parameter as a boolean (default is False)
+    
+    use_kfold = rospy.get_param('/rosparam/use_kfold', False)  # Default is 
     model_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models', data_type)
     scaler_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers', data_type)
 
-    if use_kfold:
-        model_filename = os.path.join(model_path, f"{rosbag_base_name}_{data_type}_k_model.pkl.zip")
-    else:
-        model_filename = os.path.join(model_path, f"{rosbag_base_name}_{data_type}_model.pkl.zip")
+    # Initialize the suffix for the model filenames based on the use_sparse and use_kfold flags
+    suffix = ""
 
+    if use_kfold and use_sparse:
+        suffix = "_k_s"
+    elif use_kfold:
+        suffix = "_k"
+    elif use_sparse:
+        suffix = "_s"
+
+    # Combine the model path and model name using the suffix
+    model_filename = os.path.join(model_path, f"{rosbag_base_name}_{data_type}{suffix}_model.pkl")
+
+    # Construct the scaler file name (scalers don't need suffixes)
     X_scaler_filename = os.path.join(scaler_path, f"{rosbag_base_name}_{data_type}_feature_scaler.pkl")
-    Y_scaler_filename = os.path.join(scaler_path, f"{rosbag_base_name}_{data_type}_target_scaler.pkl")
+    Y_scaler_filename = os.path.join(scaler_path, f"{rosbag_base_name}_{data_type}_target_scaler.pkl")  # Path to the saved scaler
 
     global gp_model
     gp_model = load_gp_model(model_filename)

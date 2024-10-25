@@ -88,7 +88,7 @@ def prepare_training_data(combined_csv, output_csv):
     training_data = []
 
     # Step 1: Iterate over the combined data
-    for i in range(len(df_combined) - 5):  # Adjust the range to avoid index errors
+    for i in range(0, len(df_combined) - 5, 6):  # Shift by 6 to ensure correct joint block
         # Get the current block of 6 rows (corresponding to 6 consecutive joint states)
         joint_block = df_combined.iloc[i:i+6]
 
@@ -97,13 +97,12 @@ def prepare_training_data(combined_csv, output_csv):
         joint_efforts = []
 
         for _, joint_row in joint_block.iterrows():
-            # Append the features (Position, Velocity, Acceleration)
             joint_features.extend([joint_row['Position'], joint_row['Velocity'], joint_row['Acceleration']])
-            # Collect the efforts separately (targets)
             joint_efforts.append(joint_row['Effort'])
 
         # Add to training data (flattened joint states followed by efforts)
         training_data.append(joint_features + joint_efforts)
+
 
     # Step 2: Define column names for features and targets
     joint_feature_columns = [f'Joint_{i+1}_{param}' for i in range(6) for param in ['Position', 'Velocity', 'Acceleration']]
@@ -131,8 +130,22 @@ def split_and_standardize(training_csv, train_output_csv, test_output_csv):
 
     # Standardize the features using StandardScaler
     X_scaler = StandardScaler()
+
+
+    print(f"Mean before TRAIN scaling: {np.mean(X_train, axis=0)}")  # Should be approximately 0
+    print(f"Standard deviation before scaling TRAIN: {np.std(X_train, axis=0)}")  # Should be approximately 1
+
     X_train_scaled = X_scaler.fit_transform(X_train)
+
+    # # After scaling, check the mean and stddev of the scaled training data
+    print(f"Mean after scaling TRAIN: {np.mean(X_train_scaled, axis=0)}")  # Should be approximately 0
+    print(f"Standard deviation after scaling TRAIN: {np.std(X_train_scaled, axis=0)}")  # Should be approximately 1
+
+    print(f"Mean before TEST scaling: {np.mean(X_test, axis=0)}")  # Should be approximately 0
+    print(f"Standard deviation before scaling TEST: {np.std(X_test, axis=0)}")  # Should be approximately 1
     X_test_scaled = X_scaler.transform(X_test)
+    print(f"Mean after TEST scaling: {np.mean(X_test_scaled, axis=0)}")  # Should be approximately 0
+    print(f"Standard deviation after scaling TEST: {np.std(X_test_scaled, axis=0)}")  # Should be approximately 1
 
     # Standardize the targets using a separate StandardScaler
     y_scaler = StandardScaler()
@@ -163,13 +176,6 @@ def split_and_standardize(training_csv, train_output_csv, test_output_csv):
     print(f"Train data saved to {train_output_csv}")
     print(f"Test data saved to {test_output_csv}")
 
-    # # Print the scaler's mean and scale values that were learned from the training data
-    # print(f"Scaler learned mean (before scaling): {X_scaler.mean_}")
-    # print(f"Scaler learned standard deviation (before scaling): {X_scaler.scale_}")
-
-    # # After scaling, check the mean and stddev of the scaled training data
-    # print(f"Mean after scaling: {np.mean(X_train_scaled, axis=0)}")  # Should be approximately 0
-    # print(f"Standard deviation after scaling: {np.std(X_train_scaled, axis=0)}")  # Should be approximately 1
 
 if __name__ == "__main__":
     

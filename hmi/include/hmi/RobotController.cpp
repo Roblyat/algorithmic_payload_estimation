@@ -70,11 +70,15 @@ void RobotController::moveCartesian(double dx, double dy, double dz, int speed) 
 }
 
 
-void RobotController::execPreDef(std::string &pose) {
+void RobotController::execPreDef(const std::string &pose, double max_velocity_scaling, double max_acceleration_scaling) {
 
     setPlanningGroup("manipulator");
 
-    // Set the target pose to the home position for the robot
+    // Set maximum velocity and acceleration scaling
+    move_group_interface.setMaxVelocityScalingFactor(0.04);
+    move_group_interface.setMaxAccelerationScalingFactor(0.015);
+
+    // Set the target pose to the predefined position for the robot
     move_group_interface.setNamedTarget(pose);
 
     // Configure collision checking and set parameters for planning
@@ -82,7 +86,7 @@ void RobotController::execPreDef(std::string &pose) {
     bool success = (move_group_interface.plan(plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
 
     if (success) {
-        moveit::planning_interface::MoveItErrorCode result = move_group_interface.asyncExecute(plan);
+        moveit::planning_interface::MoveItErrorCode result = move_group_interface.execute(plan);
         if (result == moveit::planning_interface::MoveItErrorCode::SUCCESS) {
             ROS_INFO("Robot is moving to the %s position asynchronously.", pose.c_str());
         } else {
@@ -92,6 +96,7 @@ void RobotController::execPreDef(std::string &pose) {
         ROS_WARN("Planning to %s failed due to collision or other constraints.", pose.c_str());
     }
 }
+
 
 void RobotController::controlGripper(const std::string &position, double speed) {
     setPlanningGroup("gripper");
@@ -251,36 +256,62 @@ void RobotController::executeJerkTrajectory(int num_moves, double max_velocity_s
 }
 
 //move rand cartesian
-void RobotController::executeCartesianJerkTrajectory(int num_moves, double max_velocity_scaling, double max_acceleration_scaling, double offScale_x, double offScale_y, double offScale_z) {
+void RobotController::executeCartesianJerkTrajectory(int num_moves, double max_velocity_scaling, double max_acceleration_scaling, double offScale_x, double offScale_y, double offScale_z, bool sampling) {
 
     std::lock_guard<std::mutex> lock(move_group_mutex);
 
     setPlanningGroup("manipulator");
+
+    bool previous_z_negative = false;  // Flag to track if the last movement was negative in Z
+    std::string predefined_pose = "parallel";  // Example predefined pose, replace with your actual predefined pose
 
     for (int i = 0; i < num_moves; ++i) {
         if (!cartesian_running.load()) {
             ROS_INFO("Cartesian jerk trajectory stopped early.");
             return;
         }
-        
+
+        // Every 20th movement, execute the predefined pose
+        if ((i + 1) % 20 == 0) {
+            ROS_INFO("Executing predefined pose on move %d.", i + 1);
+            execPreDef(predefined_pose, max_velocity_scaling, max_acceleration_scaling);
+            continue;  // Skip the rest of the loop for predefined pose execution
+        }
+
         // Get the current pose
         geometry_msgs::PoseStamped current_pose = move_group_interface.getCurrentPose("sensor_robotiq_ft_frame_id");
         geometry_msgs::Pose target_pose = current_pose.pose;
 
-        // Generate small random movements (short trajectory)
+        // Ensure minimum displacement (at least 20 cm) for each axis that is active (non-zero offset)
+
+        // Generate small random movements for X-axis
         if (offScale_x != 0) {
-            double random_delta_x = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_x;  // Random small movement in X
+            double random_delta_x;
+            do {
+                random_delta_x = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_x;  // Random small movement in X
+            } while (fabs(random_delta_x) < 0.2);  // Ensure movement is at least 0.2 meters
             target_pose.position.x += random_delta_x;
         }
 
+        // Generate small random movements for Y-axis
         if (offScale_y != 0) {
-            double random_delta_y = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_y;  // Random small movement in Y
+            double random_delta_y;
+            do {
+                random_delta_y = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_y;  // Random small movement in Y
+            } while (fabs(random_delta_y) < 0.2);  // Ensure movement is at least 0.2 meters
             target_pose.position.y += random_delta_y;
         }
 
+        // Generate small random movements for Z-axis
         if (offScale_z != 0) {
-            double random_delta_z = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_z;  // Random small movement in Z
+            double random_delta_z;
+            do {
+                random_delta_z = (static_cast<double>(rand()) / RAND_MAX - 0.5) * offScale_z;  // Random small movement in Z
+            } while (fabs(random_delta_z) < 0.2);  // Ensure movement is at least 0.2 meters
             target_pose.position.z += random_delta_z;
+
+            // Update the flag to track if this movement is negative in Z
+            previous_z_negative = (random_delta_z < 0);
         }
 
         // Ensure the start state matches the current robot state
@@ -305,9 +336,23 @@ void RobotController::executeCartesianJerkTrajectory(int num_moves, double max_v
             robot_trajectory::RobotTrajectory robot_trajectory(move_group_interface.getRobotModel(), "manipulator");
             robot_trajectory.setRobotTrajectoryMsg(*move_group_interface.getCurrentState(), trajectory_msg);
 
-            // Apply time parameterization to the trajectory
+            double velocity_scaling_sample;
+            double acceleration_scaling_sample;
+
+            // If sampling is enabled, sample random values; otherwise, use the provided values
+            if (sampling) {
+                velocity_scaling_sample = 0.01 + (static_cast<int>((static_cast<double>(rand()) / RAND_MAX) * ((max_velocity_scaling - 0.01) / 0.005))) * 0.005;
+                acceleration_scaling_sample = 0.01 + (static_cast<int>((static_cast<double>(rand()) / RAND_MAX) * ((max_acceleration_scaling - 0.01) / 0.005))) * 0.005;
+                ROS_INFO("Using random velocity scaling: %.3f, random acceleration scaling: %.3f", velocity_scaling_sample, acceleration_scaling_sample);
+            } else {
+                velocity_scaling_sample = max_velocity_scaling;
+                acceleration_scaling_sample = max_acceleration_scaling;
+                ROS_INFO("Using provided velocity scaling: %.3f, provided acceleration scaling: %.3f", velocity_scaling_sample, acceleration_scaling_sample);
+            }
+
+            // Apply time parameterization to the trajectory with the sampled or provided values
             trajectory_processing::IterativeParabolicTimeParameterization time_param;
-            bool success = time_param.computeTimeStamps(robot_trajectory, max_velocity_scaling, max_acceleration_scaling);
+            bool success = time_param.computeTimeStamps(robot_trajectory, velocity_scaling_sample, acceleration_scaling_sample);
             if (!success) {
                 ROS_WARN("Failed to apply time parameterization.");
                 continue;
@@ -340,6 +385,7 @@ void RobotController::executeCartesianJerkTrajectory(int num_moves, double max_v
     }
 }
 
+
 // Helper function to ensure time is strictly increasing
 bool RobotController::isTrajectoryTimeIncreasing(moveit_msgs::RobotTrajectory &trajectory) {
     // Minimum time difference to ensure strict increasing time
@@ -354,7 +400,6 @@ bool RobotController::isTrajectoryTimeIncreasing(moveit_msgs::RobotTrajectory &t
     }
     return true;
 }
-
 
 
 //methods for thread start/stop handling
@@ -416,7 +461,7 @@ void RobotController::stopRandomMove() {
     ROS_INFO("Random move stopped.");
 }
 
-void RobotController::startCartesian(int num_moves, double max_velocity_scaling, double max_acceleration_scaling, double offScale_x, double offScale_y, double offScale_z) {
+void RobotController::startCartesian(int num_moves, double max_velocity_scaling, double max_acceleration_scaling, double offScale_x, double offScale_y, double offScale_z, bool sampling) {
     if (cartesian_running.load()) {
         ROS_WARN("Cartesian trajectory is already running.");
         return;
@@ -425,7 +470,7 @@ void RobotController::startCartesian(int num_moves, double max_velocity_scaling,
     cartesian_running.store(true);
 
     // Start the jerk trajectory in a new thread
-    cartesian_thread = std::thread(&RobotController::executeCartesianJerkTrajectory, this, num_moves, max_velocity_scaling, max_acceleration_scaling, offScale_x, offScale_y, offScale_z);
+    cartesian_thread = std::thread(&RobotController::executeCartesianJerkTrajectory, this, num_moves, max_velocity_scaling, max_acceleration_scaling, offScale_x, offScale_y, offScale_z, sampling);
 }
 
 void RobotController::stopCartesian() {

@@ -25,17 +25,19 @@ def load_training_data(training_csv, subsample_size):
     
     return X, Y
 
-def train_gp_model(X, Y, kernel=None):
+def train_gp_model(X, Y, kernel=None, model_filename=""):
     """
     Train a Gaussian Process (GP) model using GPy library.
     - X: Features (input joint states)
     - Y: Targets (output force/torque)
     - kernel: Optional kernel to use in the GP model. Defaults to RBF kernel.
+    - model_filename: The filename where the model is saved, used to create the _info.txt file.
     
     Returns the trained GP model.
     """
-    # Retrieve the kernel type from the ROS parameter server (default to 'RBF')
+    # Retrieve the kernel type and use_sparse flag from the ROS parameter server
     kernel_type = rospy.get_param('/rosparam/kernel', 'RBF')
+    use_sparse = rospy.get_param('/rosparam/use_sparse', False)
 
     # Define the kernel based on the parameter or use the provided kernel
     if kernel_type == 'RBF':
@@ -44,26 +46,57 @@ def train_gp_model(X, Y, kernel=None):
         kernel = GPy.kern.Matern52(input_dim=X.shape[1], variance=1., lengthscale=1.)
     elif kernel_type == 'Linear':
         kernel = GPy.kern.Linear(input_dim=X.shape[1])
+    elif kernel_type == 'RBF_White':
+        rbf_kernel = GPy.kern.RBF(input_dim=X.shape[1], variance=1., lengthscale=1.)
+        white_kernel = GPy.kern.White(input_dim=X.shape[1], variance=1e-5)
+        kernel = rbf_kernel + white_kernel
     else:
         rospy.logwarn(f"Unknown kernel type '{kernel_type}', defaulting to RBF.")
         kernel = GPy.kern.RBF(input_dim=X.shape[1], variance=1., lengthscale=1.)
 
-    # Create the GP regression model
-    gp_model = GPy.models.GPRegression(X, Y, kernel)
+    # Check if a sparse model should be used
+    if use_sparse:
+        rospy.loginfo("Using sparse GP model...")
+        inducing_points = X[np.random.choice(X.shape[0], min(500, X.shape[0]), replace=False)]
+        gp_model = GPy.models.SparseGPRegression(X, Y, kernel, Z=inducing_points)
+    else:
+        rospy.loginfo("Using full GP model...")
+        gp_model = GPy.models.GPRegression(X, Y, kernel)
     
     # Train the model by optimizing the hyperparameters
+    rospy.loginfo("Optimizing the GP model...")
     gp_model.optimize(messages=True)
+
+    # Add multiple restarts for better optimization
+    rospy.loginfo("Optimizing with multiple restarts...")
+    gp_model.optimize_restarts(num_restarts=10, verbose=True)
+
+    # Capture model and kernel print output
+    model_info = f"Optimized GP model structure:\n{gp_model}\n\nKernel structure:\n{gp_model.kern}"
+
+    # Save the model info into a text file
+    if model_filename:
+        info_filename = model_filename.replace('.pkl', '_info.txt')
+        with open(info_filename, 'w') as f:
+            f.write(model_info)
+        rospy.loginfo(f"Model information saved to {info_filename}")
 
     # Return the trained model
     return gp_model
 
+
+
 def save_gp_model(gp_model, model_filename):
     """
-    Saves the trained GP model using GPy's internal save_model function.
+    Saves the trained GP model using pickle.
     """
-    gp_model.save_model(model_filename)
-    rospy.loginfo(f"GP model saved to {model_filename}")
-
+    try:
+        rospy.loginfo(f"Saving model using pickle to {model_filename}")
+        with open(model_filename, 'wb') as file:
+            pickle.dump(gp_model, file)
+        rospy.loginfo(f"GP model saved to {model_filename}")
+    except Exception as e:
+        rospy.logerr(f"Failed to save model to {model_filename}: {str(e)}")
 
 
 def gp_training_node():
@@ -102,8 +135,12 @@ def gp_training_node():
     # Model output path, depending on data_type (effort or wrench)
     model_output_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models', data_type)
 
+    # Check if sparse models are being used
+    use_sparse = rospy.get_param('/rosparam/use_sparse', False)
+    sparse_suffix = "_s" if use_sparse else ""
+
     # Combine the output path and model name using os.path.join (recommended for paths)
-    full_model_path = os.path.join(model_output_path, f"{rosbag_base_name}_{data_type}_model.pkl")
+    full_model_path = os.path.join(model_output_path, f"{rosbag_base_name}_{data_type}{sparse_suffix}_model.pkl")
 
 
     # Load the training data

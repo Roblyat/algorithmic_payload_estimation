@@ -25,18 +25,17 @@ public:
     // Method for Cartesian movement
     void moveCartesian(double dx, double dy, double dz, int speed);
 
-    void execPreDef(std::string &pose);
+    void execPreDef(const std::string &pose, double max_velocity_scaling, double max_acceleration_scaling);
     
     //deprecated
     void moveRandom(int num_moves, int max_valid_attempts, double max_velocity_scaling, 
         double max_acceleration_scaling, int planning_attempts, double planning_time);
-    //
     
     void executeJerkTrajectory(int num_moves, double max_velocity_scaling, double max_acceleration_scaling, 
         double offScale_x, double offScale_y, double offScale_z);
 
     void executeCartesianJerkTrajectory(int num_moves, double max_velocity_scaling, double max_acceleration_scaling,
-        double offScale_x, double offScale_y, double offScale_z);
+        double offScale_x, double offScale_y, double offScale_z, bool sampling);
 
     bool isTrajectoryTimeIncreasing(moveit_msgs::RobotTrajectory &trajectory);
 
@@ -49,7 +48,7 @@ public:
     void stopJerkTrajectory();
 
     void startCartesian(int num_moves, double max_velocity_scaling, double max_acceleration_scaling,
-        double offScale_x, double offScale_y, double offScale_z);
+        double offScale_x, double offScale_y, double offScale_z, bool sampling);
 
     void stopCartesian();
 

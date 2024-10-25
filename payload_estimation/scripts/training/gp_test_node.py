@@ -6,6 +6,7 @@ import numpy as np
 import pickle
 import os
 import GPy
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
 def load_test_data(test_csv, data_type):
     """
@@ -22,12 +23,17 @@ def load_test_data(test_csv, data_type):
 
 def load_gp_model(model_filename):
     """
-    Load the trained GP model using GPy's internal load_model function.
+    Load the trained GP model using pickle.
     """
-    rospy.loginfo(f"Loading GP model from {model_filename}")
-    gp_model = GPy.core.GP.load_model(model_filename)
-    rospy.loginfo("GP model loaded successfully.")
-    return gp_model
+    try:
+        rospy.loginfo(f"Loading GP model from {model_filename}")
+        with open(model_filename, 'rb') as file:
+            gp_model = pickle.load(file)
+        rospy.loginfo("GP model loaded successfully.")
+        return gp_model
+    except Exception as e:
+        rospy.logerr(f"Failed to load model from {model_filename}: {str(e)}")
+        return None
 
 
 def predict_with_gp(gp_model, X_test):
@@ -86,19 +92,23 @@ def gp_test_node():
 
     # Load the K-Fold parameter as a boolean (default is False)
     use_kfold = rospy.get_param('/rosparam/use_kfold', False)  # Default is False
+    use_sparse = rospy.get_param('/rosparam/use_sparse', False)  # Default is False
 
     # Model output path, depending on data_type (effort or wrench)
     model_output_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models', data_type)
 
-    if use_kfold:
-        # Get the path to the K-Fold model
-        model_filename = os.path.join(model_output_path, f"{rosbag_base_name}_{data_type}_k_model.pkl.zip")
-        # Get the path to save the results
-        results_csv = os.path.join(output_folder, f"{rosbag_base_name}_{data_type}_k_results.csv")
-    else:
-        #Get the path to the model
-        model_filename = os.path.join(model_output_path, f"{rosbag_base_name}_{data_type}_model.pkl.zip")
-        results_csv = os.path.join(output_folder, f"{rosbag_base_name}_{data_type}_results.csv")
+    # Construct the model filename based on the parameters
+    suffix = ""
+    if use_kfold and use_sparse:
+        suffix = "_k_s"
+    elif use_kfold:
+        suffix = "_k"
+    elif use_sparse:
+        suffix = "_s"
+
+    # Combine the output path and model name
+    model_filename = os.path.join(model_output_path, f"{rosbag_base_name}_{data_type}{suffix}_model.pkl")
+    results_csv = os.path.join(output_folder, f"{rosbag_base_name}_{data_type}{suffix}_results.csv")
 
     # Load the test data
     rospy.loginfo(f"Loading {data_type} test data from {test_csv}")
@@ -111,6 +121,15 @@ def gp_test_node():
     # Make predictions on the test data
     rospy.loginfo(f"Making predictions on the {data_type} test dataset...")
     Y_pred, Y_var = predict_with_gp(gp_model, X_test)
+
+        # Calculate the test metrics
+    mse = mean_squared_error(Y_test, Y_pred)
+    rmse = np.sqrt(mse)  # Root Mean Squared Error
+    mae = mean_absolute_error(Y_test, Y_pred)
+    r2 = r2_score(Y_test, Y_pred)
+
+    # Print the test metrics in the terminal
+    rospy.loginfo(f"Test Metrics: MSE={mse}, RMSE={rmse}, MAE={mae}, R^2={r2}")
 
     # Save the actual vs predicted results to a CSV file
     rospy.loginfo(f"Saving predictions and actual values to {results_csv}")

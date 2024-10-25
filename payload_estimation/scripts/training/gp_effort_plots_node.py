@@ -17,7 +17,7 @@ def handle_close(evt):
     rospy.loginfo("Plot window closed.")
     plot_windows_open = False
 
-def plot_efforts(data):
+def plot_efforts(data, save_path):
     fig, axs = plt.subplots(6, 1, figsize=(10, 18))
     fig.canvas.mpl_connect('close_event', handle_close)
     
@@ -33,8 +33,9 @@ def plot_efforts(data):
 
     plt.tight_layout()
     plt.pause(0.001)
+    plt.savefig(save_path)  # Save plot as PNG
 
-def plot_effort_error_distribution(data):
+def plot_effort_error_distribution(data, save_path):
     data['Error Effort Joint 1'] = data['Actual Effort Joint 1'] - data['Predicted Effort Joint 1']
     data['Error Effort Joint 2'] = data['Actual Effort Joint 2'] - data['Predicted Effort Joint 2']
     data['Error Effort Joint 3'] = data['Actual Effort Joint 3'] - data['Predicted Effort Joint 3']
@@ -57,8 +58,9 @@ def plot_effort_error_distribution(data):
 
     plt.tight_layout()
     plt.pause(0.001)
+    plt.savefig(save_path)  # Save plot as PNG
 
-def plot_effort_mse(data):
+def plot_effort_mse(data, save_path):
     mse_values = [mean_squared_error(data[f'Actual Effort Joint {i+1}'], data[f'Predicted Effort Joint {i+1}']) for i in range(6)]
     joints = [f'Joint {i+1}' for i in range(6)]
 
@@ -70,6 +72,7 @@ def plot_effort_mse(data):
     plt.ylabel('MSE')
 
     plt.pause(0.001)
+    plt.savefig(save_path)  # Save plot as PNG
 
 def main():
     # Initialize the ROS node
@@ -84,20 +87,36 @@ def main():
 
     rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
     rosbag_base_name = os.path.splitext(rosbag_name)[0]
+    
+    # Get K-Fold and sparse parameters
     use_kfold = rospy.get_param('/rosparam/use_kfold', False)  # Default is False
+    use_sparse = rospy.get_param('/rosparam/use_sparse', False)  # Default is False
 
-    if use_kfold:
-        file_path = f'/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/{data_type}/{rosbag_base_name}_{data_type}_k_results.csv'
-    else:
-        file_path = f'/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/{data_type}/{rosbag_base_name}_{data_type}_results.csv'
+    # Determine the correct file suffix based on the parameters
+    suffix = ""
+    if use_kfold and use_sparse:
+        suffix = "_k_s"
+    elif use_kfold:
+        suffix = "_k"
+    elif use_sparse:
+        suffix = "_s"
+
+    # Construct the full file path
+    file_path = f'/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/{data_type}/{rosbag_base_name}_{data_type}{suffix}_results.csv'
 
     # Load data
     data = pd.read_csv(file_path)
     
-    # Plot functions
-    plot_efforts(data)
-    plot_effort_error_distribution(data)
-    plot_effort_mse(data)
+    # Define save paths for the plots
+    base_save_path = os.path.dirname(file_path)
+    effort_plot_path = os.path.join(base_save_path, f"{rosbag_base_name}_{data_type}{suffix}_effort.png")
+    error_plot_path = os.path.join(base_save_path, f"{rosbag_base_name}_{data_type}{suffix}_error.png")
+    mse_plot_path = os.path.join(base_save_path, f"{rosbag_base_name}_{data_type}{suffix}_mse.png")
+
+    # Plot functions and save the plots
+    plot_efforts(data, effort_plot_path)
+    plot_effort_error_distribution(data, error_plot_path)
+    plot_effort_mse(data, mse_plot_path)
 
     global plot_windows_open
     plot_windows_open = True
