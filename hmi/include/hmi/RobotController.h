@@ -14,67 +14,87 @@
 #include <mutex>
 #include <condition_variable>
 
-// RobotController class handles robot movement operations
+struct ActionParams {
+    std::string pose = "";
+    std::string gripper_position = "";
+    int num_moves = 0;
+    double max_velocity_scaling = 1.0;
+    double max_acceleration_scaling = 1.0;
+    double offScale_x = 0.0;
+    double offScale_y = 0.0;
+    double offScale_z = 0.0;
+    bool sampling = false;
+    bool sample_goal = false;
+    bool cartesian = false;
+    bool setOrientation = false;
+    double dx = 0.0;
+    double dy = 0.0;
+    double dz = 0.0;
+    int speed = 100;
+    bool move_plane = false;
+    bool xy_plane = false;
+    bool xz_plane = false;
+    bool yz_plane = false;
+};
+
+
 class RobotController {
 public:
-    // Constructor
     RobotController(ros::NodeHandle& N, const std::string& planning_group);
-    // Destructor
     ~RobotController();
 
-    // Method for Cartesian movement
-    void moveCartesian(double dx, double dy, double dz, int speed);
+    // Enum for action types
+    enum ActionType {
+        EXEC_CARTESIAN,
+        EXEC_RANDOM,
+        EXEC_PREDEF,
+        MOVE_CARTESIAN,
+        MOVE_GRIPPER
+    };
 
-    void execPreDef(const std::string &pose, double max_velocity_scaling, double max_acceleration_scaling);
-    
-    //deprecated
-    void moveRandom(int num_moves, int max_valid_attempts, double max_velocity_scaling, 
-        double max_acceleration_scaling, int planning_attempts, double planning_time);
-    
-    void executeJerkTrajectory(int num_moves, double max_velocity_scaling, double max_acceleration_scaling, 
-        double offScale_x, double offScale_y, double offScale_z);
+    void updateAction(ActionType action, const ActionParams& params);
 
-    void executeCartesianJerkTrajectory(int num_moves, double max_velocity_scaling, double max_acceleration_scaling,
-        double offScale_x, double offScale_y, double offScale_z, bool sampling);
-
-    bool isTrajectoryTimeIncreasing(moveit_msgs::RobotTrajectory &trajectory);
-
-    void controlGripper(const std::string &position, double speed);
-
-    //thread handling methods;
-    void startJerkTrajectory(int num_moves, double max_velocity_scaling, double max_acceleration_scaling,
-        double offScale_x, double offScale_y, double offScale_z);
-
-    void stopJerkTrajectory();
-
-    void startCartesian(int num_moves, double max_velocity_scaling, double max_acceleration_scaling,
-        double offScale_x, double offScale_y, double offScale_z, bool sampling);
-
-    void stopCartesian();
-
-    void startRandomMove(int num_moves, int max_valid_attempts, double max_velocity_scaling,
-        double max_acceleration_scaling, int planning_attempts, double planning_time);
-    
-    void stopRandomMove();
-
-    // Function to dynamically set the planning group
-    void setPlanningGroup(const std::string& group_name);
-   
 private:
+        
+    ActionParams current_params;
+
+    // Worker method to manage different actions
+    void workerMethod();
+
+    // Helper methods for movement and trajectory planning
+    void setPlanningGroup(const std::string& group_name);
+    std::pair<double, double> setScalingValues();
+    void setGoalTarget(geometry_msgs::Pose& target_pose);
+    void setRandomOrientation(geometry_msgs::Pose& target_pose);
+    bool isTrajectoryTimeIncreasing(moveit_msgs::RobotTrajectory &trajectory);
+    bool computeCartesianPath(std::vector<geometry_msgs::Pose>& waypoints, moveit_msgs::RobotTrajectory& trajectory_msg);
+    void planExecute(const moveit_msgs::RobotTrajectory& trajectory_msg, int trajectory_number);
+    void moveInPlane(geometry_msgs::Pose& target_pose);
+
+    // Core movement methods
+    bool execCartesian();
+
+    bool execRandom();
+
+    bool moveCartesian();
+
+    bool execPreDef();
+    
+    bool controlGripper();
+
+    // ROS NodeHandle and MoveIt interfaces
     ros::NodeHandle nh;
     moveit::planning_interface::MoveGroupInterface move_group_interface;
     std::string current_planning_group_;
 
-
-    //thread handling variables
+    // Threading and control flags
     std::mutex move_group_mutex;
-    std::thread jerk_thread;
-    std::thread random_move_thread;
-    std::thread cartesian_thread;
-
-    std::atomic<bool> jerk_running;
+    std::thread worker_thread;
+    std::atomic<bool> worker_running;
+    std::atomic<ActionType> current_action;
+    std::atomic<bool> action_ready;
     std::atomic<bool> random_move_running;
     std::atomic<bool> cartesian_running; 
 };
 
-#endif // ROBOT_CONTROLLER_H
+#endif  // ROBOT_CONTROLLER_H

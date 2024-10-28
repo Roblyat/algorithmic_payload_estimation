@@ -99,34 +99,71 @@ int main(int argc, char** argv) {
     ros::AsyncSpinner spinner(1);
     spinner.start();
     // Create instances of RobotController and Plotting classes
+    ActionParams params;
     RobotController robot_controller(nh, "manipulator");
+    RobotController::ActionType action_type;
+    bool start_action = false;
+
     Terminal terminal(nh);
 
     ///////////////////////
     // Robot Control Tab //
     ///////////////////////
-    //step size control robot cartesian movement
+
+    // Step size control for Cartesian movement
     int speed = 100;
-    // List of predefined poses
+    static double dx = 0.0;
+    static double dy = 0.0;
+    static double dz = 0.0;
+
+    // List of predefined poses and control variables
     const char* poses[] = { "Init", "home", "up", "parallel" };
-    static int current_pose_index = 0;
-    // List of gripper positions
+    static int current_pose_index = 0;  // Index for the selected pose
+    const std::string selected_pose = poses[current_pose_index];
+
+    // Gripper position control options and variables
     const char* gripper_positions[] = { "open", "closed" };
-    static int current_gripper_index = 0;
-    static float gripper_speed = 0.5;  // Default speed (between 0 and 1)
-    //randomMove method parameters
-    static int max_random_valid_attempts = 5;  // Default value
-    static double moveit_planning_time = 5.0;  // Default value
-    static int moveit_planning_attempts = 10;  // Default value
-    //randomMove and executeJerkTrajectory parameters
-    static int random_moves_amount = 5;  // Default value
-    static double max_velocity_scaling = 0.4;  // Default value
-    static double max_acceleration_scaling = 0.4;  // Default value
-    //executeJerkTrajectory parameters
-    static double offScale_x = 0.1;
-    static double offScale_y = 0.1;
-    static double offScale_z = 0.1;
-    static bool use_sampling = false;  // Default checkbox state
+    static int current_gripper_index = 0;  // Index for the gripper position
+    const std::string selected_gripper_position = gripper_positions[current_gripper_index];
+    static float gripper_speed = 0.5;  // Default gripper speed (range 0 to 1)
+
+    // Parameters for random move and executeJerkTrajectory
+    static int random_moves_amount = 5;  // Number of random moves
+    static double max_velocity_scaling = 0.3;  // Velocity scaling factor
+    static double max_acceleration_scaling = 0.5;  // Acceleration scaling factor
+
+    // Execute Jerk Trajectory specific offsets and flags
+    static double offScale_x = 0.4;
+    static double offScale_y = 0.4;
+    static double offScale_z = 0.4;
+    static bool use_sampling = false;
+    static bool cartesian = false;
+    static bool set_orientation = false;
+    static bool sample_goal = false;
+    static bool xy_plane = false;
+    static bool xz_plane = false;
+    static bool yz_plane = false;
+
+    // Initialize ActionParams with default values
+    params.pose = selected_pose;
+    params.gripper_position = selected_gripper_position;
+    params.num_moves = random_moves_amount;
+    params.max_velocity_scaling = max_velocity_scaling;
+    params.max_acceleration_scaling = max_acceleration_scaling;
+    params.offScale_x = offScale_x;
+    params.offScale_y = offScale_y;
+    params.offScale_z = offScale_z;
+    params.sampling = use_sampling;
+    params.cartesian = cartesian;
+    params.setOrientation = set_orientation;
+    params.dx = dx;
+    params.dy = dy;
+    params.dz = dz;
+    params.speed = speed;
+    params.xy_plane = xy_plane;
+    params.xz_plane = xz_plane;
+    params.yz_plane = yz_plane;
+
 
     ////////////////////
     //  Terminal Tab  //
@@ -154,7 +191,7 @@ int main(int argc, char** argv) {
 
 
     //move buttons as block
-    int y_bRand = 200;
+    int y_bRand = 260;
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
@@ -179,29 +216,77 @@ int main(int argc, char** argv) {
 
                 ImGui::Text("Use buttons to move the robot.");  // Informational text
 
-                ///////////////////////////
-                // Cartesian movement UI //
-                ///////////////////////////
-                // X-axis buttons (X+ and X-)
-                ImGui::SetCursorPosX(50);
-                if (ImGui::Button("X+", ImVec2(50.0f, 50.0f))) robot_controller.moveCartesian(1, 0, 0, speed);
-                ImGui::SameLine();
-                ImGui::SetCursorPosX(120);
-                if (ImGui::Button("X-", ImVec2(50.0f, 50.0f))) robot_controller.moveCartesian(-1, 0, 0, speed);
+            ///////////////////////////
+            // Cartesian movement UI //
+            ///////////////////////////
 
-                // Y-axis buttons (Y+ and Y-)
-                ImGui::SetCursorPosX(50);
-                if (ImGui::Button("Y+", ImVec2(50.0f, 50.0f))) robot_controller.moveCartesian(0, 1, 0, speed);
-                ImGui::SameLine();
-                ImGui::SetCursorPosX(120);
-                if (ImGui::Button("Y-", ImVec2(50.0f, 50.0f))) robot_controller.moveCartesian(0, -1, 0, speed);
+            // X-axis buttons (X+ and X-)
 
-                // Z-axis buttons (Z+ and Z-)
-                ImGui::SetCursorPosX(50);
-                if (ImGui::Button("Z+", ImVec2(50.0f, 50.0f))) robot_controller.moveCartesian(0, 0, 1, speed);
-                ImGui::SameLine();
-                ImGui::SetCursorPosX(120);
-                if (ImGui::Button("Z-", ImVec2(50.0f, 50.0f))) robot_controller.moveCartesian(0, 0, -1, speed);
+            ImGui::SetCursorPosX(50);
+            if (ImGui::Button("X+", ImVec2(50.0f, 50.0f))) {
+                action_type = RobotController::MOVE_CARTESIAN;
+                params.dx = 1.0;
+                params.dy = 0.0;
+                params.dz = 0.0;
+                params.speed = speed;  // Use any defined speed or default
+                robot_controller.updateAction(action_type, params);
+            }
+
+            ImGui::SameLine();
+            ImGui::SetCursorPosX(120);
+            if (ImGui::Button("X-", ImVec2(50.0f, 50.0f))) {
+                action_type = RobotController::MOVE_CARTESIAN;
+                params.dx = -1.0;
+                params.dy = 0.0;
+                params.dz = 0.0;
+                params.speed = speed;
+                robot_controller.updateAction(action_type, params);
+            }
+
+            // Y-axis buttons (Y+ and Y-)
+            ImGui::SetCursorPosX(50);
+            if (ImGui::Button("Y+", ImVec2(50.0f, 50.0f))) {
+                action_type = RobotController::MOVE_CARTESIAN;
+                params.dx = 0.0;
+                params.dy = 1.0;
+                params.dz = 0.0;
+                params.speed = speed;
+                robot_controller.updateAction(action_type, params);
+            }
+
+            ImGui::SameLine();
+            ImGui::SetCursorPosX(120);
+            if (ImGui::Button("Y-", ImVec2(50.0f, 50.0f))) {
+                action_type = RobotController::MOVE_CARTESIAN;
+                params.dx = 0.0;
+                params.dy = -1.0;
+                params.dz = 0.0;
+                params.speed = speed;
+                robot_controller.updateAction(action_type, params);
+            }
+
+            // Z-axis buttons (Z+ and Z-)
+            ImGui::SetCursorPosX(50);
+            if (ImGui::Button("Z+", ImVec2(50.0f, 50.0f))) {
+                action_type = RobotController::MOVE_CARTESIAN;
+                params.dx = 0.0;
+                params.dy = 0.0;
+                params.dz = 1.0;
+                params.speed = speed;
+                robot_controller.updateAction(action_type, params);
+            }
+
+            ImGui::SameLine();
+            ImGui::SetCursorPosX(120);
+            if (ImGui::Button("Z-", ImVec2(50.0f, 50.0f))) {
+                action_type = RobotController::MOVE_CARTESIAN;
+                params.dx = 0.0;
+                params.dy = 0.0;
+                params.dz = -1.0;
+                params.speed = speed;
+                robot_controller.updateAction(action_type, params);
+            }
+
 
                 ////////////////////////////////
                 // Cartesian Speed control UI //
@@ -216,21 +301,21 @@ int main(int argc, char** argv) {
                 ///////////////////
                 // Predefined UI //
                 ///////////////////
-                ImGui::SetCursorPos(ImVec2(50, 310));  // Adjust position as per layout
+                ImGui::SetCursorPos(ImVec2(50, 310));
                 ImGui::Text("Select Pose:");
                 ImGui::SetCursorPos(ImVec2(50, 330));
-                ImGui::PushItemWidth(120);  // Compact width for drop-down
+                ImGui::PushItemWidth(120);
                 if (ImGui::Combo("##pose_select", &current_pose_index, poses, IM_ARRAYSIZE(poses))) {
-                    // Pose selected
+                    params.pose = poses[current_pose_index];  // Set pose from the selected combo box
                 }
                 ImGui::PopItemWidth();
 
-                // Move Button for Predefined Pose
+                // Button for predefined pose movement
                 ImGui::SetCursorPos(ImVec2(50, 370));
-                if (ImGui::Button("Move PreDef", ImVec2(100.0f, 40.0f))) {  // Increased width of button for better appearance
-                    std::string selected_pose = poses[current_pose_index];  // Get the selected pose
-                    robot_controller.execPreDef(selected_pose, max_velocity_scaling, max_acceleration_scaling);
-                }
+                if (ImGui::Button("Move PreDef", ImVec2(100.0f, 40.0f))) {
+                    action_type = RobotController::EXEC_PREDEF;
+                    robot_controller.updateAction(action_type, params);  // Use the updated pose value
+                }   
                 
                 ////////////////////
                 // Random Pose UI //
@@ -242,123 +327,138 @@ int main(int argc, char** argv) {
                 ImGui::SetCursorPos(ImVec2(50, 440));
                 ImGui::PushItemWidth(100);  // Set width for the input box
                 ImGui::InputInt("Moves to Execute", &random_moves_amount);
+                params.num_moves = random_moves_amount;  // Update the number of moves
                 ImGui::PopItemWidth();  // Reset width
-
-                // Input box for max planning attempts (how often to retry planning)
-                ImGui::SetCursorPos(ImVec2(50, 470));
-                ImGui::PushItemWidth(100);  // Set width for the input box
-                ImGui::InputInt("Max RandValid Attempts", &max_random_valid_attempts);
-                ImGui::PopItemWidth();  // Reset width
-
-                // Ensure the input value for planning attempts is at least 1
 
                 // Input box for max velocity scaling
                 ImGui::SetCursorPos(ImVec2(350, 530 - y_bRand));
                 ImGui::PushItemWidth(100);  // Set width for the input box
                 ImGui::InputDouble("Max Vel Scale", &max_velocity_scaling, 0.01, 0.1, "%.2f");
+                params.max_velocity_scaling = max_velocity_scaling;  // Update the velocity scaling
                 ImGui::PopItemWidth();  // Reset width
 
                 // Input box for max acceleration scaling
                 ImGui::SetCursorPos(ImVec2(350, 560 - y_bRand));
                 ImGui::PushItemWidth(100);  // Set width for the input box
                 ImGui::InputDouble("Max Acc Scale", &max_acceleration_scaling, 0.01, 0.1, "%.2f");
-                ImGui::PopItemWidth();  // Reset width
-
-                // Input box for max planning_time
-                ImGui::SetCursorPos(ImVec2(350, 590 - y_bRand));
-                ImGui::PushItemWidth(100);  // Set width for the input box
-                ImGui::InputDouble("Planning Time (s)", &moveit_planning_time, 0.1, 0.5, "%.1f");
-                ImGui::PopItemWidth();  // Reset width
-                // Ensure the input value for planning time is at least 1
-
-                // Input box for number of planning attempts per move
-                ImGui::SetCursorPos(ImVec2(350, 620 - y_bRand));
-                ImGui::PushItemWidth(100);  // Set width for the input box
-                ImGui::InputInt("Planning Attempts", &moveit_planning_attempts);
+                params.max_acceleration_scaling = max_acceleration_scaling;  // Update the acceleration scaling
                 ImGui::PopItemWidth();  // Reset width
 
                 // Input box for offScale_x
                 ImGui::SetCursorPos(ImVec2(350, 650 - y_bRand));
                 ImGui::PushItemWidth(100);  // Set width for the input box
                 ImGui::InputDouble("offScale_x", &offScale_x);
+                params.offScale_x = offScale_x;  // Update the offset scale for X
                 ImGui::PopItemWidth();  // Reset width
 
                 // Input box for offScale_y
                 ImGui::SetCursorPos(ImVec2(350, 680 - y_bRand));
                 ImGui::PushItemWidth(100);  // Set width for the input box
                 ImGui::InputDouble("offScale_y", &offScale_y);
+                params.offScale_y = offScale_y;  // Update the offset scale for Y
                 ImGui::PopItemWidth();  // Reset width
 
                 // Input box for offScale_y
                 ImGui::SetCursorPos(ImVec2(350, 710 - y_bRand));
                 ImGui::PushItemWidth(100);  // Set width for the input box
                 ImGui::InputDouble("offScale_z", &offScale_z);
+                params.offScale_z = offScale_z;  // Update the offset scale for Z
                 ImGui::PopItemWidth();  // Reset width
 
                 // Checkbox to enable sampling
                 ImGui::SetCursorPos(ImVec2(350, 740 - y_bRand));  // Adjust y to control spacing
                 if (ImGui::Checkbox("Use sampling", &use_sampling)) {
+                    params.sampling = use_sampling;  // Update the sampling flag
                     terminal.setRosParam("~use_sampling", use_sampling ? "true" : "false");  // Set the ROS parameter based on checkbox
                 }
 
+                ImGui::SetCursorPos(ImVec2(350, 770 - y_bRand));  // Adjust y to control spacing
+                if (ImGui::Checkbox("Use cartesian", &cartesian)) {
+                    params.cartesian = cartesian;  // Update the cartesian flag
+                    terminal.setRosParam("~cartesian", cartesian ? "true" : "false");  // Set the ROS parameter based on checkbox
+                }
+
+                ImGui::SetCursorPos(ImVec2(350, 800 - y_bRand));  // Adjust y to control spacing
+                if (ImGui::Checkbox("Set Orientation", &set_orientation)) {
+                    params.setOrientation = set_orientation;  // Update the set orientation flag
+                    terminal.setRosParam("~set_orientation", set_orientation ? "true" : "false");  // Set the ROS parameter based on checkbox
+                }
+
+                ImGui::SetCursorPos(ImVec2(350, 830 - y_bRand));  // Adjust y to control spacing
+                if (ImGui::Checkbox("Sample Goal", &sample_goal)) {
+                    params.sample_goal = sample_goal;  // Update the sample goal flag
+                    terminal.setRosParam("~sample_goal", sample_goal ? "true" : "false");  // Set the ROS parameter based on checkbox
+                }
+
+                // Plane selection checkboxes in ImGui
+                ImGui::SetCursorPos(ImVec2(350, 860 - y_bRand));
+                if (ImGui::Checkbox("XY", &xy_plane)) {
+                    // If XY is selected, disable XZ and YZ
+                    if (xy_plane) {
+                        xz_plane = false;
+                        yz_plane = false;
+                    }
+                    // Set the ROS parameter if needed and update params
+                    params.xy_plane = xy_plane;
+                    params.xz_plane = xz_plane;
+                    params.yz_plane = yz_plane;
+                }
+
+                ImGui::SameLine();
+                if (ImGui::Checkbox("XZ", &xz_plane)) {
+                    // If XZ is selected, disable XY and YZ
+                    if (xz_plane) {
+                        xy_plane = false;
+                        yz_plane = false;
+                    }
+                    // Set the ROS parameter if needed and update params
+                    params.xy_plane = xy_plane;
+                    params.xz_plane = xz_plane;
+                    params.yz_plane = yz_plane;
+                }
+
+                ImGui::SameLine();
+                if (ImGui::Checkbox("YZ", &yz_plane)) {
+                    // If YZ is selected, disable XY and XZ
+                    if (yz_plane) {
+                        xy_plane = false;
+                        xz_plane = false;
+                    }
+                    // Set the ROS parameter if needed and update params                
+                    params.xy_plane = xy_plane;
+                    params.xz_plane = xz_plane;
+                    params.yz_plane = yz_plane;
+                }
+
+
                 // Button to execute the random moves
-                ImGui::SetCursorPos(ImVec2(350, 300 - y_bRand));  // Moved to the right side of the Random Pose settings
                 if (ImGui::Button("Move Random", ImVec2(120.0f, 40.0f))) {
-                    robot_controller.startRandomMove(random_moves_amount, max_random_valid_attempts, max_velocity_scaling, max_acceleration_scaling, 
-                                                        moveit_planning_attempts, moveit_planning_time);
+                    robot_controller.updateAction(RobotController::EXEC_RANDOM, params);
                 }
 
-                // Button to stop random move
-                ImGui::SetCursorPos(ImVec2(350, 360 - y_bRand));
-                if (ImGui::Button("Stop Random", ImVec2(120.0f, 40.0f))) {
-                    robot_controller.stopRandomMove();
-                }
-
-
-                // Button to execute the jerk trajectory
-                ImGui::SetCursorPos(ImVec2(350, 420 - y_bRand));  // Moved to the right side of the Random Pose settings
                 if (ImGui::Button("Move Jerk", ImVec2(120.0f, 40.0f))) {
-                    robot_controller.startCartesian(random_moves_amount, max_velocity_scaling, max_acceleration_scaling, offScale_x, offScale_y, offScale_z, use_sampling);
-                }
-
-                // Button to stop jerk trajectory
-                ImGui::SetCursorPos(ImVec2(350, 480 - y_bRand));
-                if (ImGui::Button("Stop Jerk", ImVec2(120.0f, 40.0f))) {
-                    robot_controller.stopCartesian();
-                }
-                                
+                    robot_controller.updateAction(RobotController::EXEC_CARTESIAN, params);
+                }                           
 
                 ///////////////////////////
                 // Gripper Control UI    //
                 ///////////////////////////
-                // Gripper position control dropdown
-                ImGui::SetCursorPos(ImVec2(50, 510));  // Adjust position as per layout
                 ImGui::Text("Gripper Control:");
-                ImGui::SetCursorPos(ImVec2(50, 530));  // Dropdown below the label
-                ImGui::PushItemWidth(120);  // Compact width for drop-down
+                ImGui::PushItemWidth(120);
                 if (ImGui::Combo("##gripper_select", &current_gripper_index, gripper_positions, IM_ARRAYSIZE(gripper_positions))) {
-                    // Gripper position selected
+                    params.gripper_position = gripper_positions[current_gripper_index];  // Set gripper position
                 }
-                ImGui::PopItemWidth();  // Reset width
+                ImGui::PopItemWidth();
 
-                ///////////////////////////
-                // Gripper Speed Control //
-                ///////////////////////////
-                // Gripper speed control slider
-                ImGui::SetCursorPos(ImVec2(50, 570));  // Adjust position after the dropdown
-                ImGui::Text("Gripper Speed:");
-                ImGui::SetCursorPos(ImVec2(50, 590));  // Slider below the text
-                ImGui::PushItemWidth(150);  // Set slider width
-                ImGui::SliderFloat("##gripper_speed_slider", &gripper_speed, 0.1f, 1.0f, "%.2f");  // Slider for speed control
-                ImGui::PopItemWidth();  // Reset width
+                if (ImGui::SliderFloat("Gripper Speed", &gripper_speed, 0.0f, 1.0f, "%.1f")) {
+                    params.speed = static_cast<int>(gripper_speed * 100);  // Set gripper speed
+                }
 
-                // Button to move the gripper with the selected speed
-                ImGui::SetCursorPos(ImVec2(50, 620));  // Button position adjusted
+                // Button for controlling gripper
                 if (ImGui::Button("Move Gripper", ImVec2(120.0f, 40.0f))) {
-                    std::string selected_gripper_position = gripper_positions[current_gripper_index];  // Get the selected gripper position
-                    robot_controller.controlGripper(selected_gripper_position, gripper_speed);  // Call the method to move the gripper with speed control
+                    action_type = RobotController::MOVE_GRIPPER;
+                    robot_controller.updateAction(action_type, params);  // Use updated gripper parameters
                 }
-                ///////////////////////////
 
                 ImGui::EndTabItem();  // End of Robot Control Tab
             }

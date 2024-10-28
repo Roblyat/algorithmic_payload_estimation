@@ -1,17 +1,18 @@
 #include "ftExtractor.h"
 #include <ros/ros.h>
-#include <geometry_msgs/Wrench.h>
+#include <geometry_msgs/WrenchStamped.h>
 #include <fstream>
+#include <message_filters/subscriber.h>
+#include <message_filters/time_synchronizer.h>
 
 ftExtractor::ftExtractor(ros::NodeHandle& nh)
-: wrench_received_(false), predicted_wrench_received_(false)
+    : wrench_sub_(nh, "/wrench", 1000), predicted_wrench_sub_(nh, "/predicted_wrench", 1000), sync_(wrench_sub_, predicted_wrench_sub_, 1000)
 {
-    // Subscribe to /wrench and /predicted_wrench topics
-    wrench_sub_ = nh.subscribe("/wrench", 1, &ftExtractor::wrenchCallback, this);
-    predicted_wrench_sub_ = nh.subscribe("/predicted_wrench", 1, &ftExtractor::predictedWrenchCallback, this);
+    // Register synchronized callback
+    sync_.registerCallback(boost::bind(&ftExtractor::synchronizedCallback, this, _1, _2));
 
-    // Optionally, you can advertise a topic to publish the difference result
-    difference_pub_ = nh.advertise<geometry_msgs::Wrench>("/wrench_difference", 1);
+    // Publisher for difference topic
+    difference_pub_ = nh.advertise<geometry_msgs::WrenchStamped>("/wrench_difference", 1);
 
     // Get the rosbag name parameter from the server
     std::string rosbag_name = ros::param::param<std::string>("/rosparam/rosbag_name", "recorded_data.bag");
@@ -33,53 +34,46 @@ ftExtractor::~ftExtractor() {
     }
 }
 
-void ftExtractor::wrenchCallback(const geometry_msgs::Wrench::ConstPtr& msg)
+void ftExtractor::synchronizedCallback(const geometry_msgs::WrenchStamped::ConstPtr& wrench_msg,
+                                       const geometry_msgs::WrenchStamped::ConstPtr& predicted_wrench_msg)
 {
-    wrench_ = *msg;
-    wrench_received_ = true;
+    wrench_ = *wrench_msg;
+    predicted_wrench_ = *predicted_wrench_msg;
 
-    // Check if both messages are received before computing the difference
-    if (predicted_wrench_received_)
-    {
-        computeDifference();
-    }
-}
+    // Debug: Print received wrench messages
+    // ROS_INFO_STREAM("Received /wrench message:\n" << *wrench_msg);
+    // ROS_INFO_STREAM("Received /predicted_wrench message:\n" << *predicted_wrench_msg);
 
-void ftExtractor::predictedWrenchCallback(const geometry_msgs::Wrench::ConstPtr& msg)
-{
-    predicted_wrench_ = *msg;
-    predicted_wrench_received_ = true;
-
-    // Check if both messages are received before computing the difference
-    if (wrench_received_)
-    {
-        computeDifference();
-    }
+    computeDifference();
 }
 
 void ftExtractor::computeDifference()
 {
-    // Subtract predicted wrench from wrench
-    geometry_msgs::Wrench difference;
-    difference.force.x = wrench_.force.x - predicted_wrench_.force.x;
-    difference.force.y = wrench_.force.y - predicted_wrench_.force.y;
-    difference.force.z = wrench_.force.z - predicted_wrench_.force.z;
-    difference.torque.x = wrench_.torque.x - predicted_wrench_.torque.x;
-    difference.torque.y = wrench_.torque.y - predicted_wrench_.torque.y;
-    difference.torque.z = wrench_.torque.z - predicted_wrench_.torque.z;
+    try {
+        // Calculate the difference between wrench and predicted wrench
+        geometry_msgs::WrenchStamped difference_msg;
+        difference_msg.header.stamp = ros::Time::now();
+        difference_msg.header.frame_id = wrench_.header.frame_id;  // Optional: use the same frame
 
-    // Publish the difference (optional)
-    difference_pub_.publish(difference);
+        difference_msg.wrench.force.x = wrench_.wrench.force.x - predicted_wrench_.wrench.force.x;
+        difference_msg.wrench.force.y = wrench_.wrench.force.y - predicted_wrench_.wrench.force.y;
+        difference_msg.wrench.force.z = wrench_.wrench.force.z - predicted_wrench_.wrench.force.z;
+        difference_msg.wrench.torque.x = wrench_.wrench.torque.x - predicted_wrench_.wrench.torque.x;
+        difference_msg.wrench.torque.y = wrench_.wrench.torque.y - predicted_wrench_.wrench.torque.y;
+        difference_msg.wrench.torque.z = wrench_.wrench.torque.z - predicted_wrench_.wrench.torque.z;
 
-    // Log the error data to a file
-    if (outfile_.is_open()) {
-        outfile_ << difference.force.x << "," << difference.force.y << "," << difference.force.z << ","
-                 << difference.torque.x << "," << difference.torque.y << "," << difference.torque.z << "\n";
-    } else {
-        ROS_ERROR("Unable to open file for writing");
+        // Publish the difference
+        difference_pub_.publish(difference_msg);
+
+        // Log the error data to a file
+        if (outfile_.is_open()) {
+            outfile_ << difference_msg.wrench.force.x << "," << difference_msg.wrench.force.y << "," << difference_msg.wrench.force.z << ","
+                     << difference_msg.wrench.torque.x << "," << difference_msg.wrench.torque.y << "," << difference_msg.wrench.torque.z << "\n";
+        } else {
+            ROS_ERROR("Unable to open file for writing");
+        }
+
+    } catch (const ros::serialization::StreamOverrunException& e) {
+        ROS_ERROR("Stream Overrun Exception in computeDifference: %s", e.what());
     }
-
-    // Optionally reset flags after computation
-    wrench_received_ = false;
-    predicted_wrench_received_ = false;
 }

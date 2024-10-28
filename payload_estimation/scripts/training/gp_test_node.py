@@ -7,6 +7,7 @@ import pickle
 import os
 import GPy
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+import json
 
 def load_test_data(test_csv, data_type):
     """
@@ -25,15 +26,11 @@ def load_gp_model(model_filename):
     """
     Load the trained GP model using pickle.
     """
-    try:
-        rospy.loginfo(f"Loading GP model from {model_filename}")
-        with open(model_filename, 'rb') as file:
-            gp_model = pickle.load(file)
-        rospy.loginfo("GP model loaded successfully.")
-        return gp_model
-    except Exception as e:
-        rospy.logerr(f"Failed to load model from {model_filename}: {str(e)}")
-        return None
+    rospy.loginfo(f"Loading GP model from {model_filename}")
+    with open(model_filename, 'rb') as file:
+        gp_model = pickle.load(file)
+
+    return gp_model
 
 
 def predict_with_gp(gp_model, X_test):

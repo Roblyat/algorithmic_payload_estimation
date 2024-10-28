@@ -533,7 +533,7 @@ void Terminal::stopEffortPlot() {
 }
 
 //////////////////////////
-// Wrench Effort Code //
+// Plotting Wrench Code //
 //////////////////////////
 
 void Terminal::gpWrenchPlotWorker() {

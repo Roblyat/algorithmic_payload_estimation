@@ -17,8 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
-
+find_package(catkin REQUIRED COMPONENTS message_filters)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -208,7 +207,7 @@ include_directories(
 # catkin_add_nosetests(test)
 
 # Add the executable for your node
-add_executable(ft_extractor src/ft_extract.cpp include/payload_estimation/ftExtractor.cpp)
+add_executable(ft_extractor src/ft_extractor.cpp include/payload_estimation/ftExtractor.cpp)
 
 # Link against ROS and any other required libraries
 target_link_libraries(ft_extractor ${catkin_LIBRARIES})

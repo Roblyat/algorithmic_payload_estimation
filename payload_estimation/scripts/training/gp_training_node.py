@@ -69,7 +69,7 @@ def train_gp_model(X, Y, kernel=None, model_filename=""):
 
     # Add multiple restarts for better optimization
     rospy.loginfo("Optimizing with multiple restarts...")
-    gp_model.optimize_restarts(num_restarts=10, verbose=True)
+    
 
     # Capture model and kernel print output
     model_info = f"Optimized GP model structure:\n{gp_model}\n\nKernel structure:\n{gp_model.kern}"

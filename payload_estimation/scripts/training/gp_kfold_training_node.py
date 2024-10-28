@@ -42,8 +42,8 @@ def train_gp_model(X_train, Y_train, X_test, Y_test, kernel, use_sparse, model_f
     """
     # Create the GP regression model
     if use_sparse:
-        inducing_points = X_train[np.random.choice(X_train.shape[0], min(500, X_train.shape[0]), replace=False)]
-        gp_model = GPy.models.SparseGPRegression(X_train, Y_train, kernel, Z=inducing_points)
+        inducing_points = rospy.get_param('/rosparam/num_inducing', 2500)   #X_train[np.random.choice(X_train.shape[0], min(500, X_train.shape[0]), replace=False)]
+        gp_model = GPy.models.SparseGPRegression(X_train, Y_train, kernel, num_inducing=inducing_points)    #Z=inducing_points)
         rospy.loginfo("Using sparse GP model...")
     else:
         gp_model = GPy.models.GPRegression(X_train, Y_train, kernel)
@@ -52,7 +52,7 @@ def train_gp_model(X_train, Y_train, X_test, Y_test, kernel, use_sparse, model_f
     rospy.loginfo("Optimizing the GP model...")
     gp_model.optimize(messages=True)
 
-    gp_model.optimize_restarts(num_restarts=10, verbose=True)
+    # gp_model.optimize_restarts(num_restarts=1, verbose=True, max_f_eval=500, max_iters=500)
 
     # Capture model and kernel print output
     model_info = f"Optimized GP model structure:\n{gp_model}\n\nKernel structure:\n{gp_model.kern}"
@@ -108,7 +108,7 @@ def kfold_train_gp_model(X, Y, kernel, use_sparse, k=5):
         rospy.loginfo(f"Training on fold {fold}/{k}...")
         
         # Train GP model on this fold
-        gp_model, mse, rmse, mae, r2 = train_gp_model(X_train, Y_train, X_test, Y_test, kernel, use_sparse)
+        gp_model, mse, rmse, mae, r2 = train_gp_model(X_train, Y_train, X_test, Y_test, kernel, use_sparse, model_filename=f"temp_fold_{fold}_model.txt")
 
         rospy.loginfo(f"Fold {fold} Metrics: MSE={mse}, RMSE={rmse}, MAE={mae}, R^2={r2}")
 
@@ -142,9 +142,12 @@ def save_gp_model(gp_model, model_filename):
     """
     try:
         rospy.loginfo(f"Saving model using pickle to {model_filename}")
+
+        # Save the model with pickle
         with open(model_filename, 'wb') as file:
             pickle.dump(gp_model, file)
         rospy.loginfo(f"GP model saved to {model_filename}")
+
     except Exception as e:
         rospy.logerr(f"Failed to save model to {model_filename}: {str(e)}")
 
@@ -217,10 +220,11 @@ def gp_training_node():
     rospy.loginfo(f"Training Gaussian Process model for {data_type} with K-Fold CV (Sparse: {use_sparse})...")
     best_gp_model = kfold_train_gp_model(X, Y, kernel, use_sparse, k=5)
 
-    # Save the best trained model using pickle
+    # Save the best trained model and K-Fold metrics
     save_gp_model(best_gp_model, full_model_path)
 
-    rospy.loginfo(f"GP training complete. {data_type.capitalize()} model saved at {full_model_path}. Node is shutting down.")
+
+    rospy.loginfo(f"GP training complete. {data_type.capitalize()} model saved at {full_model_path}. Node is shutting down.") 
 
 if __name__ == '__main__':
     try:
