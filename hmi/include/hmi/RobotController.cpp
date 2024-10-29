@@ -50,7 +50,7 @@ void RobotController::updateAction(ActionType action, const ActionParams& params
 }
 
 
-// Updated workerMethod to run continuously
+// workerMethod to run continuously
 void RobotController::workerMethod() {
     while (worker_running) {
         if (action_ready.load()) {
@@ -79,6 +79,13 @@ void RobotController::workerMethod() {
 
                 case MOVE_GRIPPER:
                     action_completed = controlGripper();
+                    break;
+
+                case STOP:
+                    // Immediate stop, breaking out of motion handling.
+                    ROS_INFO("Stopping current action.");
+                    worker_running = false;  // Use this flag to exit loop or halt actions
+                    action_completed = true;
                     break;
 
                 default:
@@ -168,7 +175,7 @@ void RobotController::setGoalTarget(geometry_msgs::Pose& target_pose) {
 // Set a valid random orientation for the target_pose
 void RobotController::setRandomOrientation(geometry_msgs::Pose& target_pose) {
     // Apply small random perturbations to the current orientation to avoid large rotations
-    double perturbation_limit = 0.1;  // Define a small perturbation range
+    double perturbation_limit = 0.5;  // Define a small perturbation range
 
     target_pose.orientation.x += (static_cast<double>(rand()) / RAND_MAX - 0.5) * 2 * perturbation_limit;
     target_pose.orientation.y += (static_cast<double>(rand()) / RAND_MAX - 0.5) * 2 * perturbation_limit;
@@ -197,22 +204,46 @@ void RobotController::moveInPlane(geometry_msgs::Pose& target_pose) {
     // Ensure only one plane is active, with default to XY if multiple or none are set
     if (current_params.xy_plane && !current_params.xz_plane && !current_params.yz_plane) {
         current_params.offScale_z = 0;  // Zero out Z for XY plane
+
+        ROS_WARN("OffScale values: x = %f, y = %f, z = %f", 
+         current_params.offScale_x, 
+         current_params.offScale_y, 
+         current_params.offScale_z);
+
         setGoalTarget(target_pose);
         ROS_INFO("Target set within the XY plane.");
 
     } else if (!current_params.xy_plane && current_params.xz_plane && !current_params.yz_plane) {
         current_params.offScale_y = 0;  // Zero out Y for XZ plane
+
+        ROS_WARN("OffScale values: x = %f, y = %f, z = %f", 
+         current_params.offScale_x, 
+         current_params.offScale_y, 
+         current_params.offScale_z);
+
         setGoalTarget(target_pose);
         ROS_INFO("Target set within the XZ plane.");
 
     } else if (!current_params.xy_plane && !current_params.xz_plane && current_params.yz_plane) {
         current_params.offScale_x = 0;  // Zero out X for YZ plane
+
+        ROS_WARN("OffScale values: x = %f, y = %f, z = %f", 
+         current_params.offScale_x, 
+         current_params.offScale_y, 
+         current_params.offScale_z);
+
         setGoalTarget(target_pose);
         ROS_INFO("Target set within the YZ plane.");
 
     } else {
         // Default or invalid/multiple planes selected, default to XY plane
         ROS_WARN("Invalid or multiple planes specified. Defaulting to XY plane.");
+
+        ROS_WARN("OffScale values: x = %f, y = %f, z = %f", 
+         current_params.offScale_x, 
+         current_params.offScale_y, 
+         current_params.offScale_z);
+
         current_params.offScale_z = 0;  // Zero out Z for XY plane
         setGoalTarget(target_pose);
     }
@@ -365,14 +396,9 @@ bool RobotController::execPreDef() {
 // Refactored executeCartesianJerkTrajectory method
 bool RobotController::execCartesian() {
 
-    std::lock_guard<std::mutex> lock(move_group_mutex);
     setPlanningGroup("manipulator");
 
     for (int i = 0; i < current_params.num_moves; ++i) {
-        // if (!cartesian_running.load()) {
-        //     ROS_INFO("Cartesian jerk trajectory stopped early.");
-        //     return;
-        // }
 
         geometry_msgs::PoseStamped current_pose = move_group_interface.getCurrentPose("sensor_robotiq_ft_frame_id");
         geometry_msgs::Pose target_pose = current_pose.pose;

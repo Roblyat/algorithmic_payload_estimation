@@ -143,6 +143,7 @@ int main(int argc, char** argv) {
     static bool xy_plane = false;
     static bool xz_plane = false;
     static bool yz_plane = false;
+    static bool move_plane = false;
 
     // Initialize ActionParams with default values
     params.pose = selected_pose;
@@ -163,6 +164,7 @@ int main(int argc, char** argv) {
     params.xy_plane = xy_plane;
     params.xz_plane = xz_plane;
     params.yz_plane = yz_plane;
+    params.move_plane = move_plane;
 
 
     ////////////////////
@@ -369,25 +371,21 @@ int main(int argc, char** argv) {
                 ImGui::SetCursorPos(ImVec2(350, 740 - y_bRand));  // Adjust y to control spacing
                 if (ImGui::Checkbox("Use sampling", &use_sampling)) {
                     params.sampling = use_sampling;  // Update the sampling flag
-                    terminal.setRosParam("~use_sampling", use_sampling ? "true" : "false");  // Set the ROS parameter based on checkbox
                 }
 
                 ImGui::SetCursorPos(ImVec2(350, 770 - y_bRand));  // Adjust y to control spacing
                 if (ImGui::Checkbox("Use cartesian", &cartesian)) {
                     params.cartesian = cartesian;  // Update the cartesian flag
-                    terminal.setRosParam("~cartesian", cartesian ? "true" : "false");  // Set the ROS parameter based on checkbox
                 }
 
                 ImGui::SetCursorPos(ImVec2(350, 800 - y_bRand));  // Adjust y to control spacing
                 if (ImGui::Checkbox("Set Orientation", &set_orientation)) {
                     params.setOrientation = set_orientation;  // Update the set orientation flag
-                    terminal.setRosParam("~set_orientation", set_orientation ? "true" : "false");  // Set the ROS parameter based on checkbox
                 }
 
                 ImGui::SetCursorPos(ImVec2(350, 830 - y_bRand));  // Adjust y to control spacing
                 if (ImGui::Checkbox("Sample Goal", &sample_goal)) {
                     params.sample_goal = sample_goal;  // Update the sample goal flag
-                    terminal.setRosParam("~sample_goal", sample_goal ? "true" : "false");  // Set the ROS parameter based on checkbox
                 }
 
                 // Plane selection checkboxes in ImGui
@@ -430,6 +428,11 @@ int main(int argc, char** argv) {
                     params.yz_plane = yz_plane;
                 }
 
+                ImGui::SetCursorPos(ImVec2(350, 890 - y_bRand));  // Adjust y to control spacing
+                if (ImGui::Checkbox("Move Plane", &move_plane)) {
+                    params.move_plane = move_plane;  // Update the sample goal flag
+                }
+
 
                 // Button to execute the random moves
                 if (ImGui::Button("Move Random", ImVec2(120.0f, 40.0f))) {
@@ -438,7 +441,13 @@ int main(int argc, char** argv) {
 
                 if (ImGui::Button("Move Jerk", ImVec2(120.0f, 40.0f))) {
                     robot_controller.updateAction(RobotController::EXEC_CARTESIAN, params);
-                }                           
+                }
+
+                if (ImGui::Button("Stop Movement", ImVec2(120.0f, 40.0f))) {
+                    action_type = RobotController::STOP;
+                    robot_controller.updateAction(action_type, params);  // Send the stop action
+                }
+               
 
                 ///////////////////////////
                 // Gripper Control UI    //

@@ -49,7 +49,8 @@ public:
         EXEC_RANDOM,
         EXEC_PREDEF,
         MOVE_CARTESIAN,
-        MOVE_GRIPPER
+        MOVE_GRIPPER,
+        STOP
     };
 
     void updateAction(ActionType action, const ActionParams& params);
@@ -88,13 +89,10 @@ private:
     std::string current_planning_group_;
 
     // Threading and control flags
-    std::mutex move_group_mutex;
     std::thread worker_thread;
     std::atomic<bool> worker_running;
     std::atomic<ActionType> current_action;
     std::atomic<bool> action_ready;
-    std::atomic<bool> random_move_running;
-    std::atomic<bool> cartesian_running; 
 };
 
 #endif  // ROBOT_CONTROLLER_H
