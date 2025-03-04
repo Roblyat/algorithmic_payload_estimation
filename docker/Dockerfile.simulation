@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-noetic-rqt-common-plugins \
     ros-noetic-rqt-robot-plugins \
     ros-noetic-xacro \
+    ros-noetic-tf-conversions \
     libgl1-mesa-glx \
     libglu1-mesa \
     libglfw3-dev \

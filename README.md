@@ -9,3 +9,14 @@ algorithmic payload estimation ur5
                          - training
                          - prediction
                          - plots
+
+# start
+1.  - git clone git@github.com:Roblyat/algorithmic_payload_estimation.git
+    - cd algorithmic_payload_estimation
+    - git submodule update --init --recursive
+
+2.  - cd algorithmic_payload_estimation/docker
+    - docker compose up --build
+
+3.  - docker exec -it force_estimation_container /bin/bash
+    - catkin_make
