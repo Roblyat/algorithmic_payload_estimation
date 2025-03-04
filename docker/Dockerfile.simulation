@@ -1,0 +1,65 @@
+# Base image: ROS Noetic with essential packages
+FROM ros:noetic-ros-base
+
+# Install required tools and dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    python3-pip \
+    vim \
+    htop \
+    git \
+    cmake \
+    build-essential \
+    libpcl-dev \
+    ros-noetic-pcl-ros \
+    ros-noetic-rviz \
+    ros-noetic-gazebo-ros \
+    ros-noetic-gazebo-ros-control \
+    ros-noetic-gazebo-plugins \
+    ros-noetic-gazebo-ros-pkgs \
+    ros-noetic-moveit \
+    ros-noetic-moveit-ros-planning \
+    ros-noetic-moveit-ros-move-group \
+    ros-noetic-moveit-ros-planning-interface \
+    ros-noetic-moveit-visual-tools \
+    ros-noetic-ros-control \
+    ros-noetic-ros-controllers \
+    ros-noetic-controller-manager \
+    ros-noetic-joint-state-controller \
+    ros-noetic-effort-controllers \
+    ros-noetic-position-controllers \
+    ros-noetic-joint-trajectory-controller \
+    ros-noetic-rqt \
+    ros-noetic-rqt-common-plugins \
+    ros-noetic-rqt-robot-plugins \
+    ros-noetic-xacro \
+    libgl1-mesa-glx \
+    libglu1-mesa \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create catkin workspace, but DO NOT CLONE REPO (it will be mounted)
+RUN mkdir -p /catkin_ws/src
+
+# Set workspace as working directory
+WORKDIR /catkin_ws
+
+# Build the Catkin workspace (It will compile the mounted repo)
+RUN /ros_entrypoint.sh catkin_make || echo "Skipping build, repo not mounted yet"
+
+# Install ROS dependencies
+RUN apt-get update && \
+    rosdep update && \
+    rosdep install --from-paths /catkin_ws/src -i -y --rosdistro noetic || echo "Skipping rosdep, repo not mounted yet"
+
+# Update ROS entrypoint script to source workspace
+RUN echo "source /catkin_ws/devel/setup.bash" >> /ros_entrypoint.sh
+RUN echo "source /catkin_ws/devel/setup.bash" >> ~/.bashrc
+
+# Set Bash as the default shell
+SHELL ["/bin/bash", "-c"]
+
+# Set the ROS entrypoint
+ENTRYPOINT ["/ros_entrypoint.sh"]
+
+# Keep the container running
+CMD ["bash"]
