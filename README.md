@@ -15,8 +15,10 @@ algorithmic payload estimation ur5
     - cd algorithmic_payload_estimation
     - git submodule update --init --recursive
 
-2.  - cd algorithmic_payload_estimation/docker
+2.  - xhost +local:docker
+    - cd algorithmic_payload_estimation/docker
     - docker compose up --build
 
 3.  - docker exec -it force_estimation_container /bin/bash
     - catkin_make
+    - roslaunch manipulator_description manipulator_gazebo.launch

@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-noetic-gazebo-ros-control \
     ros-noetic-gazebo-plugins \
     ros-noetic-gazebo-ros-pkgs \
+    ros-noetic-gazebo-msgs \
     ros-noetic-moveit \
     ros-noetic-moveit-ros-planning \
     ros-noetic-moveit-ros-move-group \
@@ -27,6 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-noetic-effort-controllers \
     ros-noetic-position-controllers \
     ros-noetic-joint-trajectory-controller \
+    ros-noetic-robot-state-publisher \
     ros-noetic-rqt \
     ros-noetic-rqt-common-plugins \
     ros-noetic-rqt-robot-plugins \
