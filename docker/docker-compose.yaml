@@ -15,6 +15,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix  # Share X11 socket for GUI applications
       - /home/robat/.localgit/algorithmic_payload_estimation:/catkin_ws/src/algorithmic_payload_estimation
+      - ${SSH_AUTH_SOCK}:/ssh-agent
 
     stdin_open: true
     tty: true
