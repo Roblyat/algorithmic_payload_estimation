@@ -8,8 +8,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     vim \
     htop \
     git \
-    cmake \
-    build-essential \
     libpcl-dev \
     ros-noetic-pcl-ros \
     ros-noetic-rviz \
@@ -35,15 +33,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-noetic-xacro \
     libgl1-mesa-glx \
     libglu1-mesa \
+    libglfw3-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Create catkin workspace, but DO NOT CLONE REPO (it will be mounted)
+# Create catkin workspace (DO NOT CLONE REPO - It Will Be Mounted)
 RUN mkdir -p /catkin_ws/src
+
+# Ensure GitHub SSH is known (Only Needed If Using SSH)
+RUN mkdir -p ~/.ssh && \
+    ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
 # Set workspace as working directory
 WORKDIR /catkin_ws
 
-# Build the Catkin workspace (It will compile the mounted repo)
+# Ensure SSH authentication works inside the container
+ENV SSH_AUTH_SOCK=/ssh-agent
+
+# Build the Catkin workspace (It Will Compile the Mounted Repo)
 RUN /ros_entrypoint.sh catkin_make || echo "Skipping build, repo not mounted yet"
 
 # Install ROS dependencies
