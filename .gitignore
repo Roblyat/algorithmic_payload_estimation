@@ -5,37 +5,49 @@ devel
 # Ignore VS Code settings
 .vscode
 
-# Ignore model files but keep folder structure
-payload_estimation/gp_models/*
-!payload_estimation/gp_models/.gitkeep
-
-# Ignore raw data but keep folder structure
-payload_estimation/data/raw/*
+# Ignore all files inside data/ but keep the folders
+payload_estimation/data/*
+!payload_estimation/data/.gitkeep
+!payload_estimation/data/raw/
 !payload_estimation/data/raw/.gitkeep
-
-# Ignore processed data but keep folder structure
-payload_estimation/data/processed/*
+!payload_estimation/data/raw/csv/
+!payload_estimation/data/raw/csv/.gitkeep
+!payload_estimation/data/raw/csv/train/
+!payload_estimation/data/raw/csv/train/.gitkeep
+!payload_estimation/data/raw/csv/test/
+!payload_estimation/data/raw/csv/test/.gitkeep
+!payload_estimation/data/raw/rosbag/
+!payload_estimation/data/raw/rosbag/.gitkeep
+!payload_estimation/data/raw/rosbag/train/
+!payload_estimation/data/raw/rosbag/train/.gitkeep
+!payload_estimation/data/raw/rosbag/test/
+!payload_estimation/data/raw/rosbag/test/.gitkeep
+!payload_estimation/data/processed/
 !payload_estimation/data/processed/.gitkeep
-payload_estimation/data/processed/effort/*
+!payload_estimation/data/processed/effort/
 !payload_estimation/data/processed/effort/.gitkeep
-payload_estimation/data/processed/wrench/*
+!payload_estimation/data/processed/wrench/
 !payload_estimation/data/processed/wrench/.gitkeep
-
-# Ignore result data but keep folder structure
-payload_estimation/data/result/*
+!payload_estimation/data/result/
 !payload_estimation/data/result/.gitkeep
-payload_estimation/data/result/effort/*
+!payload_estimation/data/result/effort/
 !payload_estimation/data/result/effort/.gitkeep
-payload_estimation/data/result/wrench/*
+!payload_estimation/data/result/wrench/
 !payload_estimation/data/result/wrench/.gitkeep
 
-# Ignore scalers but keep folder structure
-payload_estimation/gp_models/scalers/*
+# Ignore all files inside gp_models/ but keep the folders
+payload_estimation/gp_models/*
+!payload_estimation/gp_models/.gitkeep
+!payload_estimation/gp_models/effort/
+!payload_estimation/gp_models/effort/.gitkeep
+!payload_estimation/gp_models/scalers/
 !payload_estimation/gp_models/scalers/.gitkeep
-payload_estimation/gp_models/scalers/effort/*
+!payload_estimation/gp_models/scalers/effort/
 !payload_estimation/gp_models/scalers/effort/.gitkeep
-payload_estimation/gp_models/scalers/wrench/*
+!payload_estimation/gp_models/scalers/wrench/
 !payload_estimation/gp_models/scalers/wrench/.gitkeep
+!payload_estimation/gp_models/wrench/
+!payload_estimation/gp_models/wrench/.gitkeep
 
 # Ignore lock files
 ~lock*
