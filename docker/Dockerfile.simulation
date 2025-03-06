@@ -41,7 +41,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
-RUN pip3 install --no-cache-dir pandas scikit-learn numpy GPy matplotlib
+RUN pip3 install --no-cache-dir --upgrade numpy pandas scikit-learn GPy matplotlib
 
 # Create catkin workspace (DO NOT CLONE REPO - It Will Be Mounted)
 RUN mkdir -p /catkin_ws/src
