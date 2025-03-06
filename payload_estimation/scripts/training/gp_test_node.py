@@ -59,9 +59,11 @@ def gp_test_node():
 
     # Get the base paths and file names
     if data_type == 'wrench':
-        input_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/wrench'
+        input_folder = os.getenv("ROS_PROCESSED_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/wrench")
+        # input_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/wrench'
     else:
-        input_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/effort'
+        input_folder = os.getenv("ROS_PROCESSED_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/effort")
+        # input_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/effort'
     
     #rosbag name parameter
     rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
@@ -75,13 +77,15 @@ def gp_test_node():
                    'Predicted Force X', 'Predicted Force Y', 'Predicted Force Z',
                    'Predicted Torque X', 'Predicted Torque Y', 'Predicted Torque Z',
                    'Variance']  # Column names for wrench data
-        output_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/wrench'
+        output_folder = os.getenv("ROS_RESULTS_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/wrench")
+        # output_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/wrench'
     else:
         test_csv_param = '_effort_test_data.csv'
         columns = [f'Actual Effort Joint {i+1}' for i in range(6)] + \
                   [f'Predicted Effort Joint {i+1}' for i in range(6)] + \
                   ['Variance']  # Column names for effort data
-        output_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/effort'
+        output_folder = os.getenv("ROS_RESULTS_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/effort")
+        # output_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/effort'
 
     # Combine the base name with the test_csv_param
     test_csv_name = f"{rosbag_base_name}{test_csv_param}"
@@ -92,7 +96,9 @@ def gp_test_node():
     use_sparse = rospy.get_param('/rosparam/use_sparse', False)  # Default is False
 
     # Model output path, depending on data_type (effort or wrench)
-    model_output_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models', data_type)
+    base_model_output_path = os.getenv("ROS_GP_MODELS_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models")
+    model_output_path = os.path.join(base_model_output_path, data_type)
+    # model_output_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models', data_type)
 
     # Construct the model filename based on the parameters
     suffix = ""

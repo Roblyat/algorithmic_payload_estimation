@@ -101,17 +101,22 @@ def main():
     elif use_sparse:
         suffix = "_s"
 
+    # Get base result folder from environment variable (default to expected ROS path)
+    results_folder = os.getenv("ROS_RESULTS_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result")
+
+    # Append the data_type to results_folder
+    results_folder = os.path.join(results_folder, data_type)
+
     # Construct the full file path
-    file_path = f'/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/{data_type}/{rosbag_base_name}_{data_type}{suffix}_results.csv'
+    file_path = os.path.join(results_folder, f"{rosbag_base_name}_{data_type}{suffix}_results.csv")
 
     # Load data
     data = pd.read_csv(file_path)
     
     # Define save paths for the plots
-    base_save_path = os.path.dirname(file_path)
-    effort_plot_path = os.path.join(base_save_path, f"{rosbag_base_name}_{data_type}{suffix}_effort.png")
-    error_plot_path = os.path.join(base_save_path, f"{rosbag_base_name}_{data_type}{suffix}_error.png")
-    mse_plot_path = os.path.join(base_save_path, f"{rosbag_base_name}_{data_type}{suffix}_mse.png")
+    effort_plot_path = os.path.join(results_folder, f"{rosbag_base_name}_{data_type}{suffix}_effort.png")
+    error_plot_path = os.path.join(results_folder, f"{rosbag_base_name}_{data_type}{suffix}_error.png")
+    mse_plot_path = os.path.join(results_folder, f"{rosbag_base_name}_{data_type}{suffix}_mse.png")
 
     # Plot functions and save the plots
     plot_efforts(data, effort_plot_path)

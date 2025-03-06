@@ -24,6 +24,8 @@
 
 //Thread
 #include <thread>
+//storage path with docker
+#include <cstdlib> 
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
 #pragma comment(lib, "legacy_stdio_definitions")
@@ -171,8 +173,8 @@ int main(int argc, char** argv) {
     //  Terminal Tab  //
     ////////////////////
     // Define static strings to hold the save path and file name
-    static char rosbag_path_train[256] = "/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/rosbag/train";
-    static char rosbag_path_test[256] = "/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/rosbag/test";
+    static const char* rosbag_path_train = getenv("ROS_BAG_TRAIN_PATH") ? getenv("ROS_BAG_TRAIN_PATH") : "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/rosbag/train";
+    static const char* rosbag_path_test = getenv("ROS_BAG_TEST_PATH") ? getenv("ROS_BAG_TEST_PATH") : "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/rosbag/test";
     static char rosbag_name[128] = "recorded_data.bag";  // Default file name
 
     //gp model parameters
@@ -182,6 +184,7 @@ int main(int argc, char** argv) {
     static int subsample_size = 5000;  // Default value            
     static bool use_kfold = false;  // Default heckbox state
     static bool use_gplvm = false;  // Default checkbox state
+    
     static bool use_sparse = false;  // Default checkbox state
     static char latent_dim_input[10] = "";  // Buffer for user input
     static char num_inducing_input[10] = "";  // Buffer for user input

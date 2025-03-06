@@ -43,12 +43,15 @@ def rosbag_to_csv(bag_file, joint_states_csv, wrench_csv):
 if __name__ == "__main__":
 
     #rosbag path
-    rosbag_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/rosbag/train'  # Path to the raw training data CSV
+    rosbag_path = os.getenv("ROS_BAG_TRAIN_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/rosbag/train") # Path to the raw training data CSV
+    # rosbag_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/rosbag/train'  # Path to the raw training data CSV
+
     rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
     bag_file = os.path.join(rosbag_path, rosbag_name)
     
     # Folder path for joint states and wrench CSVs
-    raw_csv_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/csv/train'
+    # raw_csv_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/csv/train'
+    raw_csv_folder = os.getenv("ROS_CSV_TRAIN_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/csv/train")
     
     # Create filenames for joint states and wrench CSV files
     rosbag_base_name = os.path.splitext(rosbag_name)[0]

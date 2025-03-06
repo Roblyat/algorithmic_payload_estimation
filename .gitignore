@@ -1,6 +1,41 @@
+# Ignore build and devel folders
 build
 devel
+
+# Ignore VS Code settings
 .vscode
-payload_estimation/gp_models/
-payload_estimation/data/raw
+
+# Ignore model files but keep folder structure
+payload_estimation/gp_models/*
+!payload_estimation/gp_models/.gitkeep
+
+# Ignore raw data but keep folder structure
+payload_estimation/data/raw/*
+!payload_estimation/data/raw/.gitkeep
+
+# Ignore processed data but keep folder structure
+payload_estimation/data/processed/*
+!payload_estimation/data/processed/.gitkeep
+payload_estimation/data/processed/effort/*
+!payload_estimation/data/processed/effort/.gitkeep
+payload_estimation/data/processed/wrench/*
+!payload_estimation/data/processed/wrench/.gitkeep
+
+# Ignore result data but keep folder structure
+payload_estimation/data/result/*
+!payload_estimation/data/result/.gitkeep
+payload_estimation/data/result/effort/*
+!payload_estimation/data/result/effort/.gitkeep
+payload_estimation/data/result/wrench/*
+!payload_estimation/data/result/wrench/.gitkeep
+
+# Ignore scalers but keep folder structure
+payload_estimation/gp_models/scalers/*
+!payload_estimation/gp_models/scalers/.gitkeep
+payload_estimation/gp_models/scalers/effort/*
+!payload_estimation/gp_models/scalers/effort/.gitkeep
+payload_estimation/gp_models/scalers/wrench/*
+!payload_estimation/gp_models/scalers/wrench/.gitkeep
+
+# Ignore lock files
 ~lock*

@@ -182,9 +182,13 @@ def split_and_standardize(training_csv, train_output_csv, test_output_csv):
 if __name__ == "__main__":
     
     # Paths to your CSV files
-    output_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/wrench'
+    output_folder = os.getenv("ROS_PROCESSED_WRENCH_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/wrench")
+    # output_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/wrench'
+
     # Folder path for joint states and wrench CSVs
-    raw_csv_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/csv/train'
+    raw_csv_folder = os.getenv("ROS_CSV_TRAIN_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/csv/train")
+    # raw_csv_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/csv/train'
+
     rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
 
     rosbag_base_name = os.path.splitext(rosbag_name)[0]
@@ -198,7 +202,8 @@ if __name__ == "__main__":
     test_data_csv = os.path.join(output_folder, f"{rosbag_base_name}_wrench_test_data.csv")  # Corrected: use test_csv_name here
 
     # Folder path for saving the scaler
-    scaler_output_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers/wrench'
+    scaler_output_path = os.getenv("ROS_SCALER_WRENCH_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers/wrench")
+    # scaler_output_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers/wrench'
 
     # Construct the scaler file name conditionally
     X_scaler_filename = os.path.join(scaler_output_path, f"{rosbag_base_name}_wrench_feature_scaler.pkl")

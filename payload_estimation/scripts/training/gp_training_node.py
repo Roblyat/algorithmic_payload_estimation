@@ -110,9 +110,11 @@ def gp_training_node():
     data_type = rospy.get_param('/rosparam/data_type', 'wrench')  # Default to 'effort'
 
     if data_type == 'wrench':
-        training_csv_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/wrench'
+        training_csv_path = os.getenv("ROS_PROCESSED_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/wrench")
+        # training_csv_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/wrench'
     else:
-        training_csv_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/effort'  # Path to the processed training data CSV
+        training_csv_path = os.getenv("ROS_PROCESSED_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/effort")
+        # training_csv_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/effort'  # Path to the processed training data CSV
     
     rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
     rosbag_base_name = os.path.splitext(rosbag_name)[0]
@@ -133,7 +135,9 @@ def gp_training_node():
     full_train_csv_path = os.path.join(training_csv_path, training_csv_name)
     
     # Model output path, depending on data_type (effort or wrench)
-    model_output_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models', data_type)
+    base_model_output_path = os.getenv("ROS_GP_MODELS_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models")
+    model_output_path = os.path.join(base_model_output_path, data_type)
+    # model_output_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models', data_type)
 
     # Check if sparse models are being used
     use_sparse = rospy.get_param('/rosparam/use_sparse', False)

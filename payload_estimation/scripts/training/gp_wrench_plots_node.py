@@ -181,18 +181,23 @@ def main():
     elif use_sparse:
         suffix = "_s"
 
+    # Get base result folder from environment variable (default to expected ROS path)
+    results_folder = os.getenv("ROS_RESULTS_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result")
+
+    # Append the data_type to results_folder
+    results_folder = os.path.join(results_folder, data_type)
+
     # Construct the full file path for the CSV file
-    file_path = f'/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/{data_type}/{rosbag_base_name}_{data_type}{suffix}_results.csv'
+    file_path = os.path.join(results_folder, f"{rosbag_base_name}_{data_type}{suffix}_results.csv")
 
     # Load data from the dynamically set CSV file
     data = pd.read_csv(file_path)
 
     # Set the save paths for the PNG files
-    base_save_path = f"/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/result/{data_type}"
-    force_plot_path = os.path.join(base_save_path, f"{rosbag_base_name}_{data_type}{suffix}_force.png")
-    torque_plot_path = os.path.join(base_save_path, f"{rosbag_base_name}_{data_type}{suffix}_torque.png")
-    error_plot_path = os.path.join(base_save_path, f"{rosbag_base_name}_{data_type}{suffix}_error.png")
-    mse_plot_path = os.path.join(base_save_path, f"{rosbag_base_name}_{data_type}{suffix}_mse.png")
+    force_plot_path = os.path.join(results_folder, f"{rosbag_base_name}_{data_type}{suffix}_force.png")
+    torque_plot_path = os.path.join(results_folder, f"{rosbag_base_name}_{data_type}{suffix}_torque.png")
+    error_plot_path = os.path.join(results_folder, f"{rosbag_base_name}_{data_type}{suffix}_error.png")
+    mse_plot_path = os.path.join(results_folder, f"{rosbag_base_name}_{data_type}{suffix}_mse.png")
 
     # Run the plotting functions
     plot_forces(data, force_plot_path)

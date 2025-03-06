@@ -180,8 +180,12 @@ def split_and_standardize(training_csv, train_output_csv, test_output_csv):
 if __name__ == "__main__":
     
     # Paths to your CSV files
-    output_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/effort'
-    raw_csv_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/csv/train'
+    output_folder = os.getenv("ROS_PROCESSED_EFFORT_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/effort")
+    # output_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/processed/effort'
+
+    raw_csv_folder = os.getenv("ROS_CSV_TRAIN_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/csv/train")
+    # raw_csv_folder = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/data/raw/csv/train'
+
     rosbag_name = rospy.get_param('/rosparam/rosbag_name', 'recorded_data.bag')
 
     rosbag_base_name = os.path.splitext(rosbag_name)[0]
@@ -194,7 +198,8 @@ if __name__ == "__main__":
     test_data_csv = os.path.join(output_folder, f"{rosbag_base_name}_effort_test_data.csv")  # Corrected: use test_csv_name
 
     # Folder path for saving the scaler
-    scaler_output_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers/effort'
+    scaler_output_path = os.getenv("ROS_SCALER_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers/effort")
+    # scaler_output_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers/effort'
 
     # Construct the scaler file name conditionally
     X_scaler_filename = os.path.join(scaler_output_path, f"{rosbag_base_name}_effort_feature_scaler.pkl")
