@@ -183,8 +183,14 @@ def gp_live_prediction_node():
     use_kfold = rospy.get_param('/rosparam/use_kfold', False)  # Default is False
 
     # Load the correct GP model based on rosbag name and data type
-    model_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models', data_type)
-    scaler_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers', data_type)
+    # model_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models', data_type)
+    # scaler_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers', data_type)
+    home_dir = os.path.expanduser("~")
+    workspace_path = os.path.join(home_dir, "catkin_ws/src/algorithmic_payload_estimation/payload_estimation")
+
+    model_path = os.path.join(workspace_path, "gp_models", data_type)
+    scaler_path = os.path.join(workspace_path, "gp_models/scalers", data_type)
+
 
     # Initialize the suffix for the model filenames based on the use_sparse and use_kfold flags
     suffix = ""
