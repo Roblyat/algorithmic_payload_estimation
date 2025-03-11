@@ -1,56 +1,17 @@
-# Ignore build and devel folders
-build
-devel
-
-# Ignore VS Code settings
-.vscode
-
+# Ignore everything inside data/ except .gitkeep
+data/*
 !data/**/.gitkeep
+
+# Ignore everything inside gp_models/ except .gitkeep
+gp_models/*
 !gp_models/**/.gitkeep
 
-# Ignore all files inside data/ but keep the folders
-data/*
-!data/.gitkeep
-!data/raw/
-!data/raw/.gitkeep
-!data/raw/csv/
-!data/raw/csv/.gitkeep
-!data/raw/csv/train/
-!data/raw/csv/train/.gitkeep
-!data/raw/csv/test/
-!data/raw/csv/test/.gitkeep
-!data/raw/rosbag/
-!data/raw/rosbag/.gitkeep
-!data/raw/rosbag/train/
-!data/raw/rosbag/train/.gitkeep
-!data/raw/rosbag/test/
-!data/raw/rosbag/test/.gitkeep
-!data/processed/
-!data/processed/.gitkeep
-!data/processed/effort/
-!data/processed/effort/.gitkeep
-!data/processed/wrench/
-!data/processed/wrench/.gitkeep
-!data/result/
-!data/result/.gitkeep
-!data/result/effort/
-!data/result/effort/.gitkeep
-!data/result/wrench/
-!data/result/wrench/.gitkeep
+# Ignore build and devel folders
+build/
+devel/
 
-# Ignore all files inside gp_models/ but keep the folders
-gp_models/*
-!gp_models/.gitkeep
-!gp_models/effort/
-!gp_models/effort/.gitkeep
-!gp_models/scalers/
-!gp_models/scalers/.gitkeep
-!gp_models/scalers/effort/
-!gp_models/scalers/effort/.gitkeep
-!gp_models/scalers/wrench/
-!gp_models/scalers/wrench/.gitkeep
-!gp_models/wrench/
-!gp_models/wrench/.gitkeep
+# Ignore VS Code settings
+.vscode/
 
 # Ignore lock files
 ~lock*
