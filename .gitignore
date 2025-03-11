@@ -1,8 +1,8 @@
-# Ignore everything inside data/ except .gitkeep
+# Ignore all files inside data/ but keep the structure
 data/*
 !data/**/.gitkeep
 
-# Ignore everything inside gp_models/ except .gitkeep
+# Ignore all files inside gp_models/ but keep the structure
 gp_models/*
 !gp_models/**/.gitkeep
 
