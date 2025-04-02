@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  ros-container:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: force_estimation-docker
+    container_name: force_estimation_container
+    network_mode: host
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      - QT_QPA_PLATFORM=xcb
+      - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+      - ROS_DOMAIN_ID=0
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility,graphics
+      - NVIDIA_REQUIRE_CUDA="cuda>=12.2"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix  # Share X11 socket for GUI applications
+      - /home/robat/.localgit/algorithmic_payload_estimation:/ros2_ws/src/algorithmic_payload_estimation
+      - ${SSH_AUTH_SOCK:-}:/ssh-agent
+      - ros2_ws:/ros2_ws
+    stdin_open: true
+    tty: true
+    restart: no
+
+volumes:
+  ros2_ws:
+    driver: local
