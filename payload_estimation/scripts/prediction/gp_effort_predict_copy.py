@@ -187,8 +187,8 @@ def gp_live_prediction_node():
     # scaler_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers', data_type)
 
     # Get base model folder from environment variable (default to expected ROS path)
-    model_base_path = os.getenv("ROS_GP_MODELS_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models")
-    scaler_base_path = os.getenv("ROS_SCALERS_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers")
+    model_base_path = os.getenv("ROS_GP_MODELS_PATH", "/catkin_ws/src/algorithmic_payload_estimation/ros1/payload_estimation/gp_models")
+    scaler_base_path = os.getenv("ROS_SCALERS_PATH", "/catkin_ws/src/algorithmic_payload_estimation/ros1/payload_estimation/gp_models/scalers")
 
     # Append the data_type
     model_path = os.path.join(model_base_path, data_type)
