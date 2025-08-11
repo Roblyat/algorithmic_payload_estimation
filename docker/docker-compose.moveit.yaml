@@ -1,0 +1,41 @@
+services:
+  ros-container:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        USER_UID: ${UID:-1000}
+        USER_GID: ${GID:-1000}
+        USERNAME: ${USER:-robat}
+    image: force_estimation-docker:jazzy-cuda
+    container_name: force_estimation_container
+    network_mode: host
+
+    gpus: all
+
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      - QT_QPA_PLATFORM=xcb
+      - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+      - ROS_DOMAIN_ID=0
+      - SSH_AUTH_SOCK=/ssh-agent
+      # Optional legacy envs; safe to drop if you like
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility,graphics
+      - NVIDIA_REQUIRE_CUDA=cuda>=12.9
+
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ${HOME}/.localgit/algorithmic_payload_estimation:/ros2_ws/src/algorithmic_payload_estimation:rw
+      - ${SSH_AUTH_SOCK:-}:/ssh-agent
+      - ros2_ws:/ros2_ws
+      # - /dev/video0:/dev/video0  # if you need a webcam
+
+    stdin_open: true
+    tty: true
+    restart: "no"
+
+volumes:
+  ros2_ws:
+    driver: local
