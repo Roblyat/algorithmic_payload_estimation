@@ -1,24 +1,14 @@
-# algorithmic_payload_estimation
-algorithmic payload estimation ur5
+# To Do
+- remove robotiq & universal_robot submodule
+- remove manipulator_description & manipulator_moveit_config
+- remove hmi & payload_estimation 
+- add ros2 submodules
+    - Universal_Robots_ROS2_Driver
+    - IsaacLab
+    - rbyt_robotiq
+    - Universal_Robots_ROS2_Description
+## Create ros2 amend_cmake pkgs and:
+- rework robotiq submodule
+- rework manipulator_description & manipulator_moveit_config
+[- rework hmi (no prio, in case as submodule) & payload_estimation (payload_estimation as submodule)]
 
-# info
-- robot description  -->  manipulator.urdf.xacro
-- robot controller   -->  algorithmic_payload_estimation/hmi/include/hmi/RobotController.h
-- payload estimation --> payload_estimation/scripts
-                         - data preperation
-                         - training
-                         - prediction
-                         - plots
-
-# start
-1.  - git clone git@github.com:Roblyat/algorithmic_payload_estimation.git
-    - cd algorithmic_payload_estimation
-    - git submodule update --init --recursive
-
-2.  - xhost +local:docker
-    - cd algorithmic_payload_estimation/docker
-    - docker compose up --build
-
-3.  - docker exec -it force_estimation_container /bin/bash
-    - catkin_make
-    - roslaunch manipulator_description manipulator_gazebo.launch
