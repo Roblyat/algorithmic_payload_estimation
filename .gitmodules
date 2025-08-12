@@ -1,9 +1,6 @@
 [submodule "hmi/include/imgui"]
 	path = hmi/include/imgui
 	url = git@github.com:ocornut/imgui.git
-[submodule "robotiq"]
-	path = robotiq
-	url = git@github.com:Roblyat/robotiq.git
 [submodule "hmi/include/implot"]
 	path = hmi/include/implot
 	url = https://github.com/epezent/implot.git
