@@ -10,32 +10,49 @@ services:
     image: force_estimation-docker:jazzy-cuda
     container_name: force_estimation_container
     network_mode: host
-
     gpus: all
-
+    ipc: host
     environment:
       - DISPLAY=${DISPLAY}
       - QT_X11_NO_MITSHM=1
-      - QT_QPA_PLATFORM=xcb
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
       - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
       - ROS_DOMAIN_ID=0
-      - SSH_AUTH_SOCK=/ssh-agent
-      # Optional legacy envs; safe to drop if you like
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=compute,utility,graphics
-      - NVIDIA_REQUIRE_CUDA=cuda>=12.9
-
+      - SSH_AUTH_SOCK=${SSH_AUTH_SOCK}
+      - COLCON_PYTHON_EXECUTABLE=/opt/venv/bin/python3
     volumes:
+      # bind your repo
+      - ${APE_REPO:-$HOME/.localgit/algorithmic_payload_estimation}:/ros2_ws/src/algorithmic_payload_estimation:rw
+      # X11 for RViz
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - ${HOME}/.localgit/algorithmic_payload_estimation:/ros2_ws/src/algorithmic_payload_estimation:rw
-      - ${SSH_AUTH_SOCK:-}:/ssh-agent
-      - ros2_ws:/ros2_ws
-      # - /dev/video0:/dev/video0  # if you need a webcam
+      # ssh-agent for private submodules
+      - ${SSH_AUTH_SOCK}:${SSH_AUTH_SOCK}
+    working_dir: /ros2_ws
+    # command: >
+    #   bash -lc '
+    #     set -euxo pipefail;
+    #     source /opt/ros/jazzy/setup.bash;
 
+    #     # ensure dirs exist & are writable (no named volumes now; this is quick)
+    #     mkdir -p /ros2_ws/{build,install,log};
+
+    #     # git safe dir (when mapped UID/GID differs)
+    #     git config --global --add safe.directory /ros2_ws/src/algorithmic_payload_estimation || true;
+
+    #     # submodules pinned to committed SHAs
+    #     cd /ros2_ws/src/algorithmic_payload_estimation;
+    #     git submodule sync --recursive;
+    #     git submodule update --init --recursive;
+
+    #     cd /ros2_ws;
+    #     sudo apt-get update -y || true;
+    #     sudo rosdep update || true;
+    #     sudo rosdep install --from-paths src --rosdistro jazzy -y --ignore-src || true;
+
+    #     colcon build --symlink-install || { echo "[WARN] colcon failed; dropping to shell"; exec bash; }
+    #     exec bash
+    #   '
     stdin_open: true
     tty: true
     restart: "no"
-
-volumes:
-  ros2_ws:
-    driver: local

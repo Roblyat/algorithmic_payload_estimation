@@ -27,3 +27,11 @@ echo "[+] Starting your MoveIt/ROS2 container..."
 echo "[✓] Done."
 echo "  IsaacLab: docker compose -p isaaclab ps"
 echo "  MoveIt:   docker compose -p moveit ps"
+
+
+
+
+
+# COPY startup.sh /usr/local/bin/startup.sh
+# RUN chmod +x /usr/local/bin/startup.sh
+# ENTRYPOINT ["/usr/local/bin/startup.sh"]
