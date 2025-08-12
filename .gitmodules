@@ -1,3 +1,24 @@
 [submodule "docs/latex-module"]
 	path = docs/latex-module
 	url = git@github.com:Roblyat/latex-module.git
+[submodule "payload_estimation"]
+	path = payload_estimation
+	url = git@github.com:Roblyat/payload_estimation.git
+[submodule "ur_manipulator_moveit_config"]
+	path = ur_manipulator_moveit_config
+	url = git@github.com:Roblyat/ur_manipulator_moveit_config.git
+[submodule "ur_manipulator_description"]
+	path = ur_manipulator_description
+	url = git@github.com:Roblyat/ur_manipulator_description.git
+[submodule "rbyt_robotiq"]
+	path = rbyt_robotiq
+	url = git@github.com:Roblyat/rbyt_robotiq.git
+[submodule "IsaacLab"]
+	path = IsaacLab
+	url = git@github.com:Roblyat/IsaacLab.git
+[submodule "Universal_Robots_ROS2_Driver"]
+	path = Universal_Robots_ROS2_Driver
+	url = git@github.com:Roblyat/Universal_Robots_ROS2_Driver.git
+[submodule "Universal_Robots_ROS2_Description"]
+	path = Universal_Robots_ROS2_Description
+	url = git@github.com:Roblyat/Universal_Robots_ROS2_Description.git
