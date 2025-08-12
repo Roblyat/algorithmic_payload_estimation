@@ -22,3 +22,7 @@
 [submodule "Universal_Robots_ROS2_Description"]
 	path = Universal_Robots_ROS2_Description
 	url = git@github.com:Roblyat/Universal_Robots_ROS2_Description.git
+[submodule "src/algorithmic_payload_estimation/Universal_Robots_ROS2_Driver"]
+	path = src/algorithmic_payload_estimation/Universal_Robots_ROS2_Driver
+	url = git@github.com:Roblyat/Universal_Robots_ROS2_Driver.git
+	branch = jazzy
