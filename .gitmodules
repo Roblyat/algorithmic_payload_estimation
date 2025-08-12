@@ -1,6 +1,3 @@
-[submodule "hmi/include/implot"]
-	path = hmi/include/implot
-	url = https://github.com/epezent/implot.git
 [submodule "docs/latex-module"]
 	path = docs/latex-module
 	url = git@github.com:Roblyat/latex-module.git
