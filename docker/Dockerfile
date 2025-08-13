@@ -1,59 +1,23 @@
-FROM nvidia/cuda:12.9.0-devel-ubuntu24.04
+FROM nvidia/cuda:12.9.0-devel-ubuntu24.04 AS cuda
 
-ENV DEBIAN_FRONTEND=noninteractive \
-    TZ=Etc/UTC \
-    LANG=en_US.UTF-8 \
-    LC_ALL=en_US.UTF-8 \
-    ROS_DISTRO=jazzy
+# ---- Final stage ----
+FROM osrf/ros:jazzy-desktop-full
 
-SHELL ["/bin/bash","-lc"]
+# Copy CUDA toolchain from the CUDA stage
+COPY --from=cuda /usr/local/cuda /usr/local/cuda
 
-# Base tools + ROS 2 repo
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      locales tzdata ca-certificates curl gnupg2 lsb-release \
-      software-properties-common \
-      build-essential git wget vim htop openssh-client sudo \
-      python3-pip python3-venv python3-rosdep python3-colcon-common-extensions \
-    && locale-gen en_US.UTF-8 \
-    && rm -rf /var/lib/apt/lists/*
+# CUDA environment
+ENV PATH=/usr/local/cuda/bin:${PATH} \
+    LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}
 
-RUN mkdir -p /etc/apt/keyrings && \
-    curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
-      | gpg --dearmor -o /usr/share/keyrings/ros-archive-keyring.gpg && \
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] \
-      http://packages.ros.org/ros2/ubuntu noble main" \
-      > /etc/apt/sources.list.d/ros2.list
+# Set environment for CUDA 12.9
+ENV CUDA_HOME=/usr/local/cuda-12.9
+ENV PATH=$CUDA_HOME/bin:$PATH
+ENV LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+ENV NVIDIA_REQUIRE_CUDA="cuda>=12.9"
 
-# ROS + your stack
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      ros-jazzy-desktop \
-      ros-jazzy-moveit \
-      ros-jazzy-moveit-visual-tools \
-      ros-jazzy-ros2-control \
-      ros-jazzy-ros2-controllers \
-      ros-jazzy-controller-manager \
-      ros-jazzy-joint-state-broadcaster \
-      ros-jazzy-joint-trajectory-controller \
-      ros-jazzy-rviz2 \
-      ros-jazzy-xacro \
-      ros-jazzy-ament-cmake \
-      ros-jazzy-ament-cmake-python \
-      ros-jazzy-robot-state-publisher \
-    && rm -rf /var/lib/apt/lists/*
-
-# --- venv used by colcon & your nodes ---
-RUN python3 -m venv /opt/venv
-ENV PATH=/opt/venv/bin:$PATH \
-    COLCON_PYTHON_EXECUTABLE=/opt/venv/bin/python3
-
-# Build-time + runtime Python deps (install into the venv!)
-RUN python3 -m pip install --no-cache-dir --upgrade pip && \
-    python3 -m pip install --no-cache-dir \
-      catkin_pkg empy lark toml pytest \
-      numpy pandas scikit-learn GPy matplotlib transformers protobuf torch
-
-# rosdep once in the image (as root)
-RUN rosdep init || true && rosdep update || true
 
 # Dev user mapped to host UID/GID
 ARG USERNAME=robat
@@ -76,6 +40,65 @@ RUN mkdir -p /ros2_ws/src && chown -R ${USER_UID}:${USER_GID} /ros2_ws
 RUN echo 'source /opt/ros/jazzy/setup.bash' >> /etc/skel/.bashrc && \
     echo 'source /ros2_ws/install/setup.bash 2>/dev/null || true' >> /etc/skel/.bashrc && \
     cp /etc/skel/.bashrc /root/.bashrc
+
+USER root
+
+# Update packages
+RUN sudo apt update && sudo apt upgrade -y
+
+# Base tools + ROS 2 repo
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      locales \
+      tzdata \
+      ca-certificates \
+      curl \
+      gnupg2 \
+      lsb-release \
+      software-properties-common \
+      build-essential \
+      git \
+      wget \
+      vim \
+      htop \
+      openssh-client sudo \
+      python3-pip \
+      python3-venv \
+      python3-rosdep \
+      python3-colcon-common-extensions \
+      build-essential \
+      cmake \
+      bzip2 \
+      g++ \
+      zip \
+      unzip \
+    && locale-gen en_US.UTF-8 \
+    && rm -rf /var/lib/apt/lists/*
+
+# ROS + your stack
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      ros-jazzy-desktop \
+      ros-jazzy-moveit \
+      ros-jazzy-moveit-visual-tools \
+      ros-jazzy-ros2-control \
+      ros-jazzy-ros2-controllers \
+      ros-jazzy-controller-manager \
+      ros-jazzy-joint-state-broadcaster \
+      ros-jazzy-joint-trajectory-controller \
+      ros-jazzy-rviz2 \
+      ros-jazzy-xacro \
+      ros-jazzy-ament-cmake \
+      ros-jazzy-ament-cmake-python \
+      ros-jazzy-robot-state-publisher \
+      ros-jazzy-rqt-tf-tree \
+      ros-jazzy-tf2-tools \
+      ros-jazzy-tf-transformations \
+      ros-jazzy-pcl-ros \
+    && rm -rf /var/lib/apt/lists/*
+
+# --- venv used by colcon & your nodes ---
+RUN python3 -m venv /opt/venv
+ENV PATH=/opt/venv/bin:$PATH \
+    COLCON_PYTHON_EXECUTABLE=/opt/venv/bin/python3
 
 USER ${USERNAME}
 
