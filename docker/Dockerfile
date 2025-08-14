@@ -7,7 +7,7 @@ FROM osrf/ros:jazzy-desktop-full
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Ensure ROS apt source + keyring (Option A) – safe even if base already has it
+# Ensure ROS apt source + keyring
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl gnupg lsb-release software-properties-common \
   && add-apt-repository -y universe \
@@ -91,6 +91,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       python3-pip python3-venv python3-rosdep python3-colcon-common-extensions \
       cmake bzip2 g++ zip unzip \
   && locale-gen en_US.UTF-8
+
+# --- venv used by colcon & own nodes ---
+RUN python3 -m venv /opt/venv
+ENV PATH=/opt/venv/bin:$PATH \
+    COLCON_PYTHON_EXECUTABLE=/opt/venv/bin/python3
 
 # Switch to user
 USER ${USERNAME}
