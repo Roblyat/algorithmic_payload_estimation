@@ -21,17 +21,9 @@ echo "[+] Starting your MoveIt/ROS2 container..."
 (
   cd "$MOVEIT" || { echo "Missing: $MOVEIT"; exit 1; }
   export COMPOSE_PROJECT_NAME=moveit
-  docker compose -f docker-compose.moveit.yaml up -d
+  docker compose -f docker-compose.yaml up -d
 )
 
 echo "[✓] Done."
 echo "  IsaacLab: docker compose -p isaaclab ps"
 echo "  MoveIt:   docker compose -p moveit ps"
-
-
-
-
-
-# COPY startup.sh /usr/local/bin/startup.sh
-# RUN chmod +x /usr/local/bin/startup.sh
-# ENTRYPOINT ["/usr/local/bin/startup.sh"]

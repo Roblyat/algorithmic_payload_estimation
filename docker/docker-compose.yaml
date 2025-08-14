@@ -29,30 +29,14 @@ services:
       # ssh-agent for private submodules
       - ${SSH_AUTH_SOCK}:${SSH_AUTH_SOCK}
     working_dir: /ros2_ws
-    # command: >
-    #   bash -lc '
-    #     set -euxo pipefail;
-    #     source /opt/ros/jazzy/setup.bash;
+    command: >
+      bash -c "
+        source /opt/ros/jazzy/setup.bash &&
+        rosdep update &&
+        rosdep install --from-paths src --rosdistro jazzy --ignore-src -r -y &&
+        exec bash
+      "
 
-    #     # ensure dirs exist & are writable (no named volumes now; this is quick)
-    #     mkdir -p /ros2_ws/{build,install,log};
-
-    #     # git safe dir (when mapped UID/GID differs)
-    #     git config --global --add safe.directory /ros2_ws/src/algorithmic_payload_estimation || true;
-
-    #     # submodules pinned to committed SHAs
-    #     cd /ros2_ws/src/algorithmic_payload_estimation;
-    #     git submodule sync --recursive;
-    #     git submodule update --init --recursive;
-
-    #     cd /ros2_ws;
-    #     sudo apt-get update -y || true;
-    #     sudo rosdep update || true;
-    #     sudo rosdep install --from-paths src --rosdistro jazzy -y --ignore-src || true;
-
-    #     colcon build --symlink-install || { echo "[WARN] colcon failed; dropping to shell"; exec bash; }
-    #     exec bash
-    #   '
     stdin_open: true
     tty: true
     restart: "no"
