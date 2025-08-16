@@ -65,14 +65,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       ros-jazzy-rqt-tf-tree \
       ros-jazzy-tf2-tools \
       ros-jazzy-tf-transformations \
-      ros-jazzy-pcl-ros
-    #   ros-${ROS_DISTRO}-urdf \
-    #   ros-${ROS_DISTRO}-rclcpp \
-    #   ros-${ROS_DISTRO}-std-msgs \
-    #   ros-${ROS_DISTRO}-sensor-msgs \
-    #   ros-${ROS_DISTRO}-xacro \
-    #   ros-${ROS_DISTRO}-controller-interface \
-    #   ros-${ROS_DISTRO}-hardware-interface \
+      ros-jazzy-pcl-ros \
+      ros-jazzy-urdf \
+      ros-jazzy-rclcpp \
+      ros-jazzy-std-msgs \
+      ros-jazzy-sensor-msgs \
+      ros-jazzy-xacro \
+      ros-jazzy-controller-interface \
+      ros-jazzy-hardware-interface
 
 
 # Create workspace
@@ -93,7 +93,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && locale-gen en_US.UTF-8
 
 # --- venv used by colcon & own nodes ---
-RUN python3 -m venv /opt/venv
+RUN python3 -m venv /opt/venv && \
+    /opt/venv/bin/pip install --upgrade pip setuptools && \
+    /opt/venv/bin/pip install \
+        catkin_pkg \
+        pytest \
+        empy \
+        numpy \
+        lark-parser
+
 ENV PATH=/opt/venv/bin:$PATH \
     COLCON_PYTHON_EXECUTABLE=/opt/venv/bin/python3
 

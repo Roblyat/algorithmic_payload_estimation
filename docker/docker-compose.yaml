@@ -18,11 +18,12 @@ services:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
       - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-      - ROS_DOMAIN_ID=42
+      - ROS_DOMAIN_ID=0
       - SSH_AUTH_SOCK=${SSH_AUTH_SOCK}
       # ros2 bridge isaac udp protocol
       - FASTRTPS_DEFAULT_PROFILES_FILE=/home/robat/.ros/fastdds.xml
       - COLCON_PYTHON_EXECUTABLE=/opt/venv/bin/python3
+      - Python3_EXECUTABLE=/opt/venv/bin/python3
     volumes:
       # bind your repo
       - ${APE_REPO:-$HOME/.localgit/algorithmic_payload_estimation}:/ros2_ws/src/algorithmic_payload_estimation:rw
