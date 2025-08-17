@@ -72,8 +72,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       ros-jazzy-sensor-msgs \
       ros-jazzy-xacro \
       ros-jazzy-controller-interface \
-      ros-jazzy-hardware-interface
-
+      ros-jazzy-hardware-interface \
+      ros-jazzy-rmw-cyclonedds-cpp
 
 # Create workspace
 WORKDIR /ros2_ws

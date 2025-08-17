@@ -59,3 +59,44 @@ chmod 644 /etc/profile.d/zz-isaacsim-humble.sh
 grep -qF ".bashrc_isaac_humble" /root/.bashrc || echo "[ -f /root/.bashrc_isaac_humble ] && source /root/.bashrc_isaac_humble" >> /root/.bashrc
 '
 ok "Humble overrides in place."
+
+
+# issac env option
+isaac_sim_package_path=/isaac-sim
+ROS_DISTRO=humble
+RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+LD_LIBRARY_PATH=/isaac-sim/exts/isaacsim.ros2.bridge/humble/lib
+FASTRTPS_DEFAULT_PROFILES_FILE=/root/.ros/fastdds.xml
+ROS_DOMAIN_ID=0
+
+#check
+2) Avoid Humble↔︎Jazzy DDS wire-compat weirdness
+
+Isaac Sim 5.0’s ROS2 bridge is built around Humble; your other stack is Jazzy. The backtrace hits rmw_dds_common internal discovery types — those can change between distros. Two robust options:
+
+Option A (recommended): switch both to CycloneDDS
+
+
+
+# std isaaclab container setup
+root@robat-tower:/workspace/isaaclab# printf "RMW_IMPLEMENTATION=%s\nFASTRTPS_DEFAULT_PROFILES_FILE=%s\nROS_DOMAIN_ID=%s\n" \
+  "${RMW_IMPLEMENTATION:-<unset>}" \
+  "${FASTRTPS_DEFAULT_PROFILES_FILE:-<unset>}" \
+  "${ROS_DOMAIN_ID:-<unset>}"
+RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+FASTRTPS_DEFAULT_PROFILES_FILE=/root/.ros/fastdds.xml
+ROS_DOMAIN_ID=<unset>
+
+root@robat-tower:/workspace/isaaclab# ls -d /isaac-sim/exts/isaacsim.ros2.bridge/humble/lib 2>/dev/null || echo "missing"
+/isaac-sim/exts/isaacsim.ros2.bridge/humble/lib
+
+robat@robat-tower:~$ docker inspect -f 'network_mode={{.HostConfig.NetworkMode}} ipc={{.HostConfig.IpcMode}}' isaac-lab-ros2
+network_mode=host ipc=private
+
+
+
+
+
+
+
+
