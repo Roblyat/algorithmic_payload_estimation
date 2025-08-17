@@ -32,21 +32,6 @@ log "Starting Isaac Lab (ros2)…"
 )
 ok "Isaac Lab container started: $ISAAC_CTR"
 
-# --- Launch Isaac Lab with Cyclone DDS (override only for this process) ---
-# log "Launching Isaac Lab app with Cyclone DDS (unset FASTRTPS, set RMW=rmw_cyclonedds_cpp, ROS_DOMAIN_ID=0)…"
-# docker exec -d "$ISAAC_CTR" bash -lc '
-#   env -u FASTRTPS_DEFAULT_PROFILES_FILE \
-#       RMW_IMPLEMENTATION=rmw_cyclonedds_cpp \
-#       ROS_DOMAIN_ID=0 \
-#       bash -lc '"'"'
-#         printf "[Cyclone launch] RMW_IMPLEMENTATION=%s\n" "${RMW_IMPLEMENTATION:-<unset>}"
-#         printf "[Cyclone launch] FASTRTPS_DEFAULT_PROFILES_FILE=%s\n" "${FASTRTPS_DEFAULT_PROFILES_FILE:-<unset>}"
-#         printf "[Cyclone launch] ROS_DOMAIN_ID=%s\n" "${ROS_DOMAIN_ID:-<unset>}"
-#         isaaclab
-#       '"'"'
-# '
-# ok "Isaac Lab launched with Cyclone (detached). Use 'docker logs -f $ISAAC_CTR' to watch output."
-
 log "Starting your MoveIt/ROS2 container…"
 (
   cd "$MOVEIT" || { err "Missing: $MOVEIT"; exit 1; }
