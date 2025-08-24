@@ -1,0 +1,133 @@
+FROM nvidia/cuda:12.9.0-devel-ubuntu24.04 AS cuda
+
+# ---- Final stage ----
+FROM osrf/ros:jazzy-desktop-full
+
+# Use bash with pipefail for robustness in RUNs
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Ensure ROS apt source + keyring
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      ca-certificates curl gnupg lsb-release software-properties-common \
+  && add-apt-repository -y universe \
+  && ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest \
+        | grep -F tag_name | awk -F\" '{print $4}') \
+  && curl -fsSL -o /tmp/ros2-apt-source.deb \
+       "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-apt-source_${ROS_APT_SOURCE_VERSION}.$(. /etc/os-release && echo $VERSION_CODENAME)_all.deb" \
+  && dpkg -i /tmp/ros2-apt-source.deb \
+  && rm -f /tmp/ros2-apt-source.deb \
+  && apt-get update
+
+# Copy CUDA toolchain from the CUDA stage
+COPY --from=cuda /usr/local/cuda /usr/local/cuda
+
+# CUDA environment
+ENV PATH=/usr/local/cuda/bin:${PATH} \
+    LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}
+ENV CUDA_HOME=/usr/local/cuda-12.9
+ENV PATH=$CUDA_HOME/bin:$PATH
+ENV LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+ENV NVIDIA_REQUIRE_CUDA="cuda>=12.9"
+
+# Dev user mapped to host UID/GID
+ARG USERNAME=robat
+ARG USER_UID=1000
+ARG USER_GID=1000
+RUN set -e; \
+    getent group "${USER_GID}" >/dev/null || groupadd -g "${USER_GID}" "${USERNAME}"; \
+    if ! getent passwd "${USER_UID}" >/dev/null; then \
+        useradd -m -s /bin/bash -u "${USER_UID}" -g "${USER_GID}" -G sudo "${USERNAME}"; \
+    else \
+        usermod -l "${USERNAME}" "$(getent passwd ${USER_UID} | cut -d: -f1)" || true; \
+        usermod -d "/home/${USERNAME}" -m "${USERNAME}" || true; \
+        usermod -aG sudo "${USERNAME}" || true; \
+    fi && \
+    echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >/etc/sudoers.d/90-${USERNAME}
+
+# ROS Stack
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      ros-jazzy-desktop \
+      ros-jazzy-moveit \
+      ros-jazzy-moveit-visual-tools \
+      ros-jazzy-ros2-control \
+      ros-jazzy-ros2-controllers \
+      ros-jazzy-controller-manager \
+      ros-jazzy-joint-state-broadcaster \
+      ros-jazzy-joint-trajectory-controller \
+      ros-jazzy-rviz2 \
+      ros-jazzy-xacro \
+      ros-jazzy-ament-cmake \
+      ros-jazzy-ament-cmake-python \
+      ros-jazzy-robot-state-publisher \
+      ros-jazzy-rqt-tf-tree \
+      ros-jazzy-tf2-tools \
+      ros-jazzy-tf-transformations \
+      ros-jazzy-pcl-ros \
+      ros-jazzy-urdf \
+      ros-jazzy-rclcpp \
+      ros-jazzy-std-msgs \
+      ros-jazzy-sensor-msgs \
+      ros-jazzy-xacro \
+      ros-jazzy-controller-interface \
+      ros-jazzy-hardware-interface \
+      ros-jazzy-rmw-cyclonedds-cpp
+
+# Create workspace
+WORKDIR /ros2_ws
+RUN mkdir -p /ros2_ws/src && chown -R ${USER_UID}:${USER_GID} /ros2_ws
+
+# Setup .bashrc (for both root and user)
+RUN echo 'source /opt/ros/jazzy/setup.bash' >> /etc/skel/.bashrc && \
+    echo 'source /ros2_ws/install/setup.bash 2>/dev/null || true' >> /etc/skel/.bashrc && \
+    cp /etc/skel/.bashrc /root/.bashrc
+
+# Base tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      locales tzdata ca-certificates curl gnupg2 lsb-release software-properties-common \
+      build-essential git wget vim htop openssh-client sudo \
+      python3-pip python3-venv python3-rosdep python3-colcon-common-extensions \
+      cmake bzip2 g++ zip unzip \
+  && locale-gen en_US.UTF-8
+
+# --- venv used by colcon & own nodes ---
+RUN python3 -m venv /opt/venv && \
+    /opt/venv/bin/pip install --upgrade pip setuptools && \
+    /opt/venv/bin/pip install \
+        catkin_pkg \
+        pytest \
+        empy \
+        numpy \
+        lark-parser
+
+ENV PATH=/opt/venv/bin:$PATH \
+    COLCON_PYTHON_EXECUTABLE=/opt/venv/bin/python3
+
+# Switch to user
+USER ${USERNAME}
+WORKDIR /ros2_ws
+
+# QoL: GitHub known_hosts
+RUN mkdir -p ~/.ssh && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts 2>/dev/null || true
+
+# Workspace build preparation
+RUN set -e && \
+    if [ -d /ros2_ws/src/algorithmic_payload_estimation ]; then \
+      cd /ros2_ws/src/algorithmic_payload_estimation && \
+      git submodule sync --recursive && \
+      git submodule update --init --recursive; \
+    fi && \
+    source /opt/ros/jazzy/setup.bash && \
+    rosdep update && \
+    rosdep install --from-paths src --rosdistro jazzy --ignore-src -r -y
+
+# GPU / DDS env
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp \
+    ROS_DOMAIN_ID=0 \
+    NVIDIA_VISIBLE_DEVICES=all \
+    NVIDIA_DRIVER_CAPABILITIES=all
+
+# Final shell
+CMD ["bash"]

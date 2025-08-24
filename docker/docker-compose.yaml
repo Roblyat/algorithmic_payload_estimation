@@ -1,44 +1,78 @@
 services:
-  ros-container:
+  moveit:
     build:
-      context: .
+      context: .                 # directory that contains your Dockerfile
       dockerfile: Dockerfile
       args:
         USER_UID: ${UID:-1000}
         USER_GID: ${GID:-1000}
         USERNAME: ${USER:-robat}
-    image: force_estimation-docker:jazzy-cuda
-    container_name: force_estimation_container
+    image: moveit-humble-custom:latest
+    container_name: moveit_humble_container
+
     network_mode: host
-    gpus: all
     ipc: host
+
+    # Request GPU for RViz (compose v2: easiest is 'gpus: all')
+    gpus: all
+
     environment:
+      # ROS / DDS
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+      - ROS_DOMAIN_ID=0
+      - ROS_LOCALHOST_ONLY=0
+      - RCUTILS_COLORIZED_OUTPUT=1
+
+      # Display (X11)
       - DISPLAY=${DISPLAY}
       - QT_X11_NO_MITSHM=1
       - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=all
-      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-      - ROS_DOMAIN_ID=0
-      - SSH_AUTH_SOCK=${SSH_AUTH_SOCK}
+      - NVIDIA_DRIVER_CAPABILITIES=graphics,utility
+      - XDG_RUNTIME_DIR=/tmp/runtime-root
+
+      # Colcon uses your venv Python
       - COLCON_PYTHON_EXECUTABLE=/opt/venv/bin/python3
       - Python3_EXECUTABLE=/opt/venv/bin/python3
+
+      # SSH agent inside container (maps to /ssh-agent below)
+      - SSH_AUTH_SOCK=/ssh-agent
+
     volumes:
-      # bind your repo
-      - ${APE_REPO:-$HOME/.localgit/algorithmic_payload_estimation}:/ros2_ws/src/algorithmic_payload_estimation:rw
       # X11 for RViz
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      # ssh-agent for private submodules
-      - ${SSH_AUTH_SOCK}:${SSH_AUTH_SOCK}
-    working_dir: /ros2_ws
-    command: >
-      bash -c "
-        source /opt/ros/jazzy/setup.bash &&
-        rosdep update &&
-        rosdep install --from-paths src --rosdistro jazzy --ignore-src -r -y &&
-        colcon build --symlink-install
-        exec bash
-      "
 
+      # SSH agent passthrough
+      - ${SSH_AUTH_SOCK}:/ssh-agent
+
+      # Your workspaces/packages
+      - ${APE_REPO}/payload_estimation:/ros2_ws/src/payload_estimation:rw
+      - ${APE_REPO}/rbyt_robotiq:/ros2_ws/src/rbyt_robotiq:rw
+      - ${APE_REPO}/Universal_Robots_ROS2_Description:/ros2_ws/src/Universal_Robots_ROS2_Description:rw
+      - ${APE_REPO}/Universal_Robots_ROS2_Driver:/ros2_ws/src/Universal_Robots_ROS2_Driver:rw
+      - ${APE_REPO}/ur_manipulator_description:/ros2_ws/src/ur_manipulator_description:rw
+      - ${APE_REPO}/ur_manipulator_moveit_config:/ros2_ws/src/ur_manipulator_moveit_config:rw
+
+    working_dir: /ros2_ws
     stdin_open: true
     tty: true
-    restart: "no"
+
+    entrypoint: ""   # keep MoveIt base entrypoint disabled
+    command: >
+      bash -lc "
+        set -e;
+        # 0) ROS + Python sanity
+        source /opt/ros/humble/setup.bash;
+        /opt/venv/bin/python3 -c 'import em,sys; print(\"EmPy:\", em.__version__, \"Py:\", sys.version)';
+        # 1) Ensure universe + apt index
+        sudo add-apt-repository -y universe && sudo apt-get update;
+        # 2) deps
+        echo '[compose] rosdep update…';
+        rosdep update || true;
+        echo '[compose] rosdep install…';
+        rosdep install --from-paths /ros2_ws/src --rosdistro humble --ignore-src -r -y --skip-keys=warehouse_ros_mongo || true;
+        # 3) build
+        echo '[compose] colcon build…';
+        colcon build --symlink-install || true;
+        echo '[compose] done. idling.';
+        exec sleep infinity
+      "

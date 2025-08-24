@@ -17,7 +17,7 @@ FAILS=0
 fail() { err "$1"; FAILS=$((FAILS+1)); }
 
 # ---------------- container names (adjust if needed) ----------------
-ISAAC_CTR="${ISAAC_CTR:-isaac-lab-ros2}"
+ISAAC_CTR="${ISAAC_CTR:-isaac-lab-base}"
 MOVEIT_CTR="${MOVEIT_CTR:-force_estimation_container}"  # change if your MoveIt container has a different name
 
 # ---------------- helpers ----------------
@@ -116,8 +116,8 @@ expect_exact "$MOVEIT_WHO" "$MOVEIT_CTR" "ROS_DISTRO" "jazzy"
 expect_exact "$MOVEIT_WHO" "$MOVEIT_CTR" "RMW_IMPLEMENTATION" "rmw_cyclonedds_cpp"
 expect_exact "$MOVEIT_WHO" "$MOVEIT_CTR" "ROS_DOMAIN_ID" "0"
 expect_unset_or_empty "$MOVEIT_WHO" "$MOVEIT_CTR" "FASTRTPS_DEFAULT_PROFILES_FILE"
-# expect_path_contains "$MOVEIT_WHO" "$MOVEIT_CTR" "LD_LIBRARY_PATH" "$MOVEIT_LIB"
-path_exists "$MOVEIT_WHO" "$MOVEIT_CTR" #"$MOVEIT_LIB"
+expect_path_contains "$MOVEIT_WHO" "$MOVEIT_CTR" "LD_LIBRARY_PATH" "$MOVEIT_LIB"
+path_exists "$MOVEIT_WHO" "$MOVEIT_CTR" "$MOVEIT_LIB"
 
 # Assert DDS modes on Isaac
 info "Inspecting Docker modes (Isaac)…"

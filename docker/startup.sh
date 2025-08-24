@@ -17,14 +17,16 @@ err()   { printf "${C_ERR}[STARTUP] %s${C_RESET}\n" "$*"; }
 ROOT="$HOME/.localgit/algorithmic_payload_estimation"
 ISAAC="$ROOT/IsaacLab/docker"
 MOVEIT="$ROOT/docker"
-ISAAC_ENV="$ROOT/docker/.env.isaacsim"   #custom Isaac env file
-ISAAC_CTR="isaac-lab-ros2"
-ISAAC_CMP="$ROOT/docker/ipc-host.yaml"   #custom Isaac compose setup"
+ISAAC_ENV="$ROOT/docker/.env.isaacsim"
+ISAAC_CTR="isaac-lab-ros"
+ISAAC_CMP="$ROOT/docker/ipc-host.yaml"
+WS_REPO="/workspace/ros_ws/IsaacSim-ros_workspaces"   # container path
 
-# Optional: allow local X clients (for GUIs)
-command -v xhost >/dev/null 2>&1 && xhost +local: || true
+# Export for compose substitution
+export APE_REPO="${APE_REPO:-$ROOT}"
 
-log "Starting Isaac Lab (ros2)…"
+# ---- Start Isaac (base profile) ----
+log "Starting Isaac Lab (ros)…"
 (
   cd "$ISAAC" || { err "Missing: $ISAAC"; exit 1; }
   export COMPOSE_PROJECT_NAME=isaaclab
@@ -32,6 +34,7 @@ log "Starting Isaac Lab (ros2)…"
 )
 ok "Isaac Lab container started: $ISAAC_CTR"
 
+# ---- Start MoveIt container ----
 log "Starting your MoveIt/ROS2 container…"
 (
   cd "$MOVEIT" || { err "Missing: $MOVEIT"; exit 1; }
@@ -40,10 +43,15 @@ log "Starting your MoveIt/ROS2 container…"
 )
 ok "MoveIt/ROS2 container started."
 
+# ---- Post info ----
 ok "Done."
 printf "  IsaacLab: docker compose -p isaaclab ps\n"
 printf "  MoveIt:   docker compose -p moveit ps\n"
 
-# Run env check (your script)
-chmod +x "$ROOT/docker/check_ros_env.sh" || true
-"$ROOT/docker/check_ros_env.sh"
+# Env check
+# chmod +x "$ROOT/docker/check_ros_env.sh" || true
+# "$ROOT/docker/check_ros_env.sh"
+
+# tmux (optional)
+# chmod +x "$ROOT/docker/tmux.sh" || true
+# "$ROOT/docker/tmux.sh"

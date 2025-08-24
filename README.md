@@ -99,4 +99,60 @@ network_mode=host ipc=private
 
 
 
+##########################################################################
 
+ISAACSIM START
+robat@robat-tower:~$ docker exec -it isaac-lab-base bash
+root@robat-tower:/workspace/isaaclab# unset PYTHONPATH
+root@robat-tower:/workspace/isaaclab# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$isaac_sim_package_path/exts/isaacsim.ros2.bridge/humble/lib
+root@robat-tower:/workspace/isaaclab# export isaac_sim_package_path=$HOME/isaacsim
+root@robat-tower:/workspace/isaaclab# export ROS_DISTRO=humble
+root@robat-tower:/workspace/isaaclab# echo "AMENT_PREFIX_PATH=$AMENT_PREFIX_PATH"
+AMENT_PREFIX_PATH=/opt/ros/humble
+root@robat-tower:/workspace/isaaclab# echo "CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH"
+CMAKE_PREFIX_PATH=
+root@robat-tower:/workspace/isaaclab# echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+LD_LIBRARY_PATH=/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib:/isaac-sim/exts/isaacsim.ros2.bridge/humble/lib
+root@robat-tower:/workspace/isaaclab# 
+
+
+CHECK
+echo "AMENT_PREFIX_PATH=$AMENT_PREFIX_PATH"       # should include your humble_ws install and /opt/ros/humble
+echo "CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH"       # same as AMENT
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"           # no /isaac-sim/... for ROS CLI
+
+
+ROSTOPIC
+
+# 1) Clean Python path to avoid pollution
+unset PYTHONPATH
+
+# 2) Keep ONLY ROS/system libs in the loader path (drop the Isaac path)
+export LD_LIBRARY_PATH="/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib:/usr/lib/x86_64-linux-gnu"
+
+# 3) Source ROS + your overlay
+source /opt/ros/humble/setup.bash
+source /workspace/IsaacSim-ros_workspaces/humble_ws/install/setup.bash
+
+apt-get install -y ros-humble-rmw-cyclonedds-cpp
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+
+# 4) Try again
+ros2 topic list
+
+
+# Show key env values one by one
+echo "ROS_DISTRO=$ROS_DISTRO"
+echo "RMW_IMPLEMENTATION=$RMW_IMPLEMENTATION"
+echo "ROS_DOMAIN_ID=$ROS_DOMAIN_ID"
+echo "ROS_LOCALHOST_ONLY=$ROS_LOCALHOST_ONLY"
+echo "FASTRTPS_DEFAULT_PROFILES_FILE=${FASTRTPS_DEFAULT_PROFILES_FILE:-<unset or empty>}"
+echo "PYTHONPATH=${PYTHONPATH:-<unset or empty>}"
+echo "isaac_sim_package_path=$isaac_sim_package_path"
+echo "ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH:-<unset or empty>}"
+
+# Also helpful: confirm Isaac/IsaacLab roots the compose provides
+echo "DOCKER_ISAACLAB_PATH=$DOCKER_ISAACLAB_PATH"
+echo "DOCKER_ISAACSIM_ROOT_PATH=$DOCKER_ISAACSIM_ROOT_PATH"
+echo "HOME=$HOME"
+echo "PWD=$PWD"

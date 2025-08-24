@@ -1,38 +1,10 @@
-FROM nvidia/cuda:12.9.0-devel-ubuntu24.04 AS cuda
+# --- Base: official MoveIt 2 on ROS 2 Humble (Docker Hub) ---
+FROM moveit/moveit2:humble-source
 
-# ---- Final stage ----
-FROM osrf/ros:jazzy-desktop-full
-
-# Use bash with pipefail for robustness in RUNs
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Ensure ROS apt source + keyring
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      ca-certificates curl gnupg lsb-release software-properties-common \
-  && add-apt-repository -y universe \
-  && ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest \
-        | grep -F tag_name | awk -F\" '{print $4}') \
-  && curl -fsSL -o /tmp/ros2-apt-source.deb \
-       "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-apt-source_${ROS_APT_SOURCE_VERSION}.$(. /etc/os-release && echo $VERSION_CODENAME)_all.deb" \
-  && dpkg -i /tmp/ros2-apt-source.deb \
-  && rm -f /tmp/ros2-apt-source.deb \
-  && apt-get update
-
-# Copy CUDA toolchain from the CUDA stage
-COPY --from=cuda /usr/local/cuda /usr/local/cuda
-
-# CUDA environment
-ENV PATH=/usr/local/cuda/bin:${PATH} \
-    LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}
-ENV CUDA_HOME=/usr/local/cuda-12.9
-ENV PATH=$CUDA_HOME/bin:$PATH
-ENV LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
-ENV NVIDIA_VISIBLE_DEVICES=all
-ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
-ENV NVIDIA_REQUIRE_CUDA="cuda>=12.9"
-
-# Dev user mapped to host UID/GID
+# -------- Host user mapping (keep your UID/GID) --------
 ARG USERNAME=robat
 ARG USER_UID=1000
 ARG USER_GID=1000
@@ -47,87 +19,92 @@ RUN set -e; \
     fi && \
     echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >/etc/sudoers.d/90-${USERNAME}
 
-# ROS Stack
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      ros-jazzy-desktop \
-      ros-jazzy-moveit \
-      ros-jazzy-moveit-visual-tools \
-      ros-jazzy-ros2-control \
-      ros-jazzy-ros2-controllers \
-      ros-jazzy-controller-manager \
-      ros-jazzy-joint-state-broadcaster \
-      ros-jazzy-joint-trajectory-controller \
-      ros-jazzy-rviz2 \
-      ros-jazzy-xacro \
-      ros-jazzy-ament-cmake \
-      ros-jazzy-ament-cmake-python \
-      ros-jazzy-robot-state-publisher \
-      ros-jazzy-rqt-tf-tree \
-      ros-jazzy-tf2-tools \
-      ros-jazzy-tf-transformations \
-      ros-jazzy-pcl-ros \
-      ros-jazzy-urdf \
-      ros-jazzy-rclcpp \
-      ros-jazzy-std-msgs \
-      ros-jazzy-sensor-msgs \
-      ros-jazzy-xacro \
-      ros-jazzy-controller-interface \
-      ros-jazzy-hardware-interface \
-      ros-jazzy-rmw-cyclonedds-cpp
-
-# Create workspace
-WORKDIR /ros2_ws
-RUN mkdir -p /ros2_ws/src && chown -R ${USER_UID}:${USER_GID} /ros2_ws
-
-# Setup .bashrc (for both root and user)
-RUN echo 'source /opt/ros/jazzy/setup.bash' >> /etc/skel/.bashrc && \
-    echo 'source /ros2_ws/install/setup.bash 2>/dev/null || true' >> /etc/skel/.bashrc && \
-    cp /etc/skel/.bashrc /root/.bashrc
-
-# Base tools
+# -------- Base tools & ROS build tools --------
 RUN apt-get update && apt-get install -y --no-install-recommends \
       locales tzdata ca-certificates curl gnupg2 lsb-release software-properties-common \
       build-essential git wget vim htop openssh-client sudo \
       python3-pip python3-venv python3-rosdep python3-colcon-common-extensions \
       cmake bzip2 g++ zip unzip \
-  && locale-gen en_US.UTF-8
+    && locale-gen en_US.UTF-8
 
-# --- venv used by colcon & own nodes ---
+# Enable Ubuntu 'universe' and install extra OS deps needed by rosdep/UR stacks
+RUN add-apt-repository -y universe && apt-get update && \
+    apt-get install -y --no-install-recommends \
+      socat \
+      liburdfdom-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+# -------- Extra ROS packages (Humble) --------
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      ros-humble-moveit \
+      ros-humble-moveit-visual-tools \
+      ros-humble-ros2-control \
+      ros-humble-ros2-controllers \
+      ros-humble-controller-manager \
+      ros-humble-joint-state-broadcaster \
+      ros-humble-joint-trajectory-controller \
+      ros-humble-rviz2 \
+      ros-humble-xacro \
+      ros-humble-ament-cmake \
+      ros-humble-ament-cmake-python \
+      ros-humble-robot-state-publisher \
+      ros-humble-rqt-tf-tree \
+      ros-humble-tf2-tools \
+      ros-humble-tf-transformations \
+      ros-humble-pcl-ros \
+      ros-humble-urdf \
+      ros-humble-rclcpp \
+      ros-humble-std-msgs \
+      ros-humble-sensor-msgs \
+      ros-humble-controller-interface \
+      ros-humble-hardware-interface \
+      ros-humble-rmw-cyclonedds-cpp \
+    && rm -rf /var/lib/apt/lists/*
+
+# -------- Workspace scaffold --------
+WORKDIR /ros2_ws
+RUN mkdir -p /ros2_ws/src && chown -R ${USER_UID}:${USER_GID} /ros2_ws
+
+# -------- Shell environments for ROS overlay --------
+RUN echo 'source /opt/ros/humble/setup.bash' >> /etc/skel/.bashrc && \
+    echo 'source /ros2_ws/install/setup.bash 2>/dev/null || true' >> /etc/skel/.bashrc && \
+    cp /etc/skel/.bashrc /root/.bashrc
+
+# -------- Python venv for colcon + your Python nodes (pin EmPy) --------
 RUN python3 -m venv /opt/venv && \
     /opt/venv/bin/pip install --upgrade pip setuptools && \
     /opt/venv/bin/pip install \
         catkin_pkg \
         pytest \
-        empy \
+        "empy==3.3.4" \
         numpy \
-        lark-parser
-
+        lark-parser && \
+    chown -R ${USER_UID}:${USER_GID} /opt/venv
 ENV PATH=/opt/venv/bin:$PATH \
     COLCON_PYTHON_EXECUTABLE=/opt/venv/bin/python3
 
-# Switch to user
+# -------- Switch to dev user --------
 USER ${USERNAME}
 WORKDIR /ros2_ws
 
 # QoL: GitHub known_hosts
 RUN mkdir -p ~/.ssh && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts 2>/dev/null || true
 
-# Workspace build preparation
+# (Optional) rosdep bootstrap when src is empty (safe no-op if nothing to install)
 RUN set -e && \
-    if [ -d /ros2_ws/src/algorithmic_payload_estimation ]; then \
-      cd /ros2_ws/src/algorithmic_payload_estimation && \
-      git submodule sync --recursive && \
-      git submodule update --init --recursive; \
-    fi && \
-    source /opt/ros/jazzy/setup.bash && \
+    source /opt/ros/humble/setup.bash && \
     rosdep update && \
-    rosdep install --from-paths src --rosdistro jazzy --ignore-src -r -y
+    rosdep install --from-paths src --rosdistro humble --ignore-src -r -y || true
 
-# GPU / DDS env
-ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp \
+# -------- Default ROS/DDS env --------
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp \
     ROS_DOMAIN_ID=0 \
-    NVIDIA_VISIBLE_DEVICES=all \
-    NVIDIA_DRIVER_CAPABILITIES=all
+    ROS_LOCALHOST_ONLY=0
 
-# Final shell
+# -------- Paths hygiene --------
+ENV AMENT_PREFIX_PATH=/opt/ros/humble:/ros2_ws/install \
+    CMAKE_PREFIX_PATH=/opt/ros/humble:/ros2_ws/install \
+    PYTHONPATH=/ros2_ws/install/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages \
+    LD_LIBRARY_PATH=/opt/ros/humble/lib:/ros2_ws/install/lib:${LD_LIBRARY_PATH}
+
 CMD ["bash"]
