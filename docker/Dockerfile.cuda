@@ -1,5 +1,20 @@
-# -------------------- Base: ROS 2 Humble desktop full ----------------
+FROM nvidia/cuda:12.9.0-devel-ubuntu22.04 AS cuda
+
+# --- Base: official ROS 2 Humble (OSRF) with desktop & RViz ---
 FROM osrf/ros:humble-desktop-full
+
+# Copy CUDA toolchain from the CUDA stage
+COPY --from=cuda /usr/local/cuda /usr/local/cuda
+
+# CUDA environment
+ENV PATH=/usr/local/cuda/bin:${PATH} \
+    LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}
+ENV CUDA_HOME=/usr/local/cuda-12.9
+ENV PATH=$CUDA_HOME/bin:$PATH
+ENV LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+ENV NVIDIA_REQUIRE_CUDA="cuda>=12.9"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
@@ -25,11 +40,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       build-essential git wget vim htop openssh-client sudo \
       python3-pip python3-venv python3-rosdep python3-colcon-common-extensions \
       cmake bzip2 g++ zip unzip tree \
-      # GUI / GL sanity
-      mesa-utils libgl1-mesa-dri libglu1-mesa libxkbcommon-x11-0 xauth x11-apps \
-      # handy tools
-      socat liburdfdom-tools \
-    && locale-gen en_US.UTF-8 && rm -rf /var/lib/apt/lists/*
+    && locale-gen en_US.UTF-8
+
+# Enable 'universe' and install extra OS deps needed by UR/GL & debugging
+RUN add-apt-repository -y universe && apt-get update && \
+    apt-get install -y --no-install-recommends \
+      socat \
+      liburdfdom-tools \
+      mesa-utils \
+      libxkbcommon-x11-0 \
+      libglu1-mesa \
+    && rm -rf /var/lib/apt/lists/*
 
 # -------- ROS packages (Humble) you relied on --------
 # (MoveIt + controllers + CycloneDDS, etc.)
@@ -79,7 +100,6 @@ RUN python3 -m venv /opt/venv && \
         numpy \
         lark-parser && \
     chown -R ${USER_UID}:${USER_GID} /opt/venv
-
 ENV PATH=/opt/venv/bin:$PATH \
     COLCON_PYTHON_EXECUTABLE=/opt/venv/bin/python3
 
@@ -105,12 +125,8 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp \
 ENV AMENT_PREFIX_PATH=/opt/ros/humble:/ros2_ws/install \
     CMAKE_PREFIX_PATH=/opt/ros/humble:/ros2_ws/install \
     PYTHONPATH=/ros2_ws/install/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages \
-    LD_LIBRARY_PATH=/opt/ros/humble/lib:/ros2_ws/install/lib:${LD_LIBRARY_PATH}
-
-# -------- Qt/GL stability for RViz/Setup Assistant in containers --------
-# xcb -> use X11/XWayland; NO_MITSHM avoids shm pitfalls; scale=0 avoids scaling quirks.
-ENV QT_QPA_PLATFORM=xcb \
-    QT_X11_NO_MITSHM=1 \
-    QT_AUTO_SCREEN_SCALE_FACTOR=0
+    LD_LIBRARY_PATH=/opt/ros/humble/lib:/ros2_ws/install/lib:${LD_LIBRARY_PATH} \
+    NVIDIA_VISIBLE_DEVICES=all \
+    NVIDIA_DRIVER_CAPABILITIES=all
 
 CMD ["bash"]

@@ -1,13 +1,13 @@
-# -------------------- Base: ROS 2 Humble desktop full ----------------
-FROM osrf/ros:humble-desktop-full
+# --- Base: official MoveIt 2 on ROS 2 Humble (Docker Hub) ---
+FROM moveit/moveit2:humble-source
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG DEBIAN_FRONTEND=noninteractive
+
+# -------- Host user mapping (keep your UID/GID) --------
 ARG USERNAME=robat
 ARG USER_UID=1000
 ARG USER_GID=1000
-
-# -------- Host user mapping (keep your UID/GID) --------
 RUN set -e; \
     getent group "${USER_GID}" >/dev/null || groupadd -g "${USER_GID}" "${USERNAME}"; \
     if ! getent passwd "${USER_UID}" >/dev/null; then \
@@ -19,53 +19,70 @@ RUN set -e; \
     fi && \
     echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >/etc/sudoers.d/90-${USERNAME}
 
-# -------- Base tools & ROS build tools (+tree) --------
+# -------- Make the prebuilt MoveIt workspace usable by non-root --------
+# Copy out of /root (0700) to a world-readable path.
+RUN if [ -d /root/ws_moveit ]; then \
+      mkdir -p /opt && cp -a /root/ws_moveit /opt/ws_moveit && \
+      chmod -R a+rX /opt/ws_moveit ; \
+    fi
+
+# -------- Base tools & ROS build tools --------
 RUN apt-get update && apt-get install -y --no-install-recommends \
       locales tzdata ca-certificates curl gnupg2 lsb-release software-properties-common \
       build-essential git wget vim htop openssh-client sudo \
       python3-pip python3-venv python3-rosdep python3-colcon-common-extensions \
       cmake bzip2 g++ zip unzip tree \
-      # GUI / GL sanity
-      mesa-utils libgl1-mesa-dri libglu1-mesa libxkbcommon-x11-0 xauth x11-apps \
-      # handy tools
-      socat liburdfdom-tools \
-    && locale-gen en_US.UTF-8 && rm -rf /var/lib/apt/lists/*
+    && locale-gen en_US.UTF-8
 
-# -------- ROS packages (Humble) you relied on --------
-# (MoveIt + controllers + CycloneDDS, etc.)
+# Enable Ubuntu 'universe' and install extra OS deps needed by rosdep/UR stacks
+RUN add-apt-repository -y universe && apt-get update && \
+    apt-get install -y --no-install-recommends \
+      socat \
+      liburdfdom-tools \
+      mesa-utils \
+      libxkbcommon-x11-0 \
+      libglu1-mesa \
+    && rm -rf /var/lib/apt/lists/*
+
+# -------- Extra ROS packages (Humble) --------
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      ros-humble-moveit \
-      ros-humble-moveit-visual-tools \
-      ros-humble-ros2-control \
-      ros-humble-ros2-controllers \
-      ros-humble-controller-manager \
-      ros-humble-joint-state-broadcaster \
-      ros-humble-joint-trajectory-controller \
-      ros-humble-rviz2 \
-      ros-humble-xacro \
-      ros-humble-ament-cmake \
-      ros-humble-ament-cmake-python \
-      ros-humble-robot-state-publisher \
-      ros-humble-rqt-tf-tree \
-      ros-humble-tf2-tools \
-      ros-humble-tf-transformations \
-      ros-humble-pcl-ros \
-      ros-humble-urdf \
-      ros-humble-rclcpp \
-      ros-humble-std-msgs \
-      ros-humble-sensor-msgs \
-      ros-humble-controller-interface \
-      ros-humble-hardware-interface \
       ros-humble-rmw-cyclonedds-cpp \
     && rm -rf /var/lib/apt/lists/*
+# (INTENTIONALLY REMOVED to avoid ABI/resource conflicts with the MoveIt source overlay
+# RUN apt-get update && apt-get install -y --no-install-recommends \
+#       ros-humble-moveit \
+#       ros-humble-moveit-visual-tools \
+#       ros-humble-ros2-control \
+#       ros-humble-ros2-controllers \
+#       ros-humble-controller-manager \
+#       ros-humble-joint-state-broadcaster \
+#       ros-humble-joint-trajectory-controller \
+#       ros-humble-rviz2 \
+#       ros-humble-xacro \
+#       ros-humble-ament-cmake \
+#       ros-humble-ament-cmake-python \
+#       ros-humble-robot-state-publisher \
+#       ros-humble-rqt-tf-tree \
+#       ros-humble-tf2-tools \
+#       ros-humble-tf-transformations \
+#       ros-humble-pcl-ros \
+#       ros-humble-urdf \
+#       ros-humble-rclcpp \
+#       ros-humble-std-msgs \
+#       ros-humble-sensor-msgs \
+#       ros-humble-controller-interface \
+#       ros-humble-hardware-interface \
+#       ros-humble-rmw-cyclonedds-cpp \
+#     && rm -rf /var/lib/apt/lists/*
 
 # -------- Workspace scaffold --------
 WORKDIR /ros2_ws
 RUN mkdir -p /ros2_ws/src && chown -R ${USER_UID}:${USER_GID} /ros2_ws
 
-# -------- Shell environments (root + user) --------
+# -------- Shell environments for ROS overlay (root + user) --------
 RUN for f in /root/.bashrc /home/${USERNAME}/.bashrc; do \
       echo 'source /opt/ros/humble/setup.bash' >> "$f"; \
+      echo 'source /opt/ws_moveit/install/setup.bash' >> "$f"; \
       echo 'source /ros2_ws/install/setup.bash 2>/dev/null || true' >> "$f"; \
     done
 
@@ -79,7 +96,6 @@ RUN python3 -m venv /opt/venv && \
         numpy \
         lark-parser && \
     chown -R ${USER_UID}:${USER_GID} /opt/venv
-
 ENV PATH=/opt/venv/bin:$PATH \
     COLCON_PYTHON_EXECUTABLE=/opt/venv/bin/python3
 
@@ -102,15 +118,11 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp \
     ROS_LOCALHOST_ONLY=0
 
 # -------- Paths hygiene --------
-ENV AMENT_PREFIX_PATH=/opt/ros/humble:/ros2_ws/install \
-    CMAKE_PREFIX_PATH=/opt/ros/humble:/ros2_ws/install \
+ENV AMENT_PREFIX_PATH=/opt/ws_moveit/install:/opt/ros/humble:/ros2_ws/install \
+    CMAKE_PREFIX_PATH=/opt/ws_moveit/install:/opt/ros/humble:/ros2_ws/install \
     PYTHONPATH=/ros2_ws/install/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages \
-    LD_LIBRARY_PATH=/opt/ros/humble/lib:/ros2_ws/install/lib:${LD_LIBRARY_PATH}
-
-# -------- Qt/GL stability for RViz/Setup Assistant in containers --------
-# xcb -> use X11/XWayland; NO_MITSHM avoids shm pitfalls; scale=0 avoids scaling quirks.
-ENV QT_QPA_PLATFORM=xcb \
-    QT_X11_NO_MITSHM=1 \
-    QT_AUTO_SCREEN_SCALE_FACTOR=0
+    LD_LIBRARY_PATH=/opt/ros/humble/lib:/ros2_ws/install/lib:${LD_LIBRARY_PATH} \
+    NVIDIA_VISIBLE_DEVICES=all \
+    NVIDIA_DRIVER_CAPABILITIES=all
 
 CMD ["bash"]

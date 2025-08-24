@@ -1,29 +1,29 @@
 [submodule "docs/latex-module"]
 	path = docs/latex-module
-	url = git@github.com:Roblyat/latex-module.git
+	url = https://github.com/latex-module.git
 [submodule "payload_estimation"]
 	path = payload_estimation
-	url = git@github.com:Roblyat/payload_estimation.git
+	url = https://github.com/payload_estimation.git
 [submodule "ur_manipulator_moveit_config"]
 	path = ur_manipulator_moveit_config
-	url = git@github.com:Roblyat/ur_manipulator_moveit_config.git
+	url = https://github.com/ur_manipulator_moveit_config.git
 [submodule "ur_manipulator_description"]
 	path = ur_manipulator_description
-	url = git@github.com:Roblyat/ur_manipulator_description.git
+	url = https://github.com/ur_manipulator_description.git
 [submodule "rbyt_robotiq"]
 	path = rbyt_robotiq
-	url = git@github.com:Roblyat/rbyt_robotiq.git
+	url = https://github.com/rbyt_robotiq.git
 [submodule "IsaacLab"]
 	path = IsaacLab
-	url = git@github.com:Roblyat/IsaacLab.git
+	url = https://github.com/IsaacLab.git
 [submodule "Universal_Robots_ROS2_Driver"]
 	path = Universal_Robots_ROS2_Driver
-	url = git@github.com:Roblyat/Universal_Robots_ROS2_Driver.git
+	url = https://github.com/Universal_Robots_ROS2_Driver.git
 	branch = humble
 [submodule "Universal_Robots_ROS2_Description"]
     path = Universal_Robots_ROS2_Description
-    url = git@github.com:Roblyat/Universal_Robots_ROS2_Description.git
+    url = https://github.com/Universal_Robots_ROS2_Description.git
 	branch = humble
 [submodule "IsaacSim-ros_workspaces"]
 	path = IsaacSim-ros_workspaces
-	url = git@github.com:Roblyat/IsaacSim-ros_workspaces.git
+	url = https://github.com/IsaacSim-ros_workspaces.git

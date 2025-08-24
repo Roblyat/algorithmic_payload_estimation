@@ -15,20 +15,23 @@ services:
 
     # Request GPU for RViz (compose v2: easiest is 'gpus: all')
     gpus: all
+    runtime: nvidia
 
     environment:
       # ROS / DDS
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
       - ROS_DOMAIN_ID=0
       - ROS_LOCALHOST_ONLY=0
-      - RCUTILS_COLORIZED_OUTPUT=1
 
       # Display (X11)
       - DISPLAY=${DISPLAY}
+      - QT_QPA_PLATFORM=xcb
       - QT_X11_NO_MITSHM=1
+      - QT_AUTO_SCREEN_SCALE_FACTOR=0
+
+      - XDG_RUNTIME_DIR=/tmp/runtime-${USER}
       - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=graphics,utility
-      - XDG_RUNTIME_DIR=/tmp/runtime-root
+      - NVIDIA_DRIVER_CAPABILITIES=all
 
       # Colcon uses your venv Python
       - COLCON_PYTHON_EXECUTABLE=/opt/venv/bin/python3
@@ -39,7 +42,8 @@ services:
 
     volumes:
       # X11 for RViz
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - $XAUTHORITY:/root/.Xauthority
 
       # SSH agent passthrough
       - ${SSH_AUTH_SOCK}:/ssh-agent
@@ -60,19 +64,17 @@ services:
     command: >
       bash -lc "
         set -e;
-        # 0) ROS + Python sanity
+        echo '[compose] ROS/venv sanity...';
         source /opt/ros/humble/setup.bash;
         /opt/venv/bin/python3 -c 'import em,sys; print(\"EmPy:\", em.__version__, \"Py:\", sys.version)';
-        # 1) Ensure universe + apt index
+        echo '[compose] apt universe + update...';
         sudo add-apt-repository -y universe && sudo apt-get update;
-        # 2) deps
-        echo '[compose] rosdep update…';
+        echo '[compose] rosdep update...';
         rosdep update || true;
-        echo '[compose] rosdep install…';
+        echo '[compose] rosdep install from /ros2_ws/src...';
         rosdep install --from-paths /ros2_ws/src --rosdistro humble --ignore-src -r -y --skip-keys=warehouse_ros_mongo || true;
-        # 3) build
-        echo '[compose] colcon build…';
+        echo '[compose] colcon build (symlink)...';
         colcon build --symlink-install || true;
-        echo '[compose] done. idling.';
+        echo '[compose] ready. idling.';
         exec sleep infinity
       "
