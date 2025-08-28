@@ -1,29 +1,31 @@
-[submodule "docs/latex-module"]
-	path = docs/latex-module
-	url = https://github.com/latex-module.git
-[submodule "payload_estimation"]
-	path = payload_estimation
-	url = https://github.com/payload_estimation.git
-[submodule "ur_manipulator_moveit_config"]
-	path = ur_manipulator_moveit_config
-	url = https://github.com/ur_manipulator_moveit_config.git
-[submodule "ur_manipulator_description"]
-	path = ur_manipulator_description
-	url = https://github.com/ur_manipulator_description.git
-[submodule "rbyt_robotiq"]
-	path = rbyt_robotiq
-	url = https://github.com/rbyt_robotiq.git
 [submodule "IsaacLab"]
 	path = IsaacLab
 	url = https://github.com/IsaacLab.git
+[submodule "payload_estimation"]
+	path = payload_estimation
+	url = https://github.com/Roblyat/payload_estimation.git
+	branch = main
+[submodule "manipulator_description"]
+	path = manipulator_description
+	url = https://github.com/Roblyat/manipulator_description.git
+	branch = main
+[submodule "rbyt_robotiq"]
+	path = rbyt_robotiq
+	url = https://github.com/Roblyat/rbyt_robotiq.git
+	branch = main
+[submodule "manipulator_moveit_config"]
+	path = manipulator_moveit_config
+	url = https://github.com/Roblyat/manipulator_moveit_config.git
+	branch = main
+[submodule "docs/docs/latex-module"]
+	path = docs/docs/latex-module
+	url = https://github.com/Roblyat/latex-module.git
+	branch = main
+[submodule "Universal_Robots_ROS2_Description"]
+	path = Universal_Robots_ROS2_Description
+	url = https://github.com/Roblyat/Universal_Robots_ROS2_Description.git
+	branch = jazzy
 [submodule "Universal_Robots_ROS2_Driver"]
 	path = Universal_Robots_ROS2_Driver
-	url = https://github.com/Universal_Robots_ROS2_Driver.git
-	branch = humble
-[submodule "Universal_Robots_ROS2_Description"]
-    path = Universal_Robots_ROS2_Description
-    url = https://github.com/Universal_Robots_ROS2_Description.git
-	branch = humble
-[submodule "IsaacSim-ros_workspaces"]
-	path = IsaacSim-ros_workspaces
-	url = https://github.com/IsaacSim-ros_workspaces.git
+	url = https://github.com/Roblyat/Universal_Robots_ROS2_Driver.git
+	branch = jazzy

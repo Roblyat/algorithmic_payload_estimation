@@ -124,7 +124,7 @@ RUN set -e && \
     rosdep install --from-paths src --rosdistro jazzy --ignore-src -r -y
 
 # GPU / DDS env
-ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp \
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp \
     ROS_DOMAIN_ID=0 \
     NVIDIA_VISIBLE_DEVICES=all \
     NVIDIA_DRIVER_CAPABILITIES=all

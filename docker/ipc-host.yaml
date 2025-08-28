@@ -1,25 +1,36 @@
 services:
   isaac-lab-ros2:
+    network_mode: host
     ipc: host
     environment:
-      # Core ROS 2 / DDS
       ROS_DISTRO: "humble"
       RMW_IMPLEMENTATION: "rmw_cyclonedds_cpp"
       ROS_DOMAIN_ID: "0"
       ROS_LOCALHOST_ONLY: "0"
-      FASTRTPS_DEFAULT_PROFILES_FILE: ""   # ensure Fast DDS XML isn't injected
       ROS2CLI_NO_DAEMON: "1"
 
-      # Isaac Sim path hint (used by some tools/extensions)
+      # Ament index: your overlay + Isaac’s bridge
+      AMENT_PREFIX_PATH: "/workspace/ros_ws/install:/isaac-sim/exts/isaacsim.ros2.bridge/humble"
+
+      # Use Isaac’s Python 3.11 rclpy (no /opt/ros on PYTHONPATH)
+      PYTHONPATH: "/isaac-sim/exts/isaacsim.ros2.bridge/humble/lib/python3.11/site-packages"
+
+      # Optional: helps the *normal* URDF importer before first build
+      # (point to package roots inside the mounted workspace)
+      ROS_PACKAGE_PATH: >
+        /workspace/ros_ws/src/Universal_Robots_ROS2_Description:/workspace/ros_ws/src/manipulator_description/ur_manipulator_description:/workspace/ros_ws/src/manipulator_moveit_config/ur3_manipulator_moveit_config
+
       isaac_sim_package_path: "/isaac-sim"
+      FASTRTPS_DEFAULT_PROFILES_FILE: ""
 
-      # Keep Isaac's Python (3.11) clean of Humble's 3.10 site-packages
-      PYTHONPATH: ""
-
-      # Make your robot pkgs discoverable to URDF importer / tools
-      ROS_PACKAGE_PATH: "/ros_pkgs/Universal_Robots_ROS2_Description:/ros_pkgs/ur_manipulator_description:/ros_pkgs/ur_manipulator_moveit_config"
     volumes:
-      # Bind-mount your robot description/config packages into a single root
-      - ${APE_REPO}/Universal_Robots_ROS2_Description:/ros_pkgs/Universal_Robots_ROS2_Description:rw
-      - ${APE_REPO}/ur_manipulator_description/ur_manipulator_description:/ros_pkgs/ur_manipulator_description:rw
-      - ${APE_REPO}/ur_manipulator_moveit_config/ur_manipulator_moveit_config:/ros_pkgs/ur_manipulator_moveit_config:rw
+      # persist the overlay so build/install/log survive container restarts
+      - ${APE_REPO}/isaac_ros_ws:/workspace/ros_ws
+
+      # mount packages directly into the workspace src/
+      - ${APE_REPO}/Universal_Robots_ROS2_Description:/workspace/ros_ws/src/Universal_Robots_ROS2_Description:ro
+      - ${APE_REPO}/manipulator_description/ur_manipulator_description:/workspace/ros_ws/src/manipulator_description/ur_manipulator_description:ro
+      - ${APE_REPO}/manipulator_moveit_config/ur3_manipulator_moveit_config:/workspace/ros_ws/src/manipulator_moveit_config/ur3_manipulator_moveit_config:ro
+
+      # writable USD output (saved into your repo)
+      - ${APE_REPO}/manipulator_description/ur_manipulator_description/usd:/workspace/usd

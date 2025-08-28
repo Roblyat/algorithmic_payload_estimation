@@ -17,8 +17,8 @@ FAILS=0
 fail() { err "$1"; FAILS=$((FAILS+1)); }
 
 # ---------------- container names (adjust if needed) ----------------
-ISAAC_CTR="${ISAAC_CTR:-isaac-lab-base}"
-MOVEIT_CTR="${MOVEIT_CTR:-force_estimation_container}"  # change if your MoveIt container has a different name
+ISAAC_CTR="${ISAAC_CTR:-isaac-lab-ros2}"
+MOVEIT_CTR="${MOVEIT_CTR:-moveit_jazzy_cuda_container}"  # change if your MoveIt container has a different name
 
 # ---------------- helpers ----------------
 # get_var <container> <VAR>  => prints one of: __UNSET__ | __EMPTY__ | actual_value
@@ -91,7 +91,9 @@ if ! docker ps --format '{{.Names}}' | grep -qx "$MOVEIT_CTR"; then fail "Contai
 
 # Isaac expectations
 ISAAC_WHO="isaac"
-ISAAC_LIB="/isaac-sim/exts/isaacsim.ros2.bridge/humble/lib"
+ISAAC_PREFIX_BRIDGE="/isaac-sim/exts/isaacsim.ros2.bridge/humble"
+ISAAC_PY311_SITEPKG="${ISAAC_PREFIX_BRIDGE}/lib/python3.11/site-packages"
+WS="/workspace/ros_ws"
 
 info "Validating Isaac container env (${ISAAC_CTR})…"
 # exact values
@@ -101,23 +103,51 @@ expect_exact "$ISAAC_WHO" "$ISAAC_CTR" "RMW_IMPLEMENTATION" "rmw_cyclonedds_cpp"
 expect_exact "$ISAAC_WHO" "$ISAAC_CTR" "ROS_DOMAIN_ID" "0"
 # unset/empty
 expect_unset_or_empty "$ISAAC_WHO" "$ISAAC_CTR" "FASTRTPS_DEFAULT_PROFILES_FILE"
-# LD path contains
-expect_path_contains "$ISAAC_WHO" "$ISAAC_CTR" "LD_LIBRARY_PATH" "$ISAAC_LIB"
-# path presence
-path_exists "$ISAAC_WHO" "$ISAAC_CTR" "/isaac-sim"
-path_exists "$ISAAC_WHO" "$ISAAC_CTR" "$ISAAC_LIB"
 
-# MoveIt expectations
+# AMENT_PREFIX_PATH must include overlay + Isaac bridge
+expect_path_contains "$ISAAC_WHO" "$ISAAC_CTR" "AMENT_PREFIX_PATH" "${WS}/install"
+expect_path_contains "$ISAAC_WHO" "$ISAAC_CTR" "AMENT_PREFIX_PATH" "${ISAAC_PREFIX_BRIDGE}"
+
+# PYTHONPATH must include Isaac’s py311 site-packages
+expect_path_contains "$ISAAC_WHO" "$ISAAC_CTR" "PYTHONPATH" "${ISAAC_PY311_SITEPKG}"
+
+# ROS_PACKAGE_PATH must include your package roots in the workspace
+expect_path_contains "$ISAAC_WHO" "$ISAAC_CTR" "ROS_PACKAGE_PATH" "${WS}/src/Universal_Robots_ROS2_Description"
+expect_path_contains "$ISAAC_WHO" "$ISAAC_CTR" "ROS_PACKAGE_PATH" "${WS}/src/manipulator_description/ur_manipulator_description"
+expect_path_contains "$ISAAC_WHO" "$ISAAC_CTR" "ROS_PACKAGE_PATH" "${WS}/src/manipulator_moveit_config/ur3_manipulator_moveit_config"
+
+# path presence (mounts and bridge)
+path_exists "$ISAAC_WHO" "$ISAAC_CTR" "/isaac-sim"
+path_exists "$ISAAC_WHO" "$ISAAC_CTR" "${WS}"
+path_exists "$ISAAC_WHO" "$ISAAC_CTR" "${WS}/src"
+path_exists "$ISAAC_WHO" "$ISAAC_CTR" "/workspace/usd"
+path_exists "$ISAAC_WHO" "$ISAAC_CTR" "${ISAAC_PREFIX_BRIDGE}"
+
+# extra introspection (non-fatal): show Python executables and search paths
+info "Isaac Python info (shell python3 and Isaac kit python)"
+docker exec "$ISAAC_CTR" bash -lc 'which python3 || true'
+docker exec "$ISAAC_CTR" bash -lc "/isaac-sim/kit/python/bin/python3 -c 'import sys; print(\"PY EXE:\", sys.executable); print(\"--- sys.path ---\"); [print(p) for p in sys.path]' || true"
+
+# show full env paths (useful for quick eyeballing)
+docker exec "$ISAAC_CTR" bash -lc 'echo AMENT_PREFIX_PATH=$AMENT_PREFIX_PATH'
+docker exec "$ISAAC_CTR" bash -lc 'echo PYTHONPATH=$PYTHONPATH'
+docker exec "$ISAAC_CTR" bash -lc 'echo ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH'
+docker exec "$ISAAC_CTR" bash -lc 'echo FASTRTPS_DEFAULT_PROFILES_FILE=${FASTRTPS_DEFAULT_PROFILES_FILE:-<unset>}'
+
+
+# MoveIt expectations (no Isaac bridge checks here)
 MOVEIT_WHO="moveit"
-MOVEIT_LIB="/isaac-sim/exts/isaacsim.ros2.bridge/jazzy/lib"
+MOVEIT_WS="/ros2_ws"
 
 info "Validating MoveIt container env (${MOVEIT_CTR})…"
 expect_exact "$MOVEIT_WHO" "$MOVEIT_CTR" "ROS_DISTRO" "jazzy"
 expect_exact "$MOVEIT_WHO" "$MOVEIT_CTR" "RMW_IMPLEMENTATION" "rmw_cyclonedds_cpp"
 expect_exact "$MOVEIT_WHO" "$MOVEIT_CTR" "ROS_DOMAIN_ID" "0"
 expect_unset_or_empty "$MOVEIT_WHO" "$MOVEIT_CTR" "FASTRTPS_DEFAULT_PROFILES_FILE"
-expect_path_contains "$MOVEIT_WHO" "$MOVEIT_CTR" "LD_LIBRARY_PATH" "$MOVEIT_LIB"
-path_exists "$MOVEIT_WHO" "$MOVEIT_CTR" "$MOVEIT_LIB"
+
+# Workspace presence (useful sanity, but no Isaac-specific paths)
+path_exists "$MOVEIT_WHO" "$MOVEIT_CTR" "${MOVEIT_WS}"
+path_exists "$MOVEIT_WHO" "$MOVEIT_CTR" "${MOVEIT_WS}/src"
 
 # Assert DDS modes on Isaac
 info "Inspecting Docker modes (Isaac)…"

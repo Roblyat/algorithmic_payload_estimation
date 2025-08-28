@@ -18,15 +18,26 @@ ROOT="$HOME/.localgit/algorithmic_payload_estimation"
 ISAAC="$ROOT/IsaacLab/docker"
 MOVEIT="$ROOT/docker"
 ISAAC_ENV="$ROOT/docker/.env.isaacsim"
-ISAAC_CTR="isaac-lab-ros"
+ISAAC_CTR="isaac-lab-ros2"
 ISAAC_CMP="$ROOT/docker/ipc-host.yaml"
-WS_REPO="/workspace/ros_ws/IsaacSim-ros_workspaces"   # container path
 
 # Export for compose substitution
 export APE_REPO="${APE_REPO:-$ROOT}"
 
+# Which MoveIt stack to start: humble (default) or jazzy
+TARGET="${1:-jazzy}"
+
+case "${TARGET}" in
+  humble|Humble) SERVICE="moveit_humble" ;;
+  jazzy|Jazzy)   SERVICE="moveit_cuda_jazzy" ;;
+  *)
+    err "Usage: $0 [humble|jazzy]"
+    exit 2
+    ;;
+esac
+
 # ---- Start Isaac (base profile) ----
-log "Starting Isaac Lab (ros)…"
+log "Starting Isaac Lab (ros2)…"
 (
   cd "$ISAAC" || { err "Missing: $ISAAC"; exit 1; }
   export COMPOSE_PROJECT_NAME=isaaclab
@@ -34,14 +45,14 @@ log "Starting Isaac Lab (ros)…"
 )
 ok "Isaac Lab container started: $ISAAC_CTR"
 
-# ---- Start MoveIt container ----
-log "Starting your MoveIt/ROS2 container…"
+# ---- Start MoveIt container (selected service) ----
+log "Starting your MoveIt/ROS2 container ($SERVICE)…"
 (
   cd "$MOVEIT" || { err "Missing: $MOVEIT"; exit 1; }
   export COMPOSE_PROJECT_NAME=moveit
-  docker compose -f docker-compose.yaml up -d
+  docker compose -f docker-compose.yaml up -d "$SERVICE"
 )
-ok "MoveIt/ROS2 container started."
+ok "MoveIt/ROS2 container started: $SERVICE"
 
 # ---- Post info ----
 ok "Done."
@@ -49,8 +60,8 @@ printf "  IsaacLab: docker compose -p isaaclab ps\n"
 printf "  MoveIt:   docker compose -p moveit ps\n"
 
 # Env check
-# chmod +x "$ROOT/docker/check_ros_env.sh" || true
-# "$ROOT/docker/check_ros_env.sh"
+chmod +x "$ROOT/docker/check_ros_env.sh" || true
+"$ROOT/docker/check_ros_env.sh"
 
 # tmux (optional)
 # chmod +x "$ROOT/docker/tmux.sh" || true
