@@ -1,6 +1,6 @@
 [submodule "IsaacLab"]
 	path = IsaacLab
-	url = https://github.com/IsaacLab.git
+	url = https://github.com/Roblyat/IsaacLab.git
 [submodule "payload_estimation"]
 	path = payload_estimation
 	url = https://github.com/Roblyat/payload_estimation.git
