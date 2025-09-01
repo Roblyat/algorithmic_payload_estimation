@@ -108,6 +108,7 @@ services:
       volumes:
         # bind your repo
         # Your workspaces/packages
+        - ${APE_REPO}/docker/shortcuts.bash:/ros2_ws/shortcuts.bash:ro
         - ${APE_REPO}/payload_estimation:/ros2_ws/src/payload_estimation:rw
         - ${APE_REPO}/rbyt_robotiq:/ros2_ws/src/rbyt_robotiq:rw
         - ${APE_REPO}/Universal_Robots_ROS2_Description:/ros2_ws/src/Universal_Robots_ROS2_Description:rw

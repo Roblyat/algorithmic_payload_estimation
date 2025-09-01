@@ -13,7 +13,7 @@ services:
       AMENT_PREFIX_PATH: "/workspace/ros_ws/install:/isaac-sim/exts/isaacsim.ros2.bridge/humble"
 
       # Use Isaac’s Python 3.11 rclpy (no /opt/ros on PYTHONPATH)
-      PYTHONPATH: "/isaac-sim/exts/isaacsim.ros2.bridge/humble/lib/python3.11/site-packages"
+      # PYTHONPATH: "/isaac-sim/exts/isaacsim.ros2.bridge/humble/lib/python3.11/site-packages"
 
       # Optional: helps the *normal* URDF importer before first build
       # (point to package roots inside the mounted workspace)
@@ -28,6 +28,8 @@ services:
       - ${APE_REPO}/isaac_ros_ws:/workspace/ros_ws
 
       # mount packages directly into the workspace src/
+      - ${APE_REPO}/docker/shortcuts.bash:/workspace/ros_ws/shortcuts.bash:ro
+      - ${APE_REPO}/docker/shortcuts.bash:/isaac-sim/shortcuts.bash:ro
       - ${APE_REPO}/Universal_Robots_ROS2_Description:/workspace/ros_ws/src/Universal_Robots_ROS2_Description:ro
       - ${APE_REPO}/manipulator_description/ur_manipulator_description:/workspace/ros_ws/src/manipulator_description/ur_manipulator_description:ro
       - ${APE_REPO}/manipulator_moveit_config/ur3_manipulator_moveit_config:/workspace/ros_ws/src/manipulator_moveit_config/ur3_manipulator_moveit_config:ro

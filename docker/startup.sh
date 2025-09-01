@@ -17,9 +17,9 @@ err()   { printf "${C_ERR}[STARTUP] %s${C_RESET}\n" "$*"; }
 ROOT="$HOME/.localgit/algorithmic_payload_estimation"
 ISAAC="$ROOT/IsaacLab/docker"
 MOVEIT="$ROOT/docker"
-ISAAC_ENV="$ROOT/docker/.env.isaacsim"
+ISAAC_ENV="$ROOT/docker/env.isaacsim"
 ISAAC_CTR="isaac-lab-ros2"
-ISAAC_CMP="$ROOT/docker/ipc-host.yaml"
+ISAAC_CMP="$ROOT/docker/isaac.compose.yaml"
 
 # Export for compose substitution
 export APE_REPO="${APE_REPO:-$ROOT}"
@@ -64,5 +64,5 @@ chmod +x "$ROOT/docker/check_ros_env.sh" || true
 "$ROOT/docker/check_ros_env.sh"
 
 # tmux (optional)
-# chmod +x "$ROOT/docker/tmux.sh" || true
-# "$ROOT/docker/tmux.sh"
+chmod +x "$ROOT/docker/tmux.sh" || true
+"$ROOT/docker/tmux.sh"
