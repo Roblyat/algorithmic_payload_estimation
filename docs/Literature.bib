@@ -1,0 +1,108 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 📚 Literature.bib
+% Structured SoA database for ape research
+% Categories: Q1 … Q6
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Q1 = Classical / Observers
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ----------------------------------------------------
+% Paper 1: The Sum of Its Parts (Visual Part Segmentation)
+% Keywords:
+% Issue: cobots can’t perform fast motions, need safe inertial parameter ID
+% Math: convex optimization, homogeneous density assumption, point cloud tetrahedralization
+% Methods: visual part segmentation (RGB-D), hybrid clustering, HTC, FT sensing
+% Results: better than OLS/GEO under noise, hammer balancing demo
+% Contribution: first integration of vision + FT for inertial ID, open dataset
+@inproceedings{sum_of_parts_hps,
+  author    = {Nadeau, Philippe and Giamou, Matthew and Kelly, Jonathan},
+  booktitle = {2023 IEEE International Conference on Robotics and Automation (ICRA)}, 
+  title     = {The Sum of Its Parts: Visual Part Segmentation for Inertial Parameter Identification of Manipulated Objects}, 
+  year      = {2023},
+  pages     = {3779-3785},
+  keywords  = {Point cloud compression; Visualization; Parameter estimation; Shape; Motion segmentation; Collaboration; Clustering algorithms},
+  doi       = {10.1109/ICRA48891.2023.10160394}
+}
+
+% ----------------------------------------------------
+% Paper 2: Fast Object Inertial Parameter Identification for Collaborative Robots
+% Keywords:
+% Issue: low SNR in cobots, need fast inertial parameter ID
+% Math: rigid body dynamics, point-mass discretization (PMD), error-invariant metrics
+% Methods: approximate dynamics, PMD, comparison with OLS/RTLS/GEO
+% Results: faster, robust to noise, loses full inertia identifiability
+% Contribution: cobot-tailored fast parameter ID method
+@inproceedings{fast_inertial_id_cobots,
+  author    = {Nadeau, Philippe and Giamou, Matthew and Kelly, Jonathan},
+  booktitle = {2022 International Conference on Robotics and Automation (ICRA)}, 
+  title     = {Fast Object Inertial Parameter Identification for Collaborative Robots}, 
+  year      = {2022},
+  pages     = {3560-3566},
+  keywords  = {Parameter estimation; Uncertainty; Shape; Heuristic algorithms; Dynamics; Collaboration; Object recognition},
+  doi       = {10.1109/ICRA46639.2022.9916213}
+}
+
+% ----------------------------------------------------
+% Paper 3: Online Payload Identification for Tactile Robots Using the Momentum Observer
+% Keywords:
+% Issue: payload affects safety/control, need online ID
+% Math: momentum observer, least squares, calibration filter
+% Methods: MO torque estimates, novel filtering, virtual calibration object
+% Results: tested on Panda robot, lower error than baseline
+% Contribution: first integration of MO torque with online payload ID
+@inproceedings{online_payload_mo,
+  author    = {Kurdas, Alexander and Hamad, Mazin and Vorndamme, Jonathan and Mansfeld, Nico and Abdolshah, Saeed and Haddadin, Sami},
+  booktitle = {2022 International Conference on Robotics and Automation (ICRA)}, 
+  title     = {Online Payload Identification for Tactile Robots Using the Momentum Observer}, 
+  year      = {2022},
+  pages     = {5953-5959},
+  keywords  = {Kinematics; Observers; Robot sensing systems; Robustness; Calibration; Sensors; Trajectory},
+  doi       = {10.1109/ICRA46639.2022.9811691}
+}
+
+% ----------------------------------------------------
+% Paper 4: External Torque Estimation Using Higher Order Sliding-Mode Observer
+% Keywords:
+% Issue: robust external torque estimation in presence of friction/model errors
+% Math: sliding mode observer, Lyapunov stability, SOS programming
+% Methods: higher-order sliding mode, Luenberger observer
+% Results: Sawyer robot, robust with 5% model error, better than ESO
+% Contribution: stable, real-time torque observer with proof guarantees
+@article{external_torque_smo,
+  author    = {Kommuri, Suneel Kumar and Han, Seungyong and Lee, Sangmoon},
+  journal   = {IEEE/ASME Transactions on Mechatronics}, 
+  title     = {External Torque Estimation Using Higher Order Sliding-Mode Observer for Robot Manipulators}, 
+  year      = {2022},
+  volume    = {27},
+  number    = {1},
+  pages     = {513-523},
+  keywords  = {Observers; Torque; Manipulators; Force; Manipulator dynamics; Friction; Convergence; External torque estimation; model uncertainties; robotic manipulator; robust-observer design},
+  doi       = {10.1109/TMECH.2021.3067443}
+}
+
+% ----------------------------------------------------
+% Paper 5: Contact Force and Torque Sensing (Adaptive Kalman Filter)
+% Keywords:
+% Issue: F/T sensors expensive/fragile, need sensorless estimation
+% Math: Kalman filtering, adaptive covariance, generalized momentum
+% Methods: adaptive Kalman filter, MSMA noise reduction
+% Results: UR5 manipulator, reduced error, robust under payload change
+% Contribution: low-cost alternative to 6-axis F/T sensors
+@article{contact_force_kf,
+  author    = {Feng Cao and Paul D. Docherty and Siliang Ni and XiaoQi Chen},
+  title     = {Contact force and torque sensing for serial manipulator based on an adaptive Kalman filter with variable time period},
+  journal   = {Robotics and Computer-Integrated Manufacturing},
+  volume    = {72},
+  pages     = {102210},
+  year      = {2021},
+  issn      = {0736-5845},
+  doi       = {https://doi.org/10.1016/j.rcim.2021.102210},
+  url       = {https://www.sciencedirect.com/science/article/pii/S0736584521000934},
+  keywords  = {Contact force and torque sensing, Adaptive Kalman filter, Mode-switching moving average, Variable time period}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% End of Q1 Section
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
