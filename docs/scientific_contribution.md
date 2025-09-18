@@ -99,15 +99,13 @@ Perfect — let’s make this clean. I’ll add a **new category: “Estimation 
 * iterative reweighted least squares (IRLS)
 * recursive least squares (RLS)
 * inertial parameter identification (IPI)
-* payload identification (PI)
-* payload estimation (PE)
 * momentum-based observer
 * dynamic state observer
 * observer
 * force observer
 * torque observer
 
-
+ 
 ## **2. Gaussian Process (GP) / Hybrid GP**
 
 * gaussian process regression (GPR)
@@ -184,9 +182,8 @@ Perfect — let’s make this clean. I’ll add a **new category: “Estimation 
 
 
 
-## **7. Estimation Goal & Domain**
-
-*(to combine with one of the above categories)*
+## **7. (Estimation Goal & Domain)**
+## **7a. Estimation & Modeling Terms**
 
 * external force
 * force measurement
@@ -199,7 +196,7 @@ Perfect — let’s make this clean. I’ll add a **new category: “Estimation 
 * inertial parameters
 * inertial parameter identification
 * online payload identification
-* robot payload identification
+* payload identification
 * payload estimation
 * object parameter estimation
 * parameter identification
@@ -210,34 +207,71 @@ Perfect — let’s make this clean. I’ll add a **new category: “Estimation 
 * nonlinear systems
 * friction approximation
 * nonlinear friction model
-* robotic manipulator
-* robotic arm
-* robotic manipulation
 * external perturbations
 * force torque sensor (F/T sensor)
-* robot payload
 * noise
 * signal noise
 * noise estimation
 * external force estimation (EFE)
 * external torque estimation (ETE)
-* force estimation
 * torque estimation
-* wrench estimation
 * parameter identification differentiable simulation
+* payload identification (PI)
+* payload estimation (PE)
+
+## **7b. Robotics Context Terms**
+
+* robotic manipulator
+* robotic arm
+* robotic manipulation
+* robot payload
 
 ---
 ---
 
-## 7) key references:
-thats what i am looking for too exactly, but for example:
+## 8) 🔎 Research Results
 
-- Fast Object Inertial Parameter Identification for Collaborative Robots: 10.1109/ICRA46639.2022.9916213
+![Query Logic Diagram](query_logic.png)
 
--An Efficient Parameter Identification Framework: A Case Study on Robot Manipulators:10.1109/TIM.2025.3542857
+### Categories
+- $C_1 =$ Classical / Observers  
+- $C_2 =$ Gaussian Process (GP) / Hybrid GP  
+- $C_3 =$ Deep Sequence Models (MLP / GRU / TCN / Transformer)  
+- $C_4 =$ Hybrid / Residual  
+- $C_5 =$ Physics-Informed / Differentiable  
+- $C_6 =$ Domain Adaptation / Latent Context  
 
-- On the Fully Decoupled Rigid-Body Dynamics Identification of Serial Industrial Robots: 10.1109/TRO.2025.3578229
+### Query Logic (Generalized Set Intersection)
 
+### Combined Representation
 
-concept map:
-https://www.researchgate.net/figure/Citation-network-mapping-the-citations-from-reviews-to-RCTs-testing-dietary-fat_fig1_325349621
+$$
+C = \{ C_1, C_2, \dots, C_6 \}
+$$
+
+$$
+Q = \bigcup_{i=1}^{6} Q_i
+$$
+
+$$
+Q_i = \left( \bigvee_{c \in C_i} c \right) 
+\;\; \land \;\; 
+\left( \bigvee_{e \in C7a} e \right) 
+\;\; \land \;\; 
+\left( \bigvee_{r \in C7b} r \right),
+\quad i = 1, 2, \dots, 6
+$$
+
+---
+
+## 📊 Research Results Table
+
+| Query   | Total Papers | Papers (2022–Current) |
+|---------|--------------|------------------------|
+| $Q_1$   |     459      |          148           |
+| $Q_2$   |              |                        |
+| $Q_3$   |              |                        |
+| $Q_4$   |              |                        |
+| $Q_5$   |              |                        |
+| $Q_6$   |              |                        |
+
