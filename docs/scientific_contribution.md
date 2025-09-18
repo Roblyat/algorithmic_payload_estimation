@@ -275,3 +275,5 @@ $$
 
 * **“Mature SoA”** = older but highly cited works [2022-2025]
 * **“Emerging SoA”** = [2025]
+
+![Concept Graph](concept_graph.png)
