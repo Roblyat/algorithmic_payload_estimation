@@ -49,13 +49,10 @@ https://doi-1org-1000340761202.han.technikum-wien.at/10.1016/j.engappai.2022.105
 - Okay mathematics
 - No robot dynamics
 
-**The Dynamic Model of the UR10 Robot and Its ROS2 Integration [2025]**
-https://doi-1org-100033c7614d9.han.technikum-wien.at/10.1109/TII.2025.3534415
-- the badest paper i have ever seen 
-- all references before 2017, lastest reference is 2017
-- this paper just apperars here to verify by Michael/Mohammed if this is a paper worth to read 
-- do i need to take papers like this into account? How the fuck this paper passed the review ?????????
+**Decoupling Observer for Contact Force Estimation of Robot Manipulators Based on Enhanced Gaussian Process Model**
+https://ieeexplore-1ieee-1org-100033c76188b.han.technikum-wien.at/document/10016359
 
+- GP
 ---
 
 ## 2) Questions
@@ -266,12 +263,15 @@ $$
 
 ## 📊 Research Results Table
 
-| Query   | Total Papers | Papers (2022–Current) |
-|---------|--------------|------------------------|
-| $Q_1$   |     459      |          148           |
-| $Q_2$   |              |                        |
-| $Q_3$   |              |                        |
-| $Q_4$   |              |                        |
-| $Q_5$   |              |                        |
-| $Q_6$   |              |                        |
+| Query   | Total Papers | Papers (2022–Current) | Mature SoA | Emerging SoA |
+|---------|--------------|------------------------|------------|--------------|
+| $Q_1$   |     459      |          148           |     4      |       0      |
+| $Q_2$   |              |                        |            |              |
+| $Q_3$   |              |                        |            |              |
+| $Q_4$   |              |                        |            |              |
+| $Q_5$   |              |                        |            |              |
+| $Q_6$   |              |                        |            |              |
 
+
+* **“Mature SoA”** = older but highly cited works [2022-2025]
+* **“Emerging SoA”** = [2025]
