@@ -49,10 +49,6 @@ https://doi-1org-1000340761202.han.technikum-wien.at/10.1016/j.engappai.2022.105
 - Okay mathematics
 - No robot dynamics
 
-**Decoupling Observer for Contact Force Estimation of Robot Manipulators Based on Enhanced Gaussian Process Model**
-https://ieeexplore-1ieee-1org-100033c76188b.han.technikum-wien.at/document/10016359
-
-- GP
 ---
 
 ## 2) Questions
@@ -228,11 +224,11 @@ Perfect — let’s make this clean. I’ll add a **new category: “Estimation 
 
 ## 8) 🔎 Research Results
 
-![Query Logic Diagram](query_logic.png)
+<img src="query_logic.png" alt="Query Logic Diagram" width="550" height="">
 
 ### Categories
-- $C_1 =$ Classical / Observers  
-- $C_2 =$ Gaussian Process (GP) / Hybrid GP  
+- $C_1 =$ Classical / Observers
+- $C_2 =$ Gaussian Process (GP) / Hybrid GP
 - $C_3 =$ Deep Sequence Models (MLP / GRU / TCN / Transformer)  
 - $C_4 =$ Hybrid / Residual  
 - $C_5 =$ Physics-Informed / Differentiable  
@@ -266,7 +262,7 @@ $$
 | Query   | Total Papers | Papers (2022–Current) | Mature SoA | Emerging SoA |
 |---------|--------------|------------------------|------------|--------------|
 | $Q_1$   |     459      |          148           |     4      |       0      |
-| $Q_2$   |              |                        |            |              |
+| $Q_2$   |      21      |                        |            |              |
 | $Q_3$   |              |                        |            |              |
 | $Q_4$   |              |                        |            |              |
 | $Q_5$   |              |                        |            |              |
@@ -276,4 +272,6 @@ $$
 * **“Mature SoA”** = older but highly cited works [2022-2025]
 * **“Emerging SoA”** = [2025]
 
-![Concept Graph](concept_graph.png)
+---
+---
+<img src="concept_graph.png" alt="Concept Graph" width="750" height="">
