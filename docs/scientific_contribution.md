@@ -127,6 +127,9 @@ Perfect — let’s make this clean. I’ll add a **new category: “Estimation 
 * transformer model
 * attention model
 * sequence-to-sequence (seq2seq, S2S)
+* sequence GAN (SeqGAN, TimeGAN)
+* GAN
+* Generative Adversarial Networks
 
 
 ## **4. Hybrid / Residual**
@@ -141,6 +144,9 @@ Perfect — let’s make this clean. I’ll add a **new category: “Estimation 
 * nominal dynamics model (NDM)
 * neural correction
 * learning inverse dynamics residual (ID residual)
+* residual GAN
+* GAN
+* Generative Adversarial Networks
 
 
 ## **5. Physics-Informed / Differentiable**
@@ -172,7 +178,11 @@ Perfect — let’s make this clean. I’ll add a **new category: “Estimation 
 * domain invariant features (DIF)
 * few shot learning (FSL)
 * zero shot transfer (ZSL)
-
+* GAN
+* CGAN
+* LSGAN
+* CycleGAN
+* Generative Adversarial Networks
 
 
 ## **7. (Estimation Goal & Domain)**
@@ -211,6 +221,7 @@ Perfect — let’s make this clean. I’ll add a **new category: “Estimation 
 * parameter identification differentiable simulation
 * payload identification (PI)
 * payload estimation (PE)
+* contact force
 
 ## **7b. Robotics Context Terms**
 
@@ -229,7 +240,7 @@ Perfect — let’s make this clean. I’ll add a **new category: “Estimation 
 ### Categories
 - $C_1 =$ Classical / Observers
 - $C_2 =$ Gaussian Process (GP) / Hybrid GP
-- $C_3 =$ Deep Sequence Models (MLP / GRU / TCN / Transformer)  
+- $C_3 =$ Deep Sequence Models (MLP / GRU / TCN / Transformer)
 - $C_4 =$ Hybrid / Residual  
 - $C_5 =$ Physics-Informed / Differentiable  
 - $C_6 =$ Domain Adaptation / Latent Context  
@@ -259,19 +270,19 @@ $$
 
 ## 📊 Research Results Table
 
-| Query   | Total Papers | Papers (2022–Current) | Mature SoA | Emerging SoA |
-|---------|--------------|------------------------|------------|--------------|
-| $Q_1$   |     459      |          148           |     4      |       0      |
-| $Q_2$   |      21      |                        |            |              |
-| $Q_3$   |              |                        |            |              |
-| $Q_4$   |              |                        |            |              |
-| $Q_5$   |              |                        |            |              |
-| $Q_6$   |              |                        |            |              |
+| Query   | Total Papers | Papers (2022–Current)  | Mature SoA [2022-2025]| Emerging SoA [2025] |
+|---------|--------------|------------------------|-----------------------|---------------------|
+| $Q_1$   |     459      |          148           |           4           |          0          |
+| $Q_2$   |      21      |            8           |           3           |          0          |
+| $Q_3$   |     165      |          117           |                       |                     |
+| $Q_4$   |              |                        |                       |                     |
+| $Q_5$   |              |                        |                       |                     |
+| $Q_6$   |              |                        |                       |                     |
 
 
+## Filter relevant impact State of Art
 * **“Mature SoA”** = older but highly cited works [2022-2025]
 * **“Emerging SoA”** = [2025]
-
 ---
 ---
 <img src="concept_graph.png" alt="Concept Graph" width="750" height="">

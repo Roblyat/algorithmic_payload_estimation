@@ -106,3 +106,85 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End of Q1 Section
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Q2 = Gaussian Process (GP) / Hybrid GP
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ----------------------------------------------------
+% Paper 1: Contact Force Estimation with GP Adaptive Disturbance Kalman Filter
+% Keywords:
+% Issue: multi-source uncertainties (model errors, noise) harm contact force estimation
+% Math: semi-parametric dynamics, GPR mean+covariance, Variational Bayes adaptive KF
+% Methods: GPADKF = GPR residual dynamics + adaptive noise estimation
+% Results: more accurate/reliable than DKF/EDKF in uncertain environments
+% Contribution: unified GP+VB framework for robust contact force estimation
+@article{contact_force_gpadkf,
+  author    = {Wei, Yanran and Lyu, Shangke and Li, Wenshuo and Yu, Xiang and Wang, Zidong and Guo, Lei},
+  journal   = {IEEE Transactions on Automation Science and Engineering}, 
+  title     = {Contact Force Estimation of Robot Manipulators With Imperfect Dynamic Model: On Gaussian Process Adaptive Disturbance Kalman Filter}, 
+  year      = {2024},
+  volume    = {21},
+  number    = {3},
+  pages     = {3524-3537},
+  keywords  = {Force; Manipulator dynamics; Dynamics; Estimation; Robots; Uncertainty; Gaussian processes; Kalman filters; Force estimation; disturbance observer; robot manipulator},
+  doi       = {10.1109/TASE.2023.3280750}
+}
+
+% ----------------------------------------------------
+% Paper 2: Decoupling Observer + Enhanced GP for Contact Force Estimation
+% Keywords:
+% Issue: residual dynamics corrupt force estimation, noise and uncertainty
+% Math: Euler-Lagrange dynamics, momentum observer, GPR mean+covariance
+% Methods: Enhanced GP residual model + GPDKF (decoupling observer + KF)
+% Results: more robust and accurate than DKF/NN-based observers on 3-DoF robot
+% Contribution: first uncertainty-aware semi-parametric observer for contact force estimation
+@inproceedings{contact_force_gp_observer,
+  author    = {Wei, Yanran and Li, Wenshuo and Yang, Yi and Yu, Xiang and Guo, Lei},
+  booktitle = {2022 IEEE 8th International Conference on Cloud Computing and Intelligent Systems (CCIS)}, 
+  title     = {Decoupling Observer for Contact Force Estimation of Robot Manipulators Based on Enhanced Gaussian Process Model}, 
+  year      = {2022},
+  pages     = {1-7},
+  keywords  = {Uncertainty; Computational modeling; Dynamics; Force; Estimation; Gaussian processes; Observers; Robotic Manipulator; Residual dynamics; Decoupling observer},
+  doi       = {10.1109/CCIS57298.2022.10016359}
+}
+
+% ----------------------------------------------------
+% Paper 3: Human-Robot Contact Detection (GP Classifier)
+% Keywords:
+% Issue: safe collaboration in assembly requires reliable contact detection
+% Math: probabilistic classification, GPR for mapping sensor data to contact/no-contact
+% Methods: GP-based binary classifier with uncertainty quantification
+% Results: better robustness than thresholding or deterministic classifiers in assembly tasks
+% Contribution: first GP-based probabilistic framework for human-robot contact detection
+@inproceedings{contact_detection_gp,
+  author    = {Fathi, Kiavash and Rezayati, Maryam and Van de Venn, Hans Wernher},
+  booktitle = {2022 7th International Conference on Mechanical Engineering and Robotics Research (ICMERR)}, 
+  title     = {Human-Robot Contact Detection in Assembly Tasks}, 
+  year      = {2022},
+  pages     = {224-230},
+  keywords  = {Industries; Torque; Service robots; Gaussian processes; Real-time systems; Safety; Human-robot collaboration; Contact detection; Gaussian process regressor},
+  doi       = {10.1109/ICMERR56497.2022.10097827}
+}
+
+% ----------------------------------------------------
+% Book: Gaussian Processes for Machine Learning
+% Keywords:
+% Issue: foundation of GP theory for regression/classification
+% Math: kernel methods, Bayesian inference, marginal likelihood, GP regression
+% Methods: nonparametric Bayesian regression with covariance functions
+% Results: canonical reference text
+% Contribution: defines GP regression and its applications
+@book{rasmussen_gpml,
+  author    = {Rasmussen, Carl Edward and Williams, Christopher K. I.},
+  title     = {Gaussian Processes for Machine Learning},
+  publisher = {MIT Press},
+  address   = {Cambridge, Massachusetts and London, England},
+  year      = {2006},
+  note      = {[Online]. Available: \url{http://www.gaussianprocess.org/gpml} [Accessed: 18-Sep-2025]}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% End of Q2 Section
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
