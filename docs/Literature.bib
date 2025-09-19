@@ -188,3 +188,106 @@
 % End of Q2 Section
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Q3 = Deep Sequence Models (MLP / GRU / TCN / Transformer)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ----------------------------------------------------
+% Paper 1: Bayesian Reinforcement Learning for Sparse-Reward Manipulation
+% Keywords:
+% Issue: sparse rewards harm exploration & stability in robot manipulation
+% Math: MDPs, Bayesian neural networks, KL divergence, Monte Carlo sampling
+% Methods: Bayesian Deep RL (BDRL), uncertainty decomposition (model, aleatoric, reward)
+% Results: improved convergence & stability across 4 manipulation tasks
+% Contribution: first uncertainty-aware RL framework for sparse-reward robotic manipulation
+@inproceedings{bayesian_rl_sparse,
+  author    = {Zheng, Li and Li, Yanghong and Wang, Yahao and Bai, Guangrui and He, Haiyang and Dong, Erbao},
+  booktitle = {2023 IEEE International Conference on Robotics and Biomimetics (ROBIO)}, 
+  title     = {Uncertainty in Bayesian Reinforcement Learning for Robot Manipulation Tasks with Sparse Rewards}, 
+  year      = {2023},
+  pages     = {1-6},
+  keywords  = {Deep learning; Uncertainty; Heuristic algorithms; Decision making; Robot control; Neural networks; Reinforcement learning},
+  doi       = {10.1109/ROBIO58561.2023.10354785}
+}
+
+% ----------------------------------------------------
+% Paper 2: Extended Deep Lagrangian Network (DeLaN) with Motor Couplings
+% Keywords:
+% Issue: standard DeLaN ignores motor torque/friction couplings, reducing realism
+% Math: Lagrangian mechanics, neural energy parameterization, friction dynamics
+% Methods: Extended DeLaN with motor signals (currents/voltages) + physics priors
+% Results: more accurate dynamics prediction on UR10e than physics-only or NN-only
+% Contribution: extends DeLaN to capture motor coupling & nonlinear dynamics
+@inproceedings{extended_delan_motor,
+  author    = {Wu, Shuangshuang and Sun, Fengyu and Chen, Wenbai and Li, Yafeng},
+  booktitle = {2025 40th Youth Academic Annual Conference of Chinese Association of Automation (YAC)}, 
+  title     = {Extended Deep Lagrangian Network for Robotic Arm Dynamics considering Motor Couplings}, 
+  year      = {2025},
+  pages     = {2050-2054},
+  keywords  = {Couplings; Accuracy; Torque; System dynamics; Friction; Dynamics; Predictive models; Motors; Manipulators; Data models; Physics-Inspired Networks; Motor Coupling; Robotic Arm},
+  doi       = {10.1109/YAC66630.2025.11150193}
+}
+
+% ----------------------------------------------------
+% Paper 3: CNN-Based Robot Arm Parameter Identification
+% Keywords:
+% Issue: LS/regressor-based ID fails under noise, need robust parameter identification
+% Math: robot dynamics regression, DCT-II subsampling, CNN feature extraction
+% Methods: transform torque/state signals into images, CNN extracts features → parameters
+% Results: CNN estimates inertial parameters more accurately under noise than LS
+% Contribution: introduces vision-inspired CNN approach for dynamic parameter ID
+@article{cnn_param_id,
+  author    = {De Le{\'o}n, Carlos Leopoldo Carre{\'o}n-D{\'\i}az and Vergara-Lim{\'o}n, Sergio and Vargas-Trevi{\~n}o, Mar{\'\i}a Aurora D. and L{\'o}pez-G{\'o}mez, Jes{\'u}s and Gonzalez-Calleros, Juan Manuel and Gonz{\'a}lez-Arriaga, Daniel Marcelo and Vargas-Trevi{\~n}o, Marciano},
+  journal   = {IEEE Access}, 
+  title     = {Parameter Identification of a Robot Arm Manipulator Based on a Convolutional Neural Network}, 
+  year      = {2022},
+  volume    = {10},
+  pages     = {55002-55019},
+  keywords  = {Robots; Friction; Torque; Mathematical models; Convolutional neural networks; Heuristic algorithms; Robot sensing systems; CNN; dynamic parameters; parameter identification; robotics; signals},
+  doi       = {10.1109/ACCESS.2022.3177209}
+}
+
+% ----------------------------------------------------
+% Paper 4: Encoder-Discrepancy + Attention for Payload Estimation
+% Keywords:
+% Issue: payload inertial ID without torque sensors, using only encoders
+% Math: torque–angle discrepancy modeling, weighted LS, attention weighting
+% Methods: NN torque estimation from encoder discrepancies, attention-based joint weighting
+% Results: estimated payload mass & CoM accurately with only encoder data
+% Contribution: first encoder-only method for payload ID with attention weighting
+@article{encoder_attention_payload,
+  author    = {Lao, Zizhou and Han, Yuanfeng and Ma, Yunshan and Chirikjian, Gregory S.},
+  journal   = {IEEE Robotics and Automation Letters}, 
+  title     = {A Learning-Based Approach for Estimating Inertial Properties of Unknown Objects From Encoder Discrepancies}, 
+  year      = {2023},
+  volume    = {8},
+  number    = {9},
+  pages     = {5283-5290},
+  keywords  = {Torque; Robots; Robot sensing systems; Sensors; Training; Force; Estimation; Attention mechanism; calibration and identification; representation learning},
+  doi       = {10.1109/LRA.2023.3293723}
+}
+
+% ----------------------------------------------------
+% Paper 5: LSTM Force/Torque Estimation for 7-DoF Manipulator
+% Keywords:
+% Issue: analytical inverse dynamics degrades under noise/unmodeled effects
+% Math: inverse dynamics equations, sequence modeling, LSTM temporal learning
+% Methods: compare MLP, CNN, LSTM for torque/force estimation
+% Results: LSTM best performance for end-effector force and torque estimation
+% Contribution: shows sequence models outperform static networks for robot force estimation
+@article{lstm_force_estimation,
+  author    = {Kru{\v{z}}i{\'c}, Stanko and Musi{\'c}, Josip and Kamnik, Roman and Papi{\'c}, Vladan},
+  journal   = {Electronics}, 
+  title     = {End-Effector Force and Joint Torque Estimation of a 7-DoF Robotic Manipulator Using Deep Learning}, 
+  year      = {2021},
+  volume    = {10},
+  number    = {23},
+  article-number = {2963},
+  issn      = {2079-9292},
+  url       = {https://www.mdpi.com/2079-9292/10/23/2963},
+  keywords  = {LSTM; Force estimation; Torque estimation; Robot dynamics; Deep learning}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% End of Q3 Section
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
