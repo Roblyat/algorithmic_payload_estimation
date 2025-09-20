@@ -178,11 +178,6 @@ Perfect — let’s make this clean. I’ll add a **new category: “Estimation 
 * domain invariant features (DIF)
 * few shot learning (FSL)
 * zero shot transfer (ZSL)
-* GAN
-* CGAN
-* LSGAN
-* CycleGAN
-* Generative Adversarial Networks
 
 
 ## **7. (Estimation Goal & Domain)**
@@ -276,9 +271,9 @@ $$
 | $Q_2$   |      21      |            8           |           3           |
 | $Q_3$   |     165      |          117           |           6           |
 | $Q_4$   |      21      |           17           |           2           |
-| $Q_5$   |              |                        |                       |
-| $Q_6$   |              |                        |                       |
-
+| $Q_5$   |       1      |            1           |           0           |
+| $Q_6$   |      38      |           24           |           6           |
+| $Total$ |     $705$    |          $315$         |          $23$         |
 
 ## Filter relevant impact State of Art
 * **“Mature SoA”** = cited or relevant work. paper with impact for ape [2022-2025]
