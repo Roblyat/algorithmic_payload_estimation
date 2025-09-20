@@ -291,3 +291,49 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End of Q3 Section
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Q4 = Hybrid / Residual
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ----------------------------------------------------
+% Paper 1: Augmenting Tactile Simulators with Real-like and Zero-Shot Capabilities (SightGAN)
+% Keywords:
+% Issue: tactile simulators have a sim-to-real gap; synthetic data fails in real transfer
+% Math: GAN adversarial loss, CycleGAN cycle loss, residual contact consistency terms
+% Methods: SightGAN = CycleGAN + spatial + pixel residual consistency losses
+% Results: RMSE reduced ~3.5 mm; 47% better FID; zero-shot transfer on unseen sensors
+% Contribution: first GAN with contact-aware residuals enabling tactile zero-shot sim-to-real
+@inproceedings{sightgan_tactile_transfer,
+  author    = {Azulay, Osher and Mizrahi, Alon and Curtis, Nimrod and Sintov, Avishai},
+  booktitle = {2024 IEEE International Conference on Robotics and Automation (ICRA)}, 
+  title     = {Augmenting Tactile Simulators with Real-like and Zero-Shot Capabilities}, 
+  year      = {2024},
+  pages     = {5702-5708},
+  keywords  = {Image sensors; Three-dimensional displays; Accuracy; Force; Tactile sensors; Generative adversarial networks; Data models},
+  doi       = {10.1109/ICRA57147.2024.10610442}
+}
+
+% ----------------------------------------------------
+% Paper 2: Programmatic Imitation Learning from Unlabeled and Noisy Demonstrations (PLUNDER)
+% Keywords:
+% Issue: Imitation learning needs clean/labeled demos; black-box NN policies lack interpretability
+% Math: EM latent variable inference, probabilistic DSL, program synthesis
+% Methods: PLUNDER = probabilistic program induction with EM (E-step particle filtering, M-step program synthesis)
+% Results: 90%+ success rate; robust to noise; interpretable symbolic policies
+% Contribution: first probabilistic programmatic imitation learning framework robust to unlabeled/noisy demos
+@article{plunder_pil,
+  author    = {Xin, Jimmy and Zheng, Linus and Rahmani, Kia and Wei, Jiayi and Holtz, Jarrett and Dillig, Isil and Biswas, Joydeep},
+  journal   = {IEEE Robotics and Automation Letters}, 
+  title     = {Programmatic Imitation Learning From Unlabeled and Noisy Demonstrations}, 
+  year      = {2024},
+  volume    = {9},
+  number    = {6},
+  pages     = {4894-4901},
+  keywords  = {Task analysis; Trajectory; Probabilistic logic; Noise measurement; Training data; Approximation algorithms; Robot learning; Program synthesis},
+  doi       = {10.1109/LRA.2024.3385691}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% End of Q4 Section
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

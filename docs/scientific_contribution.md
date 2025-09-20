@@ -270,19 +270,18 @@ $$
 
 ## 📊 Research Results Table
 
-| Query   | Total Papers | Papers (2022–Current)  | Mature SoA [2022-2025]| Emerging SoA [2025] |
-|---------|--------------|------------------------|-----------------------|---------------------|
-| $Q_1$   |     459      |          148           |           4           |          0          |
-| $Q_2$   |      21      |            8           |           3           |          0          |
-| $Q_3$   |     165      |          117           |                       |                     |
-| $Q_4$   |              |                        |                       |                     |
-| $Q_5$   |              |                        |                       |                     |
-| $Q_6$   |              |                        |                       |                     |
+| Query   | Total Papers | Papers (2022–Current)  | Mature SoA [2022-2025]|
+|---------|--------------|------------------------|-----------------------|
+| $Q_1$   |     459      |          148           |           6           |
+| $Q_2$   |      21      |            8           |           3           |
+| $Q_3$   |     165      |          117           |           6           |
+| $Q_4$   |      21      |           17           |           2           |
+| $Q_5$   |              |                        |                       |
+| $Q_6$   |              |                        |                       |
 
 
 ## Filter relevant impact State of Art
-* **“Mature SoA”** = older but highly cited works [2022-2025]
-* **“Emerging SoA”** = [2025]
+* **“Mature SoA”** = cited or relevant work. paper with impact for ape [2022-2025]
 ---
 ---
 <img src="concept_graph.png" alt="Concept Graph" width="750" height="">
