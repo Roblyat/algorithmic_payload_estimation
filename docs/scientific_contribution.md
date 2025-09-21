@@ -6,19 +6,11 @@
 1. [What is on the market](#1-what-is-on-the-market)
 2. [Questions](#2-questions)
 3. [Important things we need to remember](#3-important-things-we-need-to-remember)
-
 ---
 
-## 0) What we need to do first
+## 1) What is on the market / SIGNIFICANT PAPER
 
-- Check the 4 papers in here plus their references
-- Do big research again and compare to papers we already have
-- Check release date of papers we already have (we need 2023-2025, except for important exceptions)
-- cmd search --> search with IEEE Keywords, not Author Keywords
-
----
-
-## 1) What is on the market
+- CHECK THESE PAPER RELATED WORK --> that finishes research
 
 **Accurate Payload Dynamics Estimation and Compensation of a Robotic Manipulator without External Motion Measuring Sensors [2025]**  
 https://doi-1org-100033c7611df.han.technikum-wien.at/10.1109/EECR64516.2025.11077346
@@ -26,20 +18,6 @@ https://doi-1org-100033c7611df.han.technikum-wien.at/10.1109/EECR64516.2025.1107
 - Classical methods just work as long as payload is manipulated 
 - Force sensor gets damaged by contact with environment
 - Good SOTA 2025 and classification in SOTA
-- Good mathematics
-- **Check references of this paper first and check this paper closely!**
-
-**Contact force and torque sensing for serial manipulator based on an adaptive Kalman filter with variable time period [2021]**  
-https://doi-1org-10003407611e5.han.technikum-wien.at/10.1016/j.rcim.2021.102210
-
-- Good mathematics 
-- Good SOTA for paper's release date 
-- Force sensor gets damaged by contact with environment
-
-**Neural-Learning-Based Force Sensorless Admittance Control for Robots With Input Deadzone [2020]**  
-https://doi-1org-100033c7611fc.han.technikum-wien.at/10.1109/TIE.2020.2991929
-
-- Good SOTA for NN, based on release date
 - Good mathematics
 
 **An adaptive sparse general regression neural network-based force observer for teleoperation system [2023]**  
@@ -49,6 +27,11 @@ https://doi-1org-1000340761202.han.technikum-wien.at/10.1016/j.engappai.2022.105
 - Okay mathematics
 - No robot dynamics
 
+**On the Fully Decoupled Rigid-Body Dynamics Identification of Serial Industrial Robots** [2025]
+https://ieeexplore-1ieee-1org-100033c761aa6.han.technikum-wien.at/document/11029106
+
+- good mathmatics
+- current sota kalman filter classical observers
 ---
 
 ## 2) Questions
@@ -66,16 +49,13 @@ https://doi-1org-1000340761202.han.technikum-wien.at/10.1016/j.engappai.2022.105
 
 - We want to eliminate the need for the dynamic parameters of the robot
 
-## 4) What is searched to this point
-- "payload estimation" clocked into IEEE Search line --> gave 136 results, matching papers to ape-problem already in citavi
-
-## 5) Index Term Pool
+## 4) Index Term Pool
 
 Perfect — let’s make this clean. I’ll add a **new category: “Estimation Goal & Domain”** that contains only unique, well-scoped search terms. I’ll also keep capitalization consistent so you can copy them directly into searches.
 
 ---
 
-## 6) 🔑 Categories with Keywords (full, acronyms, no duplicates)
+## 5) 🔑 Categories with Keywords
 
 ## **1. Classical / Observers**
 
@@ -91,7 +71,6 @@ Perfect — let’s make this clean. I’ll add a **new category: “Estimation 
 * weighted least squares (WLS)
 * iterative reweighted least squares (IRLS)
 * recursive least squares (RLS)
-* inertial parameter identification (IPI)
 * momentum-based observer
 * dynamic state observer
 * observer
@@ -192,7 +171,7 @@ Perfect — let’s make this clean. I’ll add a **new category: “Estimation 
 * end-effector force
 * end-effector torque
 * inertial parameters
-* inertial parameter identification
+* inertial parameter identification (IPI)
 * online payload identification
 * payload identification
 * payload estimation
@@ -267,16 +246,25 @@ $$
 
 | Query   | Total Papers | Papers (2022–Current)  | Mature SoA [2022-2025]|
 |---------|--------------|------------------------|-----------------------|
-| $Q_1$   |     459      |          148           |           6           |
+| $Q_1$   |     462      |          152           |           10          |
 | $Q_2$   |      21      |            8           |           3           |
-| $Q_3$   |     165      |          117           |           6           |
-| $Q_4$   |      21      |           17           |           2           |
-| $Q_5$   |       1      |            1           |           0           |
-| $Q_6$   |      38      |           24           |           6           |
-| $Total$ |     $705$    |          $315$         |          $23$         |
+| $Q_3$   |     167      |          119           |           8           |
+| $Q_4$   |      23      |           19           |           4           |
+| $Q_5$   |       2      |            2           |           1           |
+| $Q_6$   |      41      |           27           |           9           |
+| $Total$ incorrect |     $705$    |          $315$         |          $23$         |
 
 ## Filter relevant impact State of Art
 * **“Mature SoA”** = cited or relevant work. paper with impact for ape [2022-2025]
 ---
 ---
+
+## Concept Graph
+
+- **category size depends on how much paper related to it**
+- **esitmation/modeling terms and robotics contend size depents on how much paper related to it**
+- **reference bubbls size with their amount of citation (maybe in combination with the relese date), showing the impact of each reference**
+
+---
+
 <img src="concept_graph.png" alt="Concept Graph" width="750" height="">

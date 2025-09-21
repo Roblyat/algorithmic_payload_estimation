@@ -103,6 +103,104 @@
   keywords  = {Contact force and torque sensing, Adaptive Kalman filter, Mode-switching moving average, Variable time period}
 }
 
+% ----------------------------------------------------
+% Paper 6: Accurate Payload Dynamics Estimation & Compensation (No External Sensors)
+% Keywords:
+% Issue: Contact F/T estimation corrupted by unknown payload dynamics; extra sensors (IMU, CAD) impractical
+% Math: Newton–Euler rigid-body dynamics, LS regression, Fourier excitation trajectory optimization, second-order filtering
+% Methods: Step-by-step decoupling (offsets → mass/CoM → inertia tensor); LS estimation; optimized excitation trajectory
+% Results: <10% mass error, improved F/T compensation on 7-DoF ROKAE manipulator
+% Contribution: Online payload ID + compensation using only wrist F/T sensor; no need for CAD/IMU
+@inproceedings{payload_estimation_compensation_2025,
+  author    = {Zhang, Shuaikang and Yuan, Mingxing and Huo, Zixuan and Huang, Junsheng and Zhang, Xuebo},
+  booktitle = {2025 11th International Conference on Electrical Engineering, Control and Robotics (EECR)},
+  title     = {Accurate Payload Dynamics Estimation and Compensation of a Robotic Manipulator without External Motion Measuring Sensors},
+  year      = {2025},
+  pages     = {1-8},
+  keywords  = {Accuracy; Force measurement; Estimation; Payloads; Manipulator dynamics; Online identification; Payload compensation; Force/torque estimation},
+  doi       = {10.1109/EECR64516.2025.11077346}
+}
+
+% ----------------------------------------------------
+% Paper 7: Fully Decoupled Rigid-Body Dynamics Identification (FDRDI)
+% Keywords:
+% Issue: coupled identification in industrial robots fails to sufficiently excite all parameters, leading to poor accuracy
+% Math: rigid-body dynamics regression, S-curve excitation trajectories, least squares estimation
+% Methods: fully decoupled identification (friction, gravity, inertia, payload) using reciprocating S-curve trajectories
+% Results: improved accuracy of torque prediction and payload parameter estimation compared to CRDI/PDRDI
+% Contribution: first fully decoupled SID framework enabling independent estimation of robot body and payload dynamics
+@ARTICLE{hu2025_fdrdi,
+  author    = {Hu, Jinfei and Chen, Zelong and Lin, Yinjie and Chen, Zheng and Yao, Bin and Ma, Xin},
+  journal   = {IEEE Transactions on Robotics}, 
+  title     = {On the Fully Decoupled Rigid-Body Dynamics Identification of Serial Industrial Robots}, 
+  year      = {2025},
+  volume    = {41},
+  number    = {},
+  pages     = {4588--4605},
+  keywords  = {Dynamics identification; industrial robots; payload identification; rigid-body dynamics; serial robots},
+  doi       = {10.1109/TRO.2025.3578229}
+}
+
+% ----------------------------------------------------
+% Paper 8: Two-Stage Payload Dynamics ID with RRTLS
+% Keywords:
+% Issue: Large payloads make force sensing inaccurate; LS/RTLS miss error sources
+% Math: Newton–Euler dynamics, TLS vs RRTLS, Fourier excitation trajectories
+% Methods: Two-stage ID (static + dynamic), recursive restricted TLS (RRTLS), feasible workspace planning
+% Results: <3 N force, <1.7 Nm torque error; better than LS/RTLS; validated on 35 kg payload in aircraft assembly
+% Contribution: First comprehensive, error-aware, online-capable ID framework for large payload collaborative robots
+@ARTICLE{10947736,
+  author    = {Liu, Mingxuan and Li, Pengcheng and Duan, Jinjun and Liu, Lunqian and Shen, Ye and Tian, Wei and Ji, Yuqi},
+  journal   = {IEEE Transactions on Automation Science and Engineering}, 
+  title     = {A Two-Stage Payload Dynamic Parameter Identification Method for Interactive Industrial Robots With Large Components}, 
+  year      = {2025},
+  volume    = {22},
+  number    = {},
+  pages     = {13871-13883},
+  keywords  = {Robot sensing systems;Payloads;Robots;Trajectory;Assembly;Parameter estimation;Sensors;Robot kinematics;Accuracy;Industrial robots;Large components identification;inertial force/torque compensation;recursive restricted total least squares;contact force sensing;industrial robots},
+  doi       = {10.1109/TASE.2025.3557064}
+}
+
+% ----------------------------------------------------
+% Paper 9: Identifying Current Dynamics of Robot Payload Based on Iterative Weighting Estimation
+% Keywords: current dynamics, iterative weighting, payload identification, nonlinear friction, UR10
+% Issue: torque-based payload ID suffers from errors due to uncertain torque constants
+% Math: Newton–Euler dynamics, current–torque mapping, weighted least squares, iterative weighting, Stribeck friction
+% Methods: current-based ID model, iterative WLS with outlier rejection, improved nonlinear friction model
+% Results: accurate payload current dynamics (56 params), lowest RMSE vs 4 torque-based methods, improved collision detection
+% Contribution: first to identify payload dynamics via current signals (no torque constants), robust estimation for industrial robots
+@ARTICLE{10944553,
+  author    = {Xu, Tian and Tuo, Hua and Song, Shuyi and Wang, Chengzhi and Fan, Jizhuang and Zhu, Yanhe and Zhao, Jie},
+  journal   = {IEEE Transactions on Instrumentation and Measurement},
+  title     = {Identifying Current Dynamics of Robot Payload Based on Iterative Weighting Estimation},
+  year      = {2025},
+  volume    = {74},
+  number    = {},
+  pages     = {1--14},
+  doi       = {10.1109/TIM.2025.3554883},
+  keywords  = {Current dynamics; iterative weighting; payload identification; UR10 robot; zero-velocity continuous friction},
+}
+
+% ----------------------------------------------------
+% Paper 10: Double Weighting for Payload Parameter ID
+% Keywords: inertial parameter identification, double weighting, nonlinear friction model, UR10 robot
+% Issue: Existing LS/WLS-based methods sensitive to noise/outliers, poor inertia accuracy
+% Math: inverse dynamics, nonlinear friction, weighted least squares, double weighting
+% Methods: modified two-loop dynamic ID, covariance + data weighting, friction variation modeling
+% Results: best accuracy for mass & CoM, 10–43× better error vs baselines, robust to outliers
+% Contribution: first double weighting framework applied to payload parameter ID
+@article{xu2022_double_weighting_payload_id,
+  author    = {Xu, Tian and Fan, Jizhuang and Fang, Qianqian and Zhu, Yanhe and Zhao, Jie},
+  title     = {An accurate identification method based on double weighting for inertial parameters of robot payloads},
+  journal   = {Robotica},
+  volume    = {40},
+  pages     = {1--17},
+  year      = {2022},
+  doi       = {10.1017/S0263574722000960},
+  url       = {https://doi.org/10.1017/S0263574722000960},
+  publisher = {Cambridge University Press}
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End of Q1 Section
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -288,6 +386,48 @@
   keywords  = {LSTM; Force estimation; Torque estimation; Robot dynamics; Deep learning}
 }
 
+% ----------------------------------------------------
+% Paper 6: Neural-Learning-Based Force Sensorless Admittance Control
+% Keywords:
+% Issue: force sensing costly/unreliable; actuator deadzone degrades performance
+% Math: inverse dynamics, RBFNN approximation, admittance control, Lyapunov stability
+% Methods: incremental-learning RBFNN observer + adaptive neural controller
+% Results: accurate external torque estimation without sensors; compliant control under disturbances
+% Contribution: first NN-based sensorless admittance control compensating actuator deadzone
+@ARTICLE{peng_force_sensorless_admittance,
+  author    = {Peng, Guangzhu and Chen, C. L. Philip and He, Wei and Yang, Chenguang},
+  journal   = {IEEE Transactions on Industrial Electronics}, 
+  title     = {Neural-Learning-Based Force Sensorless Admittance Control for Robots With Input Deadzone}, 
+  year      = {2021},
+  volume    = {68},
+  number    = {6},
+  pages     = {5184-5196},
+  keywords  = {Admittance; Artificial neural networks; Force; Dynamics; Robot sensing systems; Adaptation models; Adaptive control; admittance control; broad learning; force/torque observer; neural networks (NNs)},
+  doi       = {10.1109/TIE.2020.2991929}
+}
+
+% ----------------------------------------------------
+% Paper 7: Adaptive Sparse GRNN Force Observer for Teleoperation
+% Keywords:
+% Issue: F/T sensors impractical in hazardous or surgical teleoperation, dynamics unknown
+% Math: GRNN kernel regression, sparse regularization, support vector pruning, metaheuristic optimization
+% Methods: ASGRNN with feature selection + IALO bandwidth tuning
+% Results: >80% MSE reduction vs. GPR/MINN/RF, robust in stiff & soft environments
+% Contribution: first adaptive sparse GRNN-based force observer, sensorless and model-free
+@article{asgrnn_force_observer,
+  author    = {Pan, Mingzhang and Li, Jing and Yang, Qiye and Wang, Yupeng and Tang, Yu and Pan, Lei and Jiang, Xianbao and Lin, Yizhong and Liang, Ke},
+  title     = {An adaptive sparse general regression neural network-based force observer for teleoperation system},
+  journal   = {Engineering Applications of Artificial Intelligence},
+  volume    = {118},
+  pages     = {105689},
+  year      = {2023},
+  issn      = {0952-1976},
+  doi       = {10.1016/j.engappai.2022.105689},
+  url       = {https://www.sciencedirect.com/science/article/pii/S0952197622006790},
+  keywords  = {Force observer; General regression neural network; Teleoperation; Master–slave robot; Feature selection; Antlion optimization}
+}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End of Q3 Section
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -334,8 +474,75 @@
   doi       = {10.1109/LRA.2024.3385691}
 }
 
+% ----------------------------------------------------
+% Paper 3: Sensorless Force Estimation with DOB + NN Friction Approximation
+% Keywords: Sensorless force estimation, Disturbance observer, Friction modeling, Neural learning
+% Issue: Model-based force observers fail under strong nonlinear friction
+% Math: Newton–Euler dynamics, Stribeck friction, DKF formulation, NN approximation
+% Methods: Disturbance observer + momentum observer → DKF; NN compensates nonlinear friction residuals
+% Results: NN reduced friction MSE (14.67 → 4.97 Nm²); DKF yielded robust force estimation in KUKA experiments
+% Contribution: Hybrid observer-learning approach enabling accurate force estimation without F/T sensors
+@article{liu2021sensorless_dob_nn,
+  author    = {Sichao Liu and Lihui Wang and Xi Vincent Wang},
+  title     = {Sensorless force estimation for industrial robots using disturbance observer and neural learning of friction approximation},
+  journal   = {Robotics and Computer-Integrated Manufacturing},
+  volume    = {71},
+  pages     = {102168},
+  year      = {2021},
+  issn      = {0736-5845},
+  doi       = {10.1016/j.rcim.2021.102168},
+  url       = {https://www.sciencedirect.com/science/article/pii/S0736584521000521},
+  keywords  = {Robotics, Sensorless contact force estimation, Neural network learning, Friction approximation, Disturbance observer}
+}
+
+% ----------------------------------------------------
+% Paper 4: Adaptive Neural Trajectory Tracking Control
+% Keywords:
+% Issue: uncertain dynamics, disturbances, and state constraints degrade tracking
+% Math: robot rigid-body dynamics, RBFNN approximation, BLF stability
+% Methods: adaptive neural controller = CTC + RBFNN + NDO + BLF
+% Results: superior tracking accuracy (IAE, ITAE) vs baselines in 7-DOF robot
+% Contribution: unified observer-based adaptive neural control with sensitivity analysis
+@ARTICLE{bao_adaptive_neural_tracking,
+  author    = {Bao, Dan and Liang, Xiaoling and Ge, Shuzhi Sam and Hou, Baolin},
+  journal   = {IEEE Transactions on Industrial Informatics}, 
+  title     = {Adaptive Neural Trajectory Tracking Control for n-DOF Robotic Manipulators With State Constraints}, 
+  year      = {2023},
+  volume    = {19},
+  number    = {7},
+  pages     = {8039--8048},
+  keywords  = {Robots;Manipulator dynamics;Uncertainty;Robot sensing systems;Lyapunov methods;Stability analysis;Sensitivity analysis;Barrier Lyapunov function (BLF);disturbance observer;radial basis function neural network (RBFNN);robotic manipulator;sensitivity analysis;state constraint},
+  doi       = {10.1109/TII.2022.3215985}
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End of Q4 Section
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Q5 = Physics-Informed / Differentiable
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ----------------------------------------------------
+% Paper 1: Residual-Driven Decomposed PINNs for Dynamics ID
+% Keywords:
+% Issue: LS fails under nonlinear friction, PINNs face ill-conditioning
+% Math: Newton–Euler dynamics, LS base parameters, hybrid physics+data loss
+% Methods: Cascaded LS + PINNs, residual minimization, adaptive constraint weighting, smooth tanh friction
+% Results: Up to 65% RMSE reduction in torque prediction on 6-DoF manipulator
+% Contribution: First residual-driven decomposed PINNs framework for robust dynamics identification
+@inproceedings{residual_pinns_dynamics_id,
+  author    = {Yang, Siyuan and Hu, Jinfei and Liu, Shenghui and Chen, Wei and Liu, Yun-Hui},
+  booktitle = {2025 IEEE International Conference on Real-time Computing and Robotics (RCAR)}, 
+  title     = {A Residual-Driven Decomposed PINNs Method for Dynamics Identification of Robot Manipulators}, 
+  year      = {2025},
+  pages     = {660--665},
+  keywords  = {Adaptation models; Torque; Parameter estimation; Accuracy; Training data; Real-time systems; Robustness; Manipulator dynamics; Payloads; PINNs; nonlinear friction; dynamics identification},
+  doi       = {10.1109/RCAR65431.2025.11139811}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% End of Q5 Section
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -456,7 +663,67 @@
   doi       = {10.1109/TRO.2019.2914772}
 }
 
+% ----------------------------------------------------
+% Paper 7: Incremental Ensemble Learning for Payload ID
+% Keywords:
+% Issue: excitation trajectory requirement limits adaptability
+% Math: inertial parameters vector φ, SGD optimization
+% Methods: incremental ensemble (5 NN weak learners), classification + online update
+% Results: MAE 0.01kg mass, 0.0068kg·m CoM, 0.0008kg·m² inertia
+% Contribution: first removal of excitation path requirement in payload ID
+@inproceedings{payload_id_incremental_ensemble,
+  author    = {Wael Taie and Khaled ElGeneidy and Ali Al{-}Yacoub and Ronglei Sun},
+  booktitle = {2024 4th International Conference on Computer, Control and Robotics (ICCCR)},
+  title     = {Payload Parameters Identification Using Incremental Ensemble Learning},
+  year      = {2024},
+  pages     = {241-245},
+  keywords  = {payload dynamics; incremental learning; ensemble learning; parameter identification; collaborative robots},
+  doi       = {10.1109/ICCCR61138.2024.10585532}
+}
+
+% ----------------------------------------------------
+% Paper 8: Online Ensemble Learning for Payload ID (RA-L)
+% Keywords:
+% Issue: cobots need online payload ID, classical observers degrade under uncertainty
+% Math: rigid body dynamics, ensemble model
+% Methods: online ensemble learning with cobot proprioception (torques, motion)
+% Results: accurate, robust real-time payload ID in collaborative tasks
+% Contribution: ensemble learning applied to online payload ID in cobots
+@article{payload_id_online_ensemble,
+  author    = {Wael Taie and Khaled ElGeneidy and Ali Al{-}Yacoub and Ronglei Sun},
+  journal   = {IEEE Robotics and Automation Letters},
+  title     = {Online Identification of Payload Inertial Parameters Using Ensemble Learning for Collaborative Robots},
+  year      = {2024},
+  volume    = {9},
+  number    = {2},
+  pages     = {1350-1356},
+  keywords  = {Payloads; Sensors; Task analysis; Estimation; Trajectory; Torque measurement; Manipulators; Collaborative robots; Online identification; Payload dynamics},
+  doi       = {10.1109/LRA.2023.3346268}
+}
+
+% ----------------------------------------------------
+% Paper 9: Incremental Ensemble Learning with Catastrophic Forgetting Solution
+% Keywords:
+% Issue: incremental ensemble models forget old data
+% Math: ensemble learning theory, SGD, classification thresholds
+% Methods: add weak learner per training bag, classification model picks best learner
+% Results: eliminates catastrophic forgetting, MAE ~0.007kg mass
+% Contribution: first cobot payload ID approach solving catastrophic forgetting
+@article{payload_id_catastrophic_forgetting,
+  author    = {Wael Taie and Khaled ElGeneidy and Ali Al{-}Yacoub and Ronglei Sun},
+  title     = {Addressing Catastrophic Forgetting in Payload Parameter Identification Using Incremental Ensemble Learning},
+  journal   = {Frontiers in Robotics and AI},
+  volume    = {11},
+  pages     = {1470163},
+  year      = {2024},
+  publisher = {Frontiers},
+  doi       = {10.3389/frobt.2024.1470163},
+  url       = {https://www.frontiersin.org/articles/10.3389/frobt.2024.1470163/full},
+  issn      = {2296-9144},
+  pmid      = {39559290},
+  pmcid     = {PMC11570578}
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End of Q6 Section
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
