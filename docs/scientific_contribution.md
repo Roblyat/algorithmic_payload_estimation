@@ -246,16 +246,21 @@ $$
 
 | Query   | Total Papers | Papers (2022–Current)  | Mature SoA [2022-2025]|
 |---------|--------------|------------------------|-----------------------|
-| $Q_1$   |     462      |          152           |           10          |
+| $Q_1$   |     463      |          153           |           11          |
 | $Q_2$   |      21      |            8           |           3           |
 | $Q_3$   |     167      |          119           |           8           |
 | $Q_4$   |      23      |           19           |           4           |
-| $Q_5$   |       2      |            2           |           1           |
+| $Q_5$   |       3      |            3           |           2           |
 | $Q_6$   |      41      |           27           |           9           |
-| $Total$ incorrect |     $705$    |          $315$         |          $23$         |
+| $Total$ |     $718$    |          $329$         |          $37$         |
 
 ## Filter relevant impact State of Art
 * **“Mature SoA”** = cited or relevant work. paper with impact for ape [2022-2025]
+
+- **CMD Search done on IEEE**
+- **Deep Search ChatGPT on ScienceDirect, Elvister, ArXiv & Goolge Scholar (peer reviewed on Google Scholar**)
+- **Delivered Papers seen in table**
+
 ---
 ---
 

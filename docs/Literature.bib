@@ -201,6 +201,29 @@
   publisher = {Cambridge University Press}
 }
 
+% ----------------------------------------------------
+% Paper 11: Payload ID and Compensation for 6D F/T Sensor
+% Keywords:
+% Issue: F/T sensors corrupted by payload gravity/inertial forces
+% Math: Newton–Euler dynamics, regression-based parameter ID, conditioning analysis
+% Methods: trajectory optimization for robust LS estimation, online compensation
+% Results: fast convergence, improved F/T accuracy vs LS baselines
+% Contribution: first robust trajectory design approach for payload ID in 6D F/T sensors
+@Article{duan_payload_ftsensor,
+  author    = {Duan, Jinjun and Liu, Zhouchi and Bin, Yiming and Cui, Kunkun and Dai, Zhendong},
+  title     = {Payload Identification and Gravity/Inertial Compensation for Six-Dimensional Force/Torque Sensor with a Fast and Robust Trajectory Design Approach},
+  journal   = {Sensors},
+  year      = {2022},
+  volume    = {22},
+  number    = {2},
+  article-number = {439},
+  issn      = {1424-8220},
+  doi       = {10.3390/s22020439},
+  url       = {https://www.mdpi.com/1424-8220/22/2/439},
+  pmid      = {35062399}
+}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End of Q1 Section
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -539,6 +562,23 @@
   pages     = {660--665},
   keywords  = {Adaptation models; Torque; Parameter estimation; Accuracy; Training data; Real-time systems; Robustness; Manipulator dynamics; Payloads; PINNs; nonlinear friction; dynamics identification},
   doi       = {10.1109/RCAR65431.2025.11139811}
+}
+
+% ----------------------------------------------------
+% Paper 2: Provably-Safe, Online System Identification
+% Keywords: provably-safe, online system identification, payload dynamics, inertial parameter estimation, exciting trajectories, interval arithmetic, ARMOUR
+% Issue: Classical ID ignores safety (obstacles, torque limits), unsafe under payload uncertainty
+% Math: momentum-based dynamics (integral form), interval arithmetic, perturbation analysis, regressor condition number optimization
+% Methods: ARMOUR-based safe trajectory planning, interval-bounded ID loop, locally exciting trajectories
+% Results: Kinova Gen3 + dumbbell experiments, tighter inertial bounds, safe manipulation, higher task success rate
+% Contribution: First framework for provably-safe online payload ID with theoretical guarantees
+@article{provably_safe_sysid,
+  author    = {Zhang, Bohao and Zhou, Zichang and Vasudevan, Ram},
+  title     = {Provably-Safe, Online System Identification},
+  journal   = {arXiv preprint arXiv:2504.21486},
+  year      = {2025},
+  url       = {http://arxiv.org/pdf/2504.21486v1},
+  note      = {Robotics Institute, University of Michigan. Supported by AFOSR MURI FA9550-23-1-0400}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
