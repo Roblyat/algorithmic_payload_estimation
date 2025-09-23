@@ -1,7 +1,7 @@
 ---
 # Scientific Contribution
 
-## Table of Contents
+## Table of Contentsv
 0. [What we need to do first](#0-what-we-need-to-do-first)
 1. [What is on the market](#1-what-is-on-the-market)
 2. [Questions](#2-questions)
@@ -32,6 +32,15 @@ https://ieeexplore-1ieee-1org-100033c761aa6.han.technikum-wien.at/document/11029
 
 - good mathmatics
 - current sota kalman filter classical observers
+---
+
+**Key References**
+* [Fast Object Inertial Parameter Identification for Collaborative Robots (ICRA 2022)](https://arxiv.org/abs/2203.00830)
+* [The Sum of Its Parts: Visual Part Segmentation for Inertial Parameter Identification (ICRA 2023)](https://arxiv.org/abs/2302.06685)
+* [External Torque Estimation Using Higher-Order Sliding-Mode Observer (IEEE/ASME T-Mech 2022)](https://www.researchgate.net/publication/350072224_External_Torque_Estimation_using_Higher-order_Sliding_Mode_Observer_for_Robot_Manipulators)
+* [Accurate Identification Method Based on Double Weighting (Robotica 2022)](https://www.cambridge.org/core/journals/robotica/article/abs/an-accurate-identification-method-based-on-double-weighting-for-inertial-parameters-of-robot-payloads/527798F0D816B5094A0A1A7118862C92)
+* [Robot Hybrid Inverse Dynamics Model Compensation Based on BLL Residual Prediction (Robotica 2025)](https://www.cambridge.org/core/journals/robotica/article/robot-hybrid-inverse-dynamics-model-compensation-method-based-on-the-bll-residual-prediction-algorithm/6499FF2BA9499B066EF376E4885A0186)
+
 ---
 
 ## 2) Questions
@@ -273,3 +282,23 @@ $$
 ---
 
 <img src="concept_graph.png" alt="Concept Graph" width="750" height="">
+
+
+---
+---
+---
+
+
+### **CHECK THIS FIRST**
+- **this papers are in literature.bib, but not in deep_reseach.md**
+
+1. Rasmussen & Williams (2006) – *GPML book*
+2. Zheng et al. (ROBIO 2023) – *Bayesian RL sparse rewards*
+3. Azulay et al. (ICRA 2024) – *SightGAN tactile sim-to-real*
+4. Xin et al. (RA-L 2024) – *PLUNDER imitation learning*
+5. Zhao et al. (RA-L 2025) – *In-hand writing tactile RL*
+6. Yuan (ICETAC 2025) – *Adaptive fuzzy/DRL motion control*
+7. Son et al. (IROS 2020) – *Sim-to-real bolting*
+8. Pezzato et al. (RA-L 2025) – *Sampling-based MPC w/ physics sims*
+9. Liang & Kroemer (ICRA 2021) – *Contact localization w/o torque sensing*
+10. Falco et al. (T-RO 2019) – *Cross-modal transfer learning vision↔haptics*

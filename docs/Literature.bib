@@ -223,6 +223,43 @@
   pmid      = {35062399}
 }
 
+% ----------------------------------------------------
+% Paper 12: Composite Disturbance Filtering with Stiffness Exploration
+% Keywords:
+% Issue: force estimation corrupted by disturbances and unknown stiffness
+% Math: rigid-body dynamics, disturbance modeling, adaptive filtering
+% Methods: composite disturbance filter + online stiffness exploration
+% Results: accurate, robust force estimation without external sensors
+% Contribution: unifies force estimation and stiffness adaptation
+@article{wei_composite_filter,
+  author    = {Wei, X. and others},
+  journal   = {IEEE/ASME Transactions on Mechatronics},
+  title     = {Composite Disturbance Filtering for Interaction Force Estimation With Online Environmental Stiffness Exploration},
+  year      = {2025},
+  volume    = {30},
+  number    = {1},
+  pages     = {xxx--xxx},
+  doi       = {10.1109/TMECH.2024.3443310}
+}
+
+% ----------------------------------------------------
+% Paper 13: High-Order Finite-Time Observer for Sensorless Force Estimation
+% Keywords:
+% Issue: interaction force estimation without F/T sensors
+% Math: high-order finite-time observer, rigid-body dynamics
+% Methods: HO-FT observer using torque/current data
+% Results: fast, robust force estimation in industrial robots
+% Contribution: introduces finite-time observer framework for sensorless estimation
+@article{huang_finite_time_observer,
+  author    = {Huang, X. and others},
+  journal   = {IEEE/ASME Transactions on Mechatronics},
+  title     = {Toward Sensorless Interaction Force Estimation for Industrial Robots Using High-Order Finite-Time Observers},
+  year      = {2025},
+  volume    = {30},
+  number    = {1},
+  pages     = {xxx--xxx},
+  doi       = {10.1109/TMECH.2021.9484422}
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End of Q1 Section
@@ -314,25 +351,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % ----------------------------------------------------
-% Paper 1: Bayesian Reinforcement Learning for Sparse-Reward Manipulation
-% Keywords:
-% Issue: sparse rewards harm exploration & stability in robot manipulation
-% Math: MDPs, Bayesian neural networks, KL divergence, Monte Carlo sampling
-% Methods: Bayesian Deep RL (BDRL), uncertainty decomposition (model, aleatoric, reward)
-% Results: improved convergence & stability across 4 manipulation tasks
-% Contribution: first uncertainty-aware RL framework for sparse-reward robotic manipulation
-@inproceedings{bayesian_rl_sparse,
-  author    = {Zheng, Li and Li, Yanghong and Wang, Yahao and Bai, Guangrui and He, Haiyang and Dong, Erbao},
-  booktitle = {2023 IEEE International Conference on Robotics and Biomimetics (ROBIO)}, 
-  title     = {Uncertainty in Bayesian Reinforcement Learning for Robot Manipulation Tasks with Sparse Rewards}, 
-  year      = {2023},
-  pages     = {1-6},
-  keywords  = {Deep learning; Uncertainty; Heuristic algorithms; Decision making; Robot control; Neural networks; Reinforcement learning},
-  doi       = {10.1109/ROBIO58561.2023.10354785}
-}
-
-% ----------------------------------------------------
-% Paper 2: Extended Deep Lagrangian Network (DeLaN) with Motor Couplings
+% Paper 1: Extended Deep Lagrangian Network (DeLaN) with Motor Couplings
 % Keywords:
 % Issue: standard DeLaN ignores motor torque/friction couplings, reducing realism
 % Math: Lagrangian mechanics, neural energy parameterization, friction dynamics
@@ -350,7 +369,7 @@
 }
 
 % ----------------------------------------------------
-% Paper 3: CNN-Based Robot Arm Parameter Identification
+% Paper 2: CNN-Based Robot Arm Parameter Identification
 % Keywords:
 % Issue: LS/regressor-based ID fails under noise, need robust parameter identification
 % Math: robot dynamics regression, DCT-II subsampling, CNN feature extraction
@@ -369,7 +388,7 @@
 }
 
 % ----------------------------------------------------
-% Paper 4: Encoder-Discrepancy + Attention for Payload Estimation
+% Paper 3: Encoder-Discrepancy + Attention for Payload Estimation
 % Keywords:
 % Issue: payload inertial ID without torque sensors, using only encoders
 % Math: torque–angle discrepancy modeling, weighted LS, attention weighting
@@ -389,7 +408,7 @@
 }
 
 % ----------------------------------------------------
-% Paper 5: LSTM Force/Torque Estimation for 7-DoF Manipulator
+% Paper 4: LSTM Force/Torque Estimation for 7-DoF Manipulator
 % Keywords:
 % Issue: analytical inverse dynamics degrades under noise/unmodeled effects
 % Math: inverse dynamics equations, sequence modeling, LSTM temporal learning
@@ -410,7 +429,7 @@
 }
 
 % ----------------------------------------------------
-% Paper 6: Neural-Learning-Based Force Sensorless Admittance Control
+% Paper 5: Neural-Learning-Based Force Sensorless Admittance Control
 % Keywords:
 % Issue: force sensing costly/unreliable; actuator deadzone degrades performance
 % Math: inverse dynamics, RBFNN approximation, admittance control, Lyapunov stability
@@ -430,7 +449,7 @@
 }
 
 % ----------------------------------------------------
-% Paper 7: Adaptive Sparse GRNN Force Observer for Teleoperation
+% Paper 6: Adaptive Sparse GRNN Force Observer for Teleoperation
 % Keywords:
 % Issue: F/T sensors impractical in hazardous or surgical teleoperation, dynamics unknown
 % Math: GRNN kernel regression, sparse regularization, support vector pruning, metaheuristic optimization
@@ -450,7 +469,6 @@
   keywords  = {Force observer; General regression neural network; Teleoperation; Master–slave robot; Feature selection; Antlion optimization}
 }
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End of Q3 Section
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -460,25 +478,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % ----------------------------------------------------
-% Paper 1: Augmenting Tactile Simulators with Real-like and Zero-Shot Capabilities (SightGAN)
-% Keywords:
-% Issue: tactile simulators have a sim-to-real gap; synthetic data fails in real transfer
-% Math: GAN adversarial loss, CycleGAN cycle loss, residual contact consistency terms
-% Methods: SightGAN = CycleGAN + spatial + pixel residual consistency losses
-% Results: RMSE reduced ~3.5 mm; 47% better FID; zero-shot transfer on unseen sensors
-% Contribution: first GAN with contact-aware residuals enabling tactile zero-shot sim-to-real
-@inproceedings{sightgan_tactile_transfer,
-  author    = {Azulay, Osher and Mizrahi, Alon and Curtis, Nimrod and Sintov, Avishai},
-  booktitle = {2024 IEEE International Conference on Robotics and Automation (ICRA)}, 
-  title     = {Augmenting Tactile Simulators with Real-like and Zero-Shot Capabilities}, 
-  year      = {2024},
-  pages     = {5702-5708},
-  keywords  = {Image sensors; Three-dimensional displays; Accuracy; Force; Tactile sensors; Generative adversarial networks; Data models},
-  doi       = {10.1109/ICRA57147.2024.10610442}
-}
-
-% ----------------------------------------------------
-% Paper 2: Programmatic Imitation Learning from Unlabeled and Noisy Demonstrations (PLUNDER)
+% Paper 1: Programmatic Imitation Learning from Unlabeled and Noisy Demonstrations (PLUNDER)
 % Keywords:
 % Issue: Imitation learning needs clean/labeled demos; black-box NN policies lack interpretability
 % Math: EM latent variable inference, probabilistic DSL, program synthesis
@@ -498,7 +498,7 @@
 }
 
 % ----------------------------------------------------
-% Paper 3: Sensorless Force Estimation with DOB + NN Friction Approximation
+% Paper 2: Sensorless Force Estimation with DOB + NN Friction Approximation
 % Keywords: Sensorless force estimation, Disturbance observer, Friction modeling, Neural learning
 % Issue: Model-based force observers fail under strong nonlinear friction
 % Math: Newton–Euler dynamics, Stribeck friction, DKF formulation, NN approximation
@@ -519,7 +519,7 @@
 }
 
 % ----------------------------------------------------
-% Paper 4: Adaptive Neural Trajectory Tracking Control
+% Paper 3: Adaptive Neural Trajectory Tracking Control
 % Keywords:
 % Issue: uncertain dynamics, disturbances, and state constraints degrade tracking
 % Math: robot rigid-body dynamics, RBFNN approximation, BLF stability
@@ -537,6 +537,27 @@
   keywords  = {Robots;Manipulator dynamics;Uncertainty;Robot sensing systems;Lyapunov methods;Stability analysis;Sensitivity analysis;Barrier Lyapunov function (BLF);disturbance observer;radial basis function neural network (RBFNN);robotic manipulator;sensitivity analysis;state constraint},
   doi       = {10.1109/TII.2022.3215985}
 }
+
+% ----------------------------------------------------
+% Paper 4: Hybrid Inverse Dynamics with BLL Residual
+% Keywords:
+% Issue: nominal NE models inaccurate under unmodeled dynamics & friction
+% Math: Newton–Euler inverse dynamics, bounded linear least-squares
+% Methods: hybrid ID model = nominal NE + BLL residual correction
+% Results: reduced prediction error; more robust than NN residuals
+% Contribution: first hybrid ID framework using BLL residuals
+@article{tao2025hybrid_bll_id,
+  author    = {Tao, [First names not provided]},
+  title     = {Robot Hybrid Inverse Dynamics Model Compensation Method Based on the BLL Residual Prediction Algorithm},
+  journal   = {Robotica},
+  volume    = {43},
+  number    = {3},
+  pages     = {649--663},
+  year      = {2025},
+  doi       = {10.1017/S0263574724002911},
+  url       = {https://www.cambridge.org/core/journals/robotica/article/robot-hybrid-inverse-dynamics-model-compensation-method-based-on-the-bll-residual-prediction-algorithm/6499FF2BA9499B066EF376E4885A0186}
+}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End of Q4 Section
@@ -646,27 +667,7 @@
 }
 
 % ----------------------------------------------------
-% Paper 4: Sampling-Based MPC Leveraging Parallelizable Physics Simulations
-% Keywords:
-% Issue: real-time MPC limited by computational cost
-% Math: MPC, contact dynamics, optimization
-% Methods: parallelized physics simulations in sampling-based MPC
-% Results: robust online MPC with contact modeling
-% Contribution: scalable control framework uniting MPC + physics simulation
-@article{mpc_parallel_physics,
-  author    = {Pezzato, Corrado and Salmi, Chadi and Trevisan, Elia and Spahn, Max and Alonso-Mora, Javier and Hern{\'a}ndez Corbato, Carlos},
-  journal   = {IEEE Robotics and Automation Letters},
-  title     = {Sampling-Based Model Predictive Control Leveraging Parallelizable Physics Simulations},
-  year      = {2025},
-  volume    = {10},
-  number    = {3},
-  pages     = {2750-2757},
-  keywords  = {Optimization and Optimal Control; Contact Modeling; Whole-Body Motion Planning; MPC},
-  doi       = {10.1109/LRA.2025.3535185}
-}
-
-% ----------------------------------------------------
-% Paper 5: Contact Localization without Torque Sensing
+% Paper 4: Contact Localization without Torque Sensing
 % Keywords:
 % Issue: contact localization typically requires torque sensing
 % Math: CNN with cylindrical projection encoding, domain randomization
@@ -684,7 +685,7 @@
 }
 
 % ----------------------------------------------------
-% Paper 6: Transfer Learning for Cross-Modal Object Recognition
+% Paper 5: Transfer Learning for Cross-Modal Object Recognition
 % Keywords:
 % Issue: object recognition needs multimodal transfer (vision ↔ touch)
 % Math: TL, multimodal representations, MLS voxel filtering
@@ -704,7 +705,7 @@
 }
 
 % ----------------------------------------------------
-% Paper 7: Incremental Ensemble Learning for Payload ID
+% Paper 6: Incremental Ensemble Learning for Payload ID
 % Keywords:
 % Issue: excitation trajectory requirement limits adaptability
 % Math: inertial parameters vector φ, SGD optimization
@@ -722,7 +723,7 @@
 }
 
 % ----------------------------------------------------
-% Paper 8: Online Ensemble Learning for Payload ID (RA-L)
+% Paper 7: Online Ensemble Learning for Payload ID (RA-L)
 % Keywords:
 % Issue: cobots need online payload ID, classical observers degrade under uncertainty
 % Math: rigid body dynamics, ensemble model
@@ -742,7 +743,7 @@
 }
 
 % ----------------------------------------------------
-% Paper 9: Incremental Ensemble Learning with Catastrophic Forgetting Solution
+% Paper 8: Incremental Ensemble Learning with Catastrophic Forgetting Solution
 % Keywords:
 % Issue: incremental ensemble models forget old data
 % Math: ensemble learning theory, SGD, classification thresholds
@@ -764,6 +765,120 @@
   pmcid     = {PMC11570578}
 }
 
+% ----------------------------------------------------
+% Paper 9: PSO-based Force Estimation
+% Keywords:
+% Issue: expensive/unreliable force sensors in harsh environments
+% Math: Newton–Euler dynamics with friction, PSO optimization
+% Methods: PSO for parameter identification, sensorless force estimation
+% Results: RMS error 0.7 N, superior to BBO and CS
+% Contribution: first PSO-based external force estimation framework
+@article{liu_pso_force_estimation,
+  author    = {Liu, Huaimin and Wang, Xiangjiang and Li, Meng},
+  journal   = {International Journal of Advanced Robotic Systems},
+  title     = {External force estimation for robotic manipulator based on particle swarm optimization},
+  year      = {2021},
+  volume    = {18},
+  number    = {6},
+  pages     = {1--11},
+  doi       = {10.1177/17298814211063744},
+  url       = {https://doi.org/10.1177/17298814211063744}
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End of Q6 Section
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Q8 = Surveys & Overviews
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ----------------------------------------------------
+% Paper 1: Robot Model ID and Learning Review
+% Keywords:
+% Issue: need for unified modern perspective on system ID
+% Math: system identification, geometry, physics-informed ML
+% Methods: review of classical and data-driven approaches
+% Contribution: bridges physics-based and data-driven ID
+@article{lee_robot_model_review,
+  author    = {Lee, Taeyoon and Kwon, Jaewoon and Wensing, Patrick M. and Park, Frank C.},
+  journal   = {Annual Review of Control, Robotics, and Autonomous Systems},
+  title     = {Robot Model Identification and Learning: A Modern Perspective},
+  year      = {2024},
+  volume    = {7},
+  pages     = {311--334},
+  doi       = {10.1146/annurev-control-061523-102310},
+  url       = {https://doi.org/10.1146/annurev-control-061523-102310}
+}
+
+% ----------------------------------------------------
+% Paper 2: Survey on Inertial Parameter Identification
+% Keywords:
+% Issue: lack of unified overview of parameter ID
+% Math: rigid-body dynamics, excitation observability
+% Methods: survey of LS, RLS, convex optimization, probabilistic ID
+% Contribution: definitive survey of inertial parameter ID
+@article{leboutet_inertial_survey,
+  author    = {Leboutet, Quentin and others},
+  journal   = {Applied Sciences},
+  title     = {Inertial Parameter Identification in Robotics: A Survey},
+  year      = {2021},
+  volume    = {11},
+  number    = {9},
+  pages     = {4303},
+  doi       = {10.3390/app11094303},
+  url       = {https://doi.org/10.3390/app11094303}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% End of Q8 Section
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Peripheral Papers
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ----------------------------------------------------
+% NOISE / UNCERTAINTY
+% ----------------------------------------------------
+
+% Paper 1: Bayesian Reinforcement Learning for Sparse-Reward Manipulation
+% Keywords:
+% Issue: sparse rewards harm exploration & stability in robot manipulation
+% Math: MDPs, Bayesian neural networks, KL divergence, Monte Carlo sampling
+% Methods: Bayesian Deep RL (BDRL), uncertainty decomposition (model, aleatoric, reward)
+% Results: improved convergence & stability across 4 manipulation tasks
+% Contribution: first uncertainty-aware RL framework for sparse-reward robotic manipulation
+@inproceedings{bayesian_rl_sparse,
+  author    = {Zheng, Li and Li, Yanghong and Wang, Yahao and Bai, Guangrui and He, Haiyang and Dong, Erbao},
+  booktitle = {2023 IEEE International Conference on Robotics and Biomimetics (ROBIO)}, 
+  title     = {Uncertainty in Bayesian Reinforcement Learning for Robot Manipulation Tasks with Sparse Rewards}, 
+  year      = {2023},
+  pages     = {1-6},
+  keywords  = {Deep learning; Uncertainty; Heuristic algorithms; Decision making; Robot control; Neural networks; Reinforcement learning},
+  doi       = {10.1109/ROBIO58561.2023.10354785}
+}
+
+% ----------------------------------------------------
+% ISAAC
+% ----------------------------------------------------
+
+% Paper 1: Sampling-Based MPC Leveraging Parallelizable Physics Simulations
+% Keywords:
+% Issue: real-time MPC limited by computational cost
+% Math: MPC, contact dynamics, optimization
+% Methods: parallelized physics simulations in sampling-based MPC
+% Results: robust online MPC with contact modeling
+% Contribution: scalable control framework uniting MPC + physics simulation
+@article{mpc_parallel_physics,
+  author    = {Pezzato, Corrado and Salmi, Chadi and Trevisan, Elia and Spahn, Max and Alonso-Mora, Javier and Hern{\'a}ndez Corbato, Carlos},
+  journal   = {IEEE Robotics and Automation Letters},
+  title     = {Sampling-Based Model Predictive Control Leveraging Parallelizable Physics Simulations},
+  year      = {2025},
+  volume    = {10},
+  number    = {3},
+  pages     = {2750-2757},
+  keywords  = {Optimization and Optimal Control; Contact Modeling; Whole-Body Motion Planning; MPC},
+  doi       = {10.1109/LRA.2025.3535185}
+}
