@@ -219,7 +219,7 @@ The structured literature search identified a substantial number of relevant pap
 
 Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), describing its approach and identifying whether its focus is on **rigid-body estimation**, **payload estimation**, or **both**.
 
----
+--- 35 Paper / C1 - C6 -> 33 / C8 --> 2 
 
 ### Nadeau et al. (ICRA 2022)
 
@@ -584,8 +584,6 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 * The trend: **physics-informed + learning-based methods** (GPs, neural nets, PINNs, ensembles) for robustness and accuracy.
 
 ---
----
-
 ---
 
 # 📊 Mature SoA Papers (2021–2025) Classification
