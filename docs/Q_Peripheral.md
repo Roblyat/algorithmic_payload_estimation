@@ -46,3 +46,102 @@
   **Learning-based policy optimization**, not direct parameter ID or force estimation.
 
 ---
+
+### 2. **Programmatic Imitation Learning from Unlabeled and Noisy Demonstrations (PLUNDER)** (RA-L, 2024)
+
+* **Problem/Issue**:
+  Imitation Learning (IL) often requires *labeled*, *noise-free* demos and produces black-box neural policies. These are hard to interpret and adapt.
+
+* **SoA**:
+
+  * Behavior Cloning (NN-based).
+  * Inverse RL.
+  * Programmatic Imitation Learning (PIL): symbolic program synthesis (LDIPS, PROLEX).
+  * GAN-based IfO (GAIfO) for unlabeled demos — but opaque policies.
+
+* **Math Background**:
+
+  * Formulated as **latent variable MAP estimation**:
+    $\pi^* = \arg \max_{\pi} \sum_{a_{1:t}} P(z|a,s)P(a|s,\pi)P(\pi)$.
+  * Uses **Expectation-Maximization (EM)**:
+
+    * E-step: infer action labels via particle filter.
+    * M-step: synthesize probabilistic ASP (Action Selection Policy).
+  * Prior: penalizes large ASTs to prevent overfitting.
+
+* **Methods**:
+
+  * **PLUNDER algorithm**: probabilistic PIL with EM loop.
+  * Synthesizes interpretable **probabilistic programs** in DSL form.
+  * Handles **noisy, unlabeled** human or sim demonstrations.
+  * Compared against LDIPS, BC/BC+, GAIfO, Behavior Transformers.
+
+* **Results**:
+
+  * 95% alignment with demos (19% better than next best).
+  * 90% task success rate (17% higher).
+  * Converges in <10 EM iterations.
+  * Robust under noise (outperforms GAIfO & BC).
+  * Generated policies interpretable (conditions expressed in logic + probabilities).
+
+* **Contribution**:
+
+  * First **probabilistic PIL** for noisy, unlabeled demos.
+  * Bridges gap between **symbolic program synthesis** and **probabilistic modeling**.
+
+* **Outlook**:
+
+  * Apply to **real-world robot data**.
+  * Integrate **LLMs** or **neural-guided synthesis** for scalability.
+  * Jointly optimize observation models.
+
+* **Focus**:
+  **Residual hybridization** of **program synthesis + probabilistic models** → robust, interpretable **robot learning from demos**.
+
+---
+
+### 3. Yuan et al 2025 **Optimization of Adaptive Algorithm for Precise Motion Control of Multi-Degree-of-Freedom Robotic Arms
+
+* **Problem/Issue**: Precise control of multi-DoF arms suffers under uncertainty, noise, and nonlinearities.
+
+* **SoA**: Fuzzy control, heuristic optimization, DRL for real-time adaptation.
+
+* **Math Background**: Adaptive control, fuzzy logic, online optimization, DRL policy learning.
+
+* **Methods**:
+
+  * Combined fuzzy control + deep reinforcement learning.
+  * Optimized adaptive algorithm for trajectory tracking.
+
+* **Results**: Improved accuracy + robustness in real-time control.
+
+* **Contribution**: Domain adaptation method for **high-precision trajectory control**.
+
+* **Outlook**: Extend to contact-rich manipulation.
+
+* **Focus**: **Robot control adaptation**, not parameter ID.
+
+---
+
+### 4. **Sampling-Based MPC Leveraging Parallelizable Physics Simulations** (RA-L 2025)
+
+* **Problem/Issue**: Online MPC is limited by computational cost.
+
+* **SoA**: Sampling-based MPC, physics simulators.
+
+* **Math Background**: MPC, contact dynamics, optimization.
+
+* **Methods**:
+
+  * Physics simulations parallelized for sampling-based MPC.
+  * Contact modeling integrated into optimization.
+
+* **Results**: Improved real-time MPC, robust to contact.
+
+* **Contribution**: Framework uniting **contact dynamics + MPC + physics simulation**.
+
+* **Outlook**: Whole-body manipulation with fast online MPC.
+
+* **Focus**: **Control adaptation with simulation-in-the-loop**.
+
+---

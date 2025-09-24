@@ -262,7 +262,7 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 
 ### Cao et al. (Robotics & CIM 2021)
 
-**“Contact force and torque sensing for a serial manipulator based on an adaptive Kalman filter.”**
+**“Contact force and torque sensing for serial manipulator based on an adaptive Kalman filter with variable time period”**
 
 * **Focus:** Rigid-body (force) estimation
 * **Summary:** Adaptive Kalman filter (variable update rate) estimating contact forces/torques from motor currents. Robust to payload changes; validated on UR5 arm.
@@ -317,7 +317,7 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 
 ### Duan et al. (Sensors 2022)
 
-**“Payload Identification and Gravity/Inertial Compensation for 6-D F/T Sensor with a Fast and Robust Trajectory Design.”**
+**“Payload Identification and Gravity/Inertial Compensation for Six-Dimensional Force/Torque Sensor with a Fast and Robust Trajectory Design Approach”**
 
 * **Focus:** Payload estimation
 * **Summary:** Trajectory optimization for payload parameter identification, improving accuracy of F/T sensor readings under payload influence.
@@ -362,7 +362,7 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 
 ### Kružić et al. (Electronics 2021)
 
-**“End-Effector Force and Joint Torque Estimation of a 7-DoF Manipulator Using Deep Learning.”**
+**End-Effector Force and Joint Torque Estimation of a 7-DoF Robotic Manipulator Using Deep Learning**
 
 * **Focus:** Rigid-body (force/torque estimation)
 * **Summary:** LSTM sequence models outperform MLPs for temporal dynamics. Key insight: sequence modeling matters.
@@ -371,7 +371,7 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 
 ### Pan et al. (Eng. Apps of AI 2023)
 
-**“An adaptive sparse general regression neural network-based force observer for teleoperation.”**
+**An adaptive sparse general regression neural network-based force observer for teleoperation system**
 
 * **Focus:** Rigid-body (force estimation)
 * **Summary:** Sparse adaptive GRNN with feature selection. Outperforms GP and NN baselines. High accuracy in teleoperation.
@@ -445,17 +445,17 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
   * **Focus:** Payload estimation.
   * **Contribution:** Conference version; removes need for excitation trajectories, precursor to their RA-L & Frontiers works.
 
-### De León et al. 2022 – *CNN Parameter Identification of a Robot Arm Manipulator* (IEEE Access).
+### De León et al. 2022 – *Parameter Identification of a Robot Arm Manipulator Based on a Convolutional Neural Network
 
   * **Focus:** Both rigid-body and payload (maps torque/state signals → inertial parameters using CNN feature extraction).
   * **Contribution:** Introduces a vision-inspired CNN approach; more robust under noise than LS.
 
-### Wu et al. 2025 – *Extended DeLaN with Motor Couplings* (YAC Conf).
+### Wu et al. 2025 – *Extended Deep Lagrangian Network for Robotic Arm Dynamics considering Motor Couplings.
 
   * **Focus:** Rigid-body estimation (extends physics-informed deep models to capture motor couplings + nonlinear friction).
   * **Contribution:** Improves dynamics prediction on UR10e vs physics-only or NN-only.
 
-### Peng et al. 2021 – *Neural-Learning-Based Force Sensorless Admittance Control* (IEEE T-IE).
+### Peng et al. 2021 – Neural-Learning-Based Force Sensorless Admittance Control for Robots With Input Deadzone
 
   * **Focus:** Rigid-body estimation (sensorless external torque observer + NN controller).
   * **Contribution:** First NN-based admittance control with deadzone compensation; avoids F/T sensors.
@@ -506,6 +506,15 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 * **Focus:** Rigid-body (interaction force estimation)  
 * **Summary:** Introduces a unified framework (EEFO) combining robot dynamics and force generation models with online environmental stiffness exploration. Demonstrated on surgical robot with silicone tissue model. Outperforms DO, NDO, GMO, KF, DKF baselines.
 
+---
+
+### Liang et al 2021** - Contact Localization for Robot Arms in Motion without Torque Sensing
+
+* **Problem/Issue**: Contact localization usually requires torque sensing.
+* **SoA**: Contact particle filter, SVM classifiers, ML models with proprioception.
+* **Focus**: **Contact localization via proprioception**.
+
+
 
 ---
 
@@ -547,7 +556,6 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 | Liu et al. – *DOB + NN Friction Approximation*                                    | 2021 / RCIM          | Q4 (Hybrid/Residual)   | **Rigid-body**                            |
 | Bao et al. – *Adaptive Neural Trajectory Tracking*                                | 2023 / T-II          | Q4 (Hybrid/Residual)   | **Rigid-body**                            |
 | Wu et al. – *Extended DeLaN with Motor Couplings*                                 | 2025 / YAC Conf.     | Q3 (Deep Models)       | **Rigid-body**                            |
-| Azulay et al. – *SightGAN (Tactile Sim2Real Residuals)*                           | 2024 / ICRA          | Q4 (Hybrid/Residual)   | **Rigid-body (tactile sim-to-real)**      |
 | Xin et al. – *PLUNDER (Programmatic Imitation Learning)*                          | 2024 / RA-L          | Q4 (Hybrid/Residual)   | *(Peripheral, not direct F/T or payload)* |
 | Yang et al. – *Residual-Driven PINNs Dynamics ID*                                 | 2025 / RCAR          | Q5 (Physics-Informed)  | **Rigid-body**                            |
 | Zhang et al. – *Provably-Safe Online SysID*                                       | 2025 / arXiv         | Q5 (Physics-Informed)  | **Payload**                               |
@@ -575,8 +583,16 @@ These matched your CMD search but are not directly solving your core **payload/r
 
   * Focus: tactile sim-to-real transfer, not payload ID.
 
-* **Xin et al. 2024 \[NEW]** – *PLUNDER: Programmatic Imitation Learning* (RA-L).
+* **Xin et al. 2024 \[NEW]** – Programmatic Imitation Learning From Unlabeled and Noisy Demonstrations
 
   * Focus: program synthesis for imitation learning, not F/T or payload.
 
----
+* **Zheng et al. 2023** – Uncertainty in Bayesian Reinforcement Learning for Robot Manipulation Tasks with Sparse Rewards
+
+    * Issue: sparse rewards harm exploration & stability in robot manipulation
+    * Results: improved convergence & stability across 4 manipulation tasks
+
+* **Yuan et al 2025** -Optimization of Adaptive Algorithm for Precise Motion Control of Multi-Degree-of-Freedom Robotic Arms
+
+* **Pezzato et al 2025** - Sampling-Based Model Predictive Control Leveraging Parallelizable Physics Simulations
+ - Isaac

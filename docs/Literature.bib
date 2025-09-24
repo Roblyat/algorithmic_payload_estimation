@@ -270,7 +270,25 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % ----------------------------------------------------
-% Paper 1: Contact Force Estimation with GP Adaptive Disturbance Kalman Filter
+% Paper 1: Decoupling Observer + Enhanced GP for Contact Force Estimation
+% Keywords:
+% Issue: residual dynamics corrupt force estimation, noise and uncertainty
+% Math: Euler-Lagrange dynamics, momentum observer, GPR mean+covariance
+% Methods: Enhanced GP residual model + GPDKF (decoupling observer + KF)
+% Results: more robust and accurate than DKF/NN-based observers on 3-DoF robot
+% Contribution: first uncertainty-aware semi-parametric observer for contact force estimation
+@inproceedings{contact_force_gp_observer,
+  author    = {Wei, Yanran and Li, Wenshuo and Yang, Yi and Yu, Xiang and Guo, Lei},
+  booktitle = {2022 IEEE 8th International Conference on Cloud Computing and Intelligent Systems (CCIS)}, 
+  title     = {Decoupling Observer for Contact Force Estimation of Robot Manipulators Based on Enhanced Gaussian Process Model}, 
+  year      = {2022},
+  pages     = {1-7},
+  keywords  = {Uncertainty; Computational modeling; Dynamics; Force; Estimation; Gaussian processes; Observers; Robotic Manipulator; Residual dynamics; Decoupling observer},
+  doi       = {10.1109/CCIS57298.2022.10016359}
+}
+
+% ----------------------------------------------------
+% Paper 2: Contact Force Estimation with GP Adaptive Disturbance Kalman Filter
 % Keywords:
 % Issue: multi-source uncertainties (model errors, noise) harm contact force estimation
 % Math: semi-parametric dynamics, GPR mean+covariance, Variational Bayes adaptive KF
@@ -287,24 +305,6 @@
   pages     = {3524-3537},
   keywords  = {Force; Manipulator dynamics; Dynamics; Estimation; Robots; Uncertainty; Gaussian processes; Kalman filters; Force estimation; disturbance observer; robot manipulator},
   doi       = {10.1109/TASE.2023.3280750}
-}
-
-% ----------------------------------------------------
-% Paper 2: Decoupling Observer + Enhanced GP for Contact Force Estimation
-% Keywords:
-% Issue: residual dynamics corrupt force estimation, noise and uncertainty
-% Math: Euler-Lagrange dynamics, momentum observer, GPR mean+covariance
-% Methods: Enhanced GP residual model + GPDKF (decoupling observer + KF)
-% Results: more robust and accurate than DKF/NN-based observers on 3-DoF robot
-% Contribution: first uncertainty-aware semi-parametric observer for contact force estimation
-@inproceedings{contact_force_gp_observer,
-  author    = {Wei, Yanran and Li, Wenshuo and Yang, Yi and Yu, Xiang and Guo, Lei},
-  booktitle = {2022 IEEE 8th International Conference on Cloud Computing and Intelligent Systems (CCIS)}, 
-  title     = {Decoupling Observer for Contact Force Estimation of Robot Manipulators Based on Enhanced Gaussian Process Model}, 
-  year      = {2022},
-  pages     = {1-7},
-  keywords  = {Uncertainty; Computational modeling; Dynamics; Force; Estimation; Gaussian processes; Observers; Robotic Manipulator; Residual dynamics; Decoupling observer},
-  doi       = {10.1109/CCIS57298.2022.10016359}
 }
 
 % ----------------------------------------------------
@@ -478,27 +478,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % ----------------------------------------------------
-% Paper 1: Programmatic Imitation Learning from Unlabeled and Noisy Demonstrations (PLUNDER)
-% Keywords:
-% Issue: Imitation learning needs clean/labeled demos; black-box NN policies lack interpretability
-% Math: EM latent variable inference, probabilistic DSL, program synthesis
-% Methods: PLUNDER = probabilistic program induction with EM (E-step particle filtering, M-step program synthesis)
-% Results: 90%+ success rate; robust to noise; interpretable symbolic policies
-% Contribution: first probabilistic programmatic imitation learning framework robust to unlabeled/noisy demos
-@article{plunder_pil,
-  author    = {Xin, Jimmy and Zheng, Linus and Rahmani, Kia and Wei, Jiayi and Holtz, Jarrett and Dillig, Isil and Biswas, Joydeep},
-  journal   = {IEEE Robotics and Automation Letters}, 
-  title     = {Programmatic Imitation Learning From Unlabeled and Noisy Demonstrations}, 
-  year      = {2024},
-  volume    = {9},
-  number    = {6},
-  pages     = {4894-4901},
-  keywords  = {Task analysis; Trajectory; Probabilistic logic; Noise measurement; Training data; Approximation algorithms; Robot learning; Program synthesis},
-  doi       = {10.1109/LRA.2024.3385691}
-}
-
-% ----------------------------------------------------
-% Paper 2: Sensorless Force Estimation with DOB + NN Friction Approximation
+% Paper 1: Sensorless Force Estimation with DOB + NN Friction Approximation
 % Keywords: Sensorless force estimation, Disturbance observer, Friction modeling, Neural learning
 % Issue: Model-based force observers fail under strong nonlinear friction
 % Math: Newton–Euler dynamics, Stribeck friction, DKF formulation, NN approximation
@@ -519,7 +499,7 @@
 }
 
 % ----------------------------------------------------
-% Paper 3: Adaptive Neural Trajectory Tracking Control
+% Paper 2: Adaptive Neural Trajectory Tracking Control
 % Keywords:
 % Issue: uncertain dynamics, disturbances, and state constraints degrade tracking
 % Math: robot rigid-body dynamics, RBFNN approximation, BLF stability
@@ -539,7 +519,7 @@
 }
 
 % ----------------------------------------------------
-% Paper 4: Hybrid Inverse Dynamics with BLL Residual
+% Paper 3: Hybrid Inverse Dynamics with BLL Residual
 % Keywords:
 % Issue: nominal NE models inaccurate under unmodeled dynamics & friction
 % Math: Newton–Euler inverse dynamics, bounded linear least-squares
@@ -611,63 +591,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % ----------------------------------------------------
-% Paper 1: Tactile-Driven Dexterous In-Hand Writing
-% Keywords:
-% Issue: in-hand manipulation (writing) limited by tactile coverage
-% Math: RL with tactile state features, trajectory optimization
-% Methods: extrinsic tactile sensing + RL
-% Results: robust writing tasks adapting to contact dynamics
-% Contribution: first demo of tactile-driven RL for dexterous in-hand tasks
-@article{tactile_inhand_writing,
-  author    = {Zhao, Can and Xie, Lingzi and Huang, Bidan and Wang, Shuai and Ma, Daolin},
-  journal   = {IEEE Robotics and Automation Letters},
-  title     = {Tactile-Driven Dexterous In-Hand Writing via Extrinsic Contact Sensing},
-  year      = {2025},
-  volume    = {10},
-  number    = {9},
-  pages     = {8914-8921},
-  keywords  = {In-hand manipulation; force and tactile sensing; reinforcement learning; trajectory},
-  doi       = {10.1109/LRA.2025.3589168}
-}
-
-% ----------------------------------------------------
-% Paper 2: Optimization of Adaptive Algorithm for Precise Motion Control
-% Keywords:
-% Issue: precise multi-DoF control under uncertainty/noise
-% Math: fuzzy control, adaptive algorithms, DRL
-% Methods: fuzzy + DRL hybrid adaptive algorithm
-% Results: improved real-time accuracy and robustness
-% Contribution: adaptive control approach for high-precision robot arms
-@inproceedings{adaptive_motion_control,
-  author    = {Yuan, Ruilin},
-  booktitle = {2025 6th International Conference on Electrical Technology and Automatic Control (ICETAC)},
-  title     = {Optimization of Adaptive Algorithm for Precise Motion Control of Multi-Degree-of-Freedom Robotic Arms},
-  year      = {2025},
-  pages     = {680-684},
-  keywords  = {Robotic Arm; Motion Control; Algorithm Optimization; Deep reinforcement learning; Real-time systems},
-  doi       = {10.1109/ICETAC65964.2025.11144171}
-}
-
-% ----------------------------------------------------
-% Paper 3: Sim-to-Real Transfer of Bolting Tasks
-% Keywords:
-% Issue: sim-to-real gap in tight tolerance bolting
-% Math: RL, domain randomization
-% Methods: randomized sim policies transferred to real robot
-% Results: successful real-world tight-tolerance bolting
-% Contribution: first sim-to-real success for bolting tasks
-@inproceedings{sim2real_bolting,
-  author    = {Son, Dongwon and Yang, Hyunsoo and Lee, Dongjun},
-  booktitle = {2020 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
-  title     = {Sim-to-Real Transfer of Bolting Tasks with Tight Tolerance},
-  year      = {2020},
-  pages     = {9056-9063},
-  keywords  = {Adaptation models; Uncertainty; Task analysis; Robotics},
-  doi       = {10.1109/IROS45743.2020.9341644}
-}
-
-% ----------------------------------------------------
-% Paper 4: Contact Localization without Torque Sensing
+% Paper 1: Contact Localization without Torque Sensing
 % Keywords:
 % Issue: contact localization typically requires torque sensing
 % Math: CNN with cylindrical projection encoding, domain randomization
@@ -685,27 +609,7 @@
 }
 
 % ----------------------------------------------------
-% Paper 5: Transfer Learning for Cross-Modal Object Recognition
-% Keywords:
-% Issue: object recognition needs multimodal transfer (vision ↔ touch)
-% Math: TL, multimodal representations, MLS voxel filtering
-% Methods: visuo-tactile feature equalization and transfer
-% Results: 94.7% accuracy, robust cross-modal recognition
-% Contribution: first cross-modal visuo-tactile transfer learning for object recognition
-@article{crossmodal_tl_haptics,
-  author    = {Falco, Pietro and Lu, Shuang and Natale, Ciro and Pirozzi, Salvatore and Lee, Dongheui},
-  journal   = {IEEE Transactions on Robotics},
-  title     = {A Transfer Learning Approach to Cross-Modal Object Recognition: From Visual Observation to Robotic Haptic Exploration},
-  year      = {2019},
-  volume    = {35},
-  number    = {4},
-  pages     = {987-998},
-  keywords  = {Cross-modal recognition; Robotic manipulation; Tactile perception; Visual perception},
-  doi       = {10.1109/TRO.2019.2914772}
-}
-
-% ----------------------------------------------------
-% Paper 6: Incremental Ensemble Learning for Payload ID
+% Paper 2: Incremental Ensemble Learning for Payload ID
 % Keywords:
 % Issue: excitation trajectory requirement limits adaptability
 % Math: inertial parameters vector φ, SGD optimization
@@ -723,7 +627,7 @@
 }
 
 % ----------------------------------------------------
-% Paper 7: Online Ensemble Learning for Payload ID (RA-L)
+% Paper 3: Online Ensemble Learning for Payload ID (RA-L)
 % Keywords:
 % Issue: cobots need online payload ID, classical observers degrade under uncertainty
 % Math: rigid body dynamics, ensemble model
@@ -743,7 +647,7 @@
 }
 
 % ----------------------------------------------------
-% Paper 8: Incremental Ensemble Learning with Catastrophic Forgetting Solution
+% Paper 4: Incremental Ensemble Learning with Catastrophic Forgetting Solution
 % Keywords:
 % Issue: incremental ensemble models forget old data
 % Math: ensemble learning theory, SGD, classification thresholds
@@ -766,7 +670,7 @@
 }
 
 % ----------------------------------------------------
-% Paper 9: PSO-based Force Estimation
+% Paper 5: PSO-based Force Estimation
 % Keywords:
 % Issue: expensive/unreliable force sensors in harsh environments
 % Math: Newton–Euler dynamics with friction, PSO optimization
@@ -861,10 +765,48 @@
 }
 
 % ----------------------------------------------------
+% Paper 2: Programmatic Imitation Learning from Unlabeled and Noisy Demonstrations (PLUNDER)
+% Keywords:
+% Issue: Imitation learning needs clean/labeled demos; black-box NN policies lack interpretability
+% Math: EM latent variable inference, probabilistic DSL, program synthesis
+% Methods: PLUNDER = probabilistic program induction with EM (E-step particle filtering, M-step program synthesis)
+% Results: 90%+ success rate; robust to noise; interpretable symbolic policies
+% Contribution: first probabilistic programmatic imitation learning framework robust to unlabeled/noisy demos
+@article{plunder_pil,
+  author    = {Xin, Jimmy and Zheng, Linus and Rahmani, Kia and Wei, Jiayi and Holtz, Jarrett and Dillig, Isil and Biswas, Joydeep},
+  journal   = {IEEE Robotics and Automation Letters}, 
+  title     = {Programmatic Imitation Learning From Unlabeled and Noisy Demonstrations}, 
+  year      = {2024},
+  volume    = {9},
+  number    = {6},
+  pages     = {4894-4901},
+  keywords  = {Task analysis; Trajectory; Probabilistic logic; Noise measurement; Training data; Approximation algorithms; Robot learning; Program synthesis},
+  doi       = {10.1109/LRA.2024.3385691}
+}
+
+% ----------------------------------------------------
+% Paper 3: Optimization of Adaptive Algorithm for Precise Motion Control
+% Keywords:
+% Issue: precise multi-DoF control under uncertainty/noise
+% Math: fuzzy control, adaptive algorithms, DRL
+% Methods: fuzzy + DRL hybrid adaptive algorithm
+% Results: improved real-time accuracy and robustness
+% Contribution: adaptive control approach for high-precision robot arms
+@inproceedings{adaptive_motion_control,
+  author    = {Yuan, Ruilin},
+  booktitle = {2025 6th International Conference on Electrical Technology and Automatic Control (ICETAC)},
+  title     = {Optimization of Adaptive Algorithm for Precise Motion Control of Multi-Degree-of-Freedom Robotic Arms},
+  year      = {2025},
+  pages     = {680-684},
+  keywords  = {Robotic Arm; Motion Control; Algorithm Optimization; Deep reinforcement learning; Real-time systems},
+  doi       = {10.1109/ICETAC65964.2025.11144171}
+}
+
+% ----------------------------------------------------
 % ISAAC
 % ----------------------------------------------------
 
-% Paper 1: Sampling-Based MPC Leveraging Parallelizable Physics Simulations
+% Paper 4: Sampling-Based MPC Leveraging Parallelizable Physics Simulations
 % Keywords:
 % Issue: real-time MPC limited by computational cost
 % Math: MPC, contact dynamics, optimization
