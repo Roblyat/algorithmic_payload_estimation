@@ -205,7 +205,7 @@ The structured literature search identified a substantial number of relevant pap
 | **Q3 – Deep Sequence Models**     | 9            | 7            | 6          | 3          | 2       | 1     |
 | **Q4 – Hybrid / Residual**        | 6            | 5            | 4          | 4          | 0       | 0     |
 | **Q5 – Physics-Informed / Diff.** | 2            | 2            | 2          | 1          | 1       | 0     |
-| **Q6 – Domain Adaptation**        | 11           | 7            | 4          | 1          | 3       | 0     |
+| **Q6 – Domain Adaptation**        | 12           | 8            | 5          | 1          | 4       | 0     |
 | **Q8 – Surveys & Overviews**      | 2            | 1            | 1          | –          | –       | –     |
 | **Total**                         | **47**       | **38**       | **32**     | **17**     | **11**  | **2** |
 
@@ -514,7 +514,15 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 * **SoA**: Contact particle filter, SVM classifiers, ML models with proprioception.
 * **Focus**: **Contact localization via proprioception**.
 
+---
 
+### Xu et al., Robotica 2024 - An online payload identification method based on parameter difference for industrial robots
+
+* **Problem/Issue**:  Existing **online payload ID** methods often require external sensors (IMU, F/T) or rely on oversimplified **linear friction models**, limiting accuracy in real deployment.
+
+* **Contribution**:
+  * First **sensorless online payload ID** that incorporates **nonlinear friction** and parameter-difference formulation.
+  * Outperforms previous methods in both **accuracy** and **practicality** for industrial robots.
 
 ---
 
