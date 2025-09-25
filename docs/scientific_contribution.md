@@ -281,7 +281,7 @@ $$
 
 ---
 
-<img src="concept_graph.png" alt="Concept Graph" width="750" height="">
+
 
 
 ---
