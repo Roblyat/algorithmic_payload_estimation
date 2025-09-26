@@ -647,7 +647,7 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 - **Delivered Papers seen in table**
 
 
-<img src="concept_graph.png" alt="Concept Graph" width="750" height="">
+<img src="250926_concept_graph.drawio.png" alt="Concept Graph" width="750" height="">
 
 ---
 
