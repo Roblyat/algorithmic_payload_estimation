@@ -196,18 +196,29 @@ $$
 
 # Research Results Summary
 
+| **Database**                | **C1**    | **C2**    | **C3**    | **C4**    | **C5**    | **C6**    |
+|-----------------------------|-----------|-----------|-----------|-----------|-----------|-----------|
+| **IEEE Xplore**             | ~400/~120 |  ~80/ ~30 | ~250/ ~80 | ~180/ ~50 | ~500/~150 | ~160/~170 |
+| **ScienceDirect**           |           |           |           |           |           |           |
+| **Scopus (Elsevier index)** |           |           |           |           |           |           |
+| **arXiv**                   |           |           |           |           |           |           |
+| **Google Scholar**          |           |           |           |           |           |           |
+| **Total**                   |           |           |           |           |           |           |
+| **[2021-curent]**           |           |           |           |           |           |           |
+---
+
 The structured literature search identified a substantial number of relevant papers in each query category (Q1–Q6). The table below summarizes the counts of total relevant papers, those published 2022–present, and the subset of “Mature SoA” papers (i.e. peer-reviewed works with citations or high relevance) for each category:
 
-| Query                             | Total Papers | 2022–Current | Mature SoA | Rigid-body | Payload | Both  |
+| Query                             | Total Papers | 2021–Current | Relev. SoA | Rigid-body | Payload | Both  |
 | --------------------------------- | ------------ | ------------ | ---------- | ---------- | ------- | ----- |
-| **Q1 – Classical / Observers**    | 15           | 13           | 13         | 7          | 5       | 1     |
-| **Q2 – GP / Hybrid GP**           | 3            | 3            | 2          | 2          | 0       | 0     |
-| **Q3 – Deep Sequence Models**     | 9            | 7            | 6          | 3          | 2       | 1     |
-| **Q4 – Hybrid / Residual**        | 6            | 5            | 4          | 4          | 0       | 0     |
+| **Q1 – Classical / Observers**    | 15           | 13           | 13         | 4          | 8       | 1     |
+| **Q2 – GP / Hybrid GP**           | 3            | 3            | 3          | 3          | 0       | 0     |
+| **Q3 – Deep Sequence Models**     | 9            | 7            | 6          | 4          | 1       | 1     |
+| **Q4 – Hybrid / Residual**        | 6            | 5            | 3          | 3          | 0       | 0     |
 | **Q5 – Physics-Informed / Diff.** | 2            | 2            | 2          | 1          | 1       | 0     |
-| **Q6 – Domain Adaptation**        | 12           | 8            | 5          | 1          | 4       | 0     |
+| **Q6 – Domain Adaptation**        | 12           | 8            | 6          | 2          | 4       | 0     |
 | **Q8 – Surveys & Overviews**      | 2            | 1            | 1          | –          | –       | –     |
-| **Total**                         | **47**       | **38**       | **32**     | **17**     | **11**  | **2** |
+| **Total** without Surveys         | **47**       | **38**       | **33**     | **17**     | **14**  | **2** |
 
 > **Note:** “Total Papers” excludes non-article references like textbooks.
 > “2022–Present” counts publications from 2022 to 2025.
@@ -575,6 +586,15 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
   * Outperforms previous methods in both **accuracy** and **practicality** for industrial robots.
 
 ---
+
+### Dan Zhang et al. ISAR 2023 - Dynamic Parameter Identification of Collaborative Robot Based on WLS-RWPSO Algorithm
+
+- 🔗 [https://www.mdpi.com/2075-1702/11/2/316]
+
+### Wanke Yu et al. ADAII 2022 - A Novel Sliding Mode Momentum Observer for Collaborative Robot Collision Detection
+
+- 🔗 [https://www.mdpi.com/2075-1702/10/9/818#:~:text=This%20paper%20presents%20a%20novel,accuracy%20to%20ensure%20safe%20PHRI]
+
 
 ## Summary & Trends
 

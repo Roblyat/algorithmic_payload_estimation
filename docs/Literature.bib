@@ -261,6 +261,68 @@
   doi       = {10.1109/TMECH.2021.9484422}
 }
 
+% ----------------------------------------------------
+% Paper 14 [old but robust]: Dynamic Model Identification for Industrial Robots
+% Keywords: parameter estimation, rigid-body dynamics, friction, payload ID
+% Issue: industrial robots need accurate dynamics for model-based control; missing link inertias & actuator dynamics
+% Math: rigid-body dynamics (linear-in-parameters), WLS/ML estimation, Fourier differentiation
+% Methods: periodic excitation, Fourier-based signal processing, weighted least squares, maximum likelihood
+% Results: KUKA IR 361 & KR 15; accurate inertial + friction parameters; payload ID with <5% mass error, <1 cm CoM error
+% Contribution: established periodic excitation-based integrated framework for dynamic model ID; industrial relevance
+@article{dynamic_model_id_swevers2007,
+  author    = {Swevers, Jan and Verdonck, Walter and De Schutter, Joris},
+  journal   = {IEEE Control Systems Magazine}, 
+  title     = {Dynamic Model Identification for Industrial Robots}, 
+  year      = {2007},
+  volume    = {27},
+  number    = {5},
+  pages     = {58--71},
+  keywords  = {Service robots; Predictive models; Manipulator dynamics; Actuators; Process design; Signal design; Signal processing; Parameter estimation; Motion estimation; Robot motion},
+  doi       = {10.1109/MCS.2007.904659}
+}
+
+% ----------------------------------------------------
+% Paper 15: A Novel Sliding Mode Momentum Observer for Collaborative Robot Collision Detection
+% Keywords: collision detection, observers, momentum, sliding mode, pHRI
+% Issue: trade-off between collision sensitivity, smoothness, and noise immunity without external sensors
+% Math: rigid-body dynamics, momentum observer, sliding mode reaching law
+% Methods: NSOMO with new reaching law; Time-Varying Dynamic Threshold (TVDT)
+% Results: tested on Franka Panda; higher bandwidth, better noise robustness, reliable dynamic/quasistatic collision detection
+% Contribution: observer-based sensorless collision detection framework for safe pHRI
+@article{long2022sliding_momentum_observer,
+  author    = {Long, Shike and Dang, Xuanju and Sun, Shanlin and Wang, Yongjun and Gui, Mingzhen},
+  title     = {A Novel Sliding Mode Momentum Observer for Collaborative Robot Collision Detection},
+  journal   = {Machines},
+  volume    = {10},
+  number    = {9},
+  pages     = {818},
+  year      = {2022},
+  doi       = {10.3390/machines10090818},
+  url       = {https://www.mdpi.com/2075-1702/10/9/818},
+  keywords  = {collision detection, sliding mode, momentum observer, pHRI, observers}
+}
+
+% ----------------------------------------------------
+% Paper 16: Dynamic Parameter Identification of Collaborative Robot Based on WLS-RWPSO Algorithm
+% Keywords: dynamic parameter identification, collaborative robots, WLS, PSO, friction modeling
+% Issue: standard LS/PSO methods inaccurate under friction/nonlinearities; risk of local minima
+% Math: rigid-body dynamics (linear-in-parameters), WLS estimation, PSO optimization
+% Methods: WLS for initialization; RWPSO refinement; Kalman filter preprocessing; Fourier excitation trajectory
+% Results: validated on 6-DOF cobot; predicted torque highly matched measured torque; better than LS-PSO and WLS-PSO
+% Contribution: hybrid WLS-RWPSO method improves identification accuracy and robustness in cobots
+@article{tang2023wls_rwspo,
+  author    = {Tang, Minan and Yan, Yaguang and An, Bo and Wang, Wenjuan and Zhang, Yaqi},
+  title     = {Dynamic Parameter Identification of Collaborative Robot Based on WLS-RWPSO Algorithm},
+  journal   = {Machines},
+  volume    = {11},
+  number    = {2},
+  pages     = {316},
+  year      = {2023},
+  doi       = {10.3390/machines11020316},
+  url       = {https://www.mdpi.com/2075-1702/11/2/316},
+  keywords  = {dynamic parameter identification, collaborative robots, WLS, PSO, friction modeling}
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End of Q1 Section
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -756,6 +818,108 @@ url       = {https://doi.org/10.1017/S026357472400105X}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End of Q8 Section
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Q9 = Reinforcement Learning
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ----------------------------------------------------
+% Paper 1: Estimating an Object’s Inertial Parameters by Robotic Pushing
+% Keywords: payload identification, inertial parameters, data-driven, pushing, contact dynamics
+% Issue: traditional ID needs F/T sensors or rigid grasps; limiting for general manipulation
+% Math: planar rigid-body pushing dynamics, linear regression for inertial params
+% Methods: robotic pushing experiments; regression-based data-driven parameter learning
+% Results: recovers mass, CoM, friction approx. from pushing without F/T sensors
+% Contribution: first data-driven pushing-based inertial ID framework
+@inproceedings{yu2016pushing_inertial_id,
+author = {Yu, Kunpeng and Calandra, Roberto and Levine, Sergey and Abbeel, Pieter},
+title = {Estimating an Object’s Inertial Parameters by Robotic Pushing: A Data-Driven Approach},
+booktitle = {2016 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+year = {2016},
+pages = {3803--3810},
+doi = {10.1109/IROS.2016.7759565},
+keywords = {payload identification, inertial parameters, robotic pushing, data-driven ID, contact dynamics}
+}
+
+% ----------------------------------------------------
+% Paper 2: Model-based Reinforcement Learning with Parametrized Physical Models
+% Keywords: reinforcement learning, system identification, MPC, optimism, physics-informed
+% Issue: model-based RL suffers from poor dynamics; GP-based PILCO not scalable
+% Math: rigid-body dynamics linear-in-parameters; least squares ID; MPC optimization
+% Methods: parameter regression with morphology priors; optimism-driven exploration in MPC
+% Results: outperforms GP-based RL (PILCO) on pendulum/cartpole; scales to 7-DoF arm
+% Contribution: first integration of parametrized physical models with optimistic exploration for sample-efficient RL
+@inproceedings{xie2016mb_rl_physical_models,
+author = {Xie, Chris and Patil, Sachin and Moldovan, Teodor and Levine, Sergey and Abbeel, Pieter},
+title = {Model-based Reinforcement Learning with Parametrized Physical Models and Optimism-Driven Exploration},
+booktitle = {2016 IEEE International Conference on Robotics and Automation (ICRA)},
+year = {2016},
+pages = {504--511},
+doi = {10.1109/ICRA.2016.7487170},
+keywords = {reinforcement learning, system identification, optimism, MPC, physical models}
+}
+
+% ----------------------------------------------------
+% Paper 3: Preparing for the Unknown: Learning a Universal Policy with Online System Identification
+% Keywords: reinforcement learning, universal policy, online system identification, dynamics, robustness, reality gap
+% Issue: RL policies trained in simulation fail under real-world model mismatch; need adaptive, generalizable control
+% Math: parameterized dynamics x_{t+1} = f_mu(x_t,u_t); UP: π(x,μ); OSI: φ(history) → μ
+% Methods: Universal Policy (TRPO-based), Online System Identification (NN on state-action history), iterative refinement with simulated rollouts
+% Results: Robust performance across pendulum, manipulator, hopper, cart-pole; adapts to varying mass, friction, CoM, pole length; generalizes beyond training range
+% Contribution: Coupled UP + OSI framework for robust control under unknown dynamics; narrows the simulation-to-reality gap
+@inproceedings{yu2017uposi,
+  author    = {Yu, Wenhao and Tan, Jie and Liu, C. Karen and Turk, Greg},
+  title     = {Preparing for the Unknown: Learning a Universal Policy with Online System Identification},
+  booktitle = {Proceedings of Robotics: Science and Systems (RSS)},
+  year      = {2017},
+  address   = {Cambridge, MA, USA},
+  doi       = {10.15607/RSS.2017.XIII.038},
+  url       = {https://arxiv.org/abs/1702.02453},
+  keywords  = {reinforcement learning, online system identification, adaptive control, dynamics, robustness}
+}
+
+% ----------------------------------------------------
+% Paper 4: Learning Force Control for Contact-Rich Manipulation Tasks With Rigid Position-Controlled Robots
+% Keywords: reinforcement learning, force control, compliance, impedance, rigid robots
+% Issue: RL unsafe for rigid position-controlled robots; torque-level access unavailable
+% Math: force control (parallel position/force, admittance), RL agent learns gains
+% Methods: learning-based force control framework; safe training mechanism
+% Results: simulation + UR3e robot; learned safe force control in contact-rich tasks
+% Contribution: first RL+force control integration for rigid robots; enables real-world safe learning
+@article{beltran2020force_control_rl,
+author    = {Beltran-Hernandez, Cristian Camilo and Petit, Damien and Ramirez-Alpizar, Ixchel Georgina and Nishi, Takayuki and Kikuchi, Shinichi and Matsubara, Takamitsu and Harada, Kensuke},
+title     = {Learning Force Control for Contact-Rich Manipulation Tasks With Rigid Position-Controlled Robots},
+journal   = {IEEE Robotics and Automation Letters},
+volume    = {5},
+number    = {4},
+pages     = {5709--5716},
+year      = {2020},
+doi       = {10.1109/LRA.2020.3010739},
+keywords  = {force control, reinforcement learning, compliance control, rigid robots, contact-rich manipulation}
+}
+
+
+% ----------------------------------------------------
+% Paper 5: Reinforcement Learning Based Variable Impedance Control for High Precision Human-Robot Collaboration Tasks
+% Keywords: reinforcement learning, impedance control, human-robot collaboration, PPO, adaptive control
+% Issue: fixed impedance controllers fail for varying operators and tasks in HRC
+% Math: impedance control laws, PPO optimization
+% Methods: RL-based variable impedance learning control (VILC)
+% Results: adaptive impedance in collaborative assembly; robust to human differences
+% Contribution: first PPO variable impedance controller for HRC; generalizable and teach-less
+@inproceedings{meng2021rl_variable_impedance,
+author    = {Meng, Yan and Su, Jianhua and Wu, Jiaxi},
+title     = {Reinforcement Learning Based Variable Impedance Control for High Precision Human-robot Collaboration Tasks},
+booktitle = {2021 6th IEEE International Conference on Advanced Robotics and Mechatronics (ICARM)},
+pages     = {560--565},
+year      = {2021},
+doi       = {10.1109/ICARM52023.2021.9536100},
+keywords  = {reinforcement learning, impedance control, collaboration, adaptive control, human-robot interaction}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% End of Q9 Section
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

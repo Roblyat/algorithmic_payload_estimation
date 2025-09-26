@@ -64,7 +64,7 @@ Perfect — let’s make this clean. I’ll add a **new category: “Estimation 
 
 ---
 
-## 5) 🔑 Categories with Keywords
+## 5) 🔑 Categories with Keyterms
 
 ## **1. Classical / Observers**
 
@@ -267,7 +267,7 @@ $$
 * **“Mature SoA”** = cited or relevant work. paper with impact for ape [2022-2025]
 
 - **CMD Search done on IEEE**
-- **Deep Search ChatGPT on ScienceDirect, Elvister, ArXiv & Goolge Scholar (peer reviewed on Google Scholar**)
+- **Deep Search ChatGPT on IEEE, ScienceDirect, Elvister, ArXiv & Goolge Scholar (peer reviewed on Google Scholar**)
 - **Delivered Papers seen in table**
 
 ---
