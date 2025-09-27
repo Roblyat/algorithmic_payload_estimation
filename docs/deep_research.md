@@ -3,32 +3,37 @@
 <img src="query_logic.png" alt="Query Logic Diagram" width="550" height="">
 
 ### Categories
-- $C_1 =$ Classical / Observers
-- $C_2 =$ Gaussian Process (GP) / Hybrid GP
-- $C_3 =$ Deep Sequence Models (MLP / GRU / TCN / Transformer)
-- $C_4 =$ Hybrid / Residual  
-- $C_5 =$ Physics-Informed / Differentiable  
-- $C_6 =$ Domain Adaptation / Latent Context  
+- $C_1  =$ Classical / Observers
+- $C_2  =$ Gaussian Process (GP) / Hybrid GP
+- $C_3  =$ Deep Sequence Models (MLP / GRU / TCN / Transformer)
+- $C_4  =$ Hybrid / Residual  
+- $C_5  =$ Physics-Informed / Differentiable  
+- $C_6  =$ Domain Adaptation / Latent Context
+- $C_7. =$ Surveys & Overviews
+- $C_8  =$ Reinforcement Learning
+- $C_9  =$ Estimation Goal & Domain
+- $C_9a =$ Estimation & Modeling Terms
+- $C_9b =$ Robotics Context Terms
 
 ### Query Logic (Generalized Set Intersection)
 
 ### Combined Representation
 
 $$
-C = \{ C_1, C_2, \dots, C_6 \}
+C = \{ C_1, C_2, \dots, C_8 \}
 $$
 
 $$
-Q = \bigcup_{i=1}^{6} Q_i
+Q = \bigcup_{i=1}^{8} Q_i
 $$
 
 $$
 Q_i = \left( \bigvee_{c \in C_i} c \right) 
 \;\; \land \;\; 
-\left( \bigvee_{e \in C7a} e \right) 
+\left( \bigvee_{e \in C9a} e \right) 
 \;\; \land \;\; 
-\left( \bigvee_{r \in C7b} r \right),
-\quad i = 1, 2, \dots, 6
+\left( \bigvee_{r \in C9b} r \right),
+\quad i = 1, 2, \dots, 8
 $$
 
 ---
@@ -107,7 +112,7 @@ $$
 * Generative Adversarial Networks
 
 
-## **5. Physics-Informed / Differentiable**
+## **5. Physics-Informed / Differentiable / Reinforcement**
 
 * physics-informed neural network (PINN)
 * differentiable physics
@@ -117,8 +122,6 @@ $$
 * neural ODE (NODE)
 * torchdiffeq
 * ODE-net
-* Isaac Gym differentiable
-* Isaac Lab differentiable
 * physics-guided machine learning robotics (PGML)
 
 
@@ -138,8 +141,27 @@ $$
 * zero shot transfer (ZSL)
 
 
-## **7. (Estimation Goal & Domain)**
-## **7a. Estimation & Modeling Terms**
+## **7. Reinforcement Learning**
+
+* reinforcement
+* reinforcement learning
+* Isaac Gym differentiable
+* Isaac Lab differentiable
+* Isaac Gym
+* Isaac Lab
+
+
+## **8. Surveys & Overviews**
+
+* survey
+* benchmarking
+* review
+* overview
+* systematic comparison
+
+
+## **9. (Estimation Goal & Domain)**
+## **9a. Estimation & Modeling Terms**
 
 * external force
 * force measurement
@@ -176,20 +198,12 @@ $$
 * payload estimation (PE)
 * contact force
 
-## **7b. Robotics Context Terms**
+## **9b. Robotics Context Terms**
 
 * robotic manipulator
 * robotic arm
 * robotic manipulation
 * robot payload
-
-## **8. Surveys & Overviews**
-
-* survey
-* benchmarking
-* review
-* overview
-* systematic comparison
 
 ---
 ---
