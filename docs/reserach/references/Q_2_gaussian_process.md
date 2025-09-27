@@ -1,3 +1,5 @@
+## 🔎 Q2 -  Gaussian Process (GP) / Hybrid GP
+
 ### 1. **Decoupling Observer for Contact Force Estimation of Robot Manipulators Based on Enhanced Gaussian Process Model** (CCIS 2022)
 
 * **Problem/Issue**: Force estimation without force sensors is highly dependent on accurate robot dynamics models, which are often imperfect in practice. Existing observers (GMO, DOB, NDOB) struggle with residual dynamics and noise.

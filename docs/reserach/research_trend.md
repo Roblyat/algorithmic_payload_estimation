@@ -1,3 +1,6 @@
+[Back](deep_research.md)
+
+
 | **Database [2021–current]**        | **C1: Classical / Observers**  | **C2: GP / Hybrid GP** | **C3: Deep Sequence Models** | **C4: Hybrid / Residual** | **C5: Physics‑Informed / Differentiable**  | **C6: Domain Adaptation / Latent Context** | **C7: Reinforcement Learning** | **C8: Surveys & Overviews** | **Total [per Database] (2021‑present)** |
 | ---------------------------------- | -------------------------------| -----------------------| -----------------------------| --------------------------| -------------------------------------------| ------------------------------------------ | ------------------------------ | ----------------------------| --------------------------------------- |
 | **IEEE Xplore (est.)**             | ~65                            | ~20                    | ~30                          | ~25                       | ~20                                        | ~8                                         | ~25                            |~15                          | **~203**                                |
@@ -40,20 +43,21 @@
 ### 📑 Diagrams & Statements
 
 #### 1. *Literature Share*
-<img src="literature_share.png" alt="Literature Share Diagram" width="350" height="">
+
+![Literature Share Diagram](/docs/reserach/illustrations/literature_share.png)
 
 * The pie chart highlights that **~33% of the research is recent (2021–present)**, while **~67% is foundational work before 2021**.
 * This balance shows a **mature field with strong roots** and a **healthy stream of ongoing contributions**.
 
 #### 2. *Publication Trend*
-<img src="publication_trend.png" alt="Publication Trend Diagram" width="550" height="">
+![Publication Trend Diagram](/docs/reserach/illustrations/publication_trend.png)
 
 * The timeline shows a **steady increase in publications since 2015**, with a visible rise after 2021.
 * This trend confirms that payload and force/torque estimation for manipulators has become a **fast-growing research topic** in the last 5 years.
 
 
 #### 3. *Category Bars*
-<img src="category_bars.png" alt="Category Bars Diagram" width="550" height="">
+![Category Bars Diagram](/docs/reserach/illustrations/category_bars.png)
 
 * Each category (C1–C6) follows the same ~30–35% recent vs. ~65–70% older pattern.
 * **C1 (Observers)** is the **largest contributor overall**, with both historical weight and strong recent output — making it a backbone of the field.

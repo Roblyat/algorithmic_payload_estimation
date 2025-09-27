@@ -1,3 +1,5 @@
+[Back](deep_research.md)
+
 # 📊 Mature SoA Papers (2021–2025) Classification
 
 |    | **Paper**                                                                                                                    | **Year / Venue**     | **Category**| **Focus**      | **Citations** [250924_233600] |

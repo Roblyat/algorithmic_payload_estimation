@@ -1,3 +1,4 @@
+## 🔎 Q5 - Physics-Informed / Differentiable
 
 ---
 ### 1 **A Residual-Driven Decomposed PINNs Method for Dynamics Identification of Robot Manipulators** (RCAR 2025)

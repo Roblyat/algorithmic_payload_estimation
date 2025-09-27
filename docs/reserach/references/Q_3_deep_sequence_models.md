@@ -1,3 +1,5 @@
+## 🔎 Q3 -  Deep Sequence Models (MLP / GRU / TCN / Transformer)
+
 ### 1. Extended Deep Lagrangian Network for Robotic Arm Dynamics considering Motor Couplings
 
 * **Problem/Issue**:

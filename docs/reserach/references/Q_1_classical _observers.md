@@ -1,3 +1,5 @@
+## 🔎 Q1 - Classical / Observers
+
 ### 1. **Fast Object Inertial Parameter Identification for Collaborative Robots**&#x20;
 
 * **Problem/Issue**: Collaborative robots (cobots) need to identify object inertial parameters (mass, CoM, inertia tensor) quickly. Low SNR in safe cobot regimes makes existing identification slow/inaccurate.
