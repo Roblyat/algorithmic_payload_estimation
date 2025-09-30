@@ -265,7 +265,7 @@ The structured literature search identified a substantial number of relevant pap
 |  19| Lao et al. – *A Learning-Based Approach for Estimating Inertial Properties of Unknown Objects From Encoder Discrepancies*    | 2023 / RA-L          | Q3          | **Payload**    | 4             |
 |  20| Kružić et al. – *End-Effector Force and Joint Torque Estimation of a 7-DoF Robotic Manipulator Using Deep Learning*          | 2021 / Electronics   | Q3          | **Rigid-body** | 12            |
 |  21| Peng et al. – *Neural-Learning-Based Force Sensorless Admittance Control for Robots With Input Deadzone*                     | 2021 / T-IE          | Q3 + Q4     | **Rigid-body** | 43            |
-|  22| Pan et al. – *An adaptive sparse general regression neural network-based force observer for teleoperation system*            | 2023 / Eng. Apps. AI | Q3          | **Rigid-body** | 8             |
+|  22| Pan et al. – *An adaptive sparse general regression neural network-based force observer for teleoperation system*            | 2023 / Eng. Apps. AI | Q3          | **Rigid-body** | **9**         |
 |    |                                                     -                                                                        |        -             |     -       |      -         | -             |
 |  23| Liu et al. – *Sensorless force estimation for industrial robots using disturbance observer and neural learning of friction*  | 2021 / RCIM          | Q4 + Q3     | **Rigid-body** | 90            |
 |  24| Bao et al. – *Adaptive Neural Trajectory Tracking Control for n-DOF Robotic Manipulators With State Constraints*             | 2023 / T-II          | Q4          | **Rigid-body** | 4             |
