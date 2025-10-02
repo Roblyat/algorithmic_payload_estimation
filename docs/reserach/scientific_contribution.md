@@ -73,3 +73,151 @@ https://ieeexplore-1ieee-1org-100033c761aa6.han.technikum-wien.at/document/11029
 ## 3) Important things we need to remember
 
 - We want to eliminate the need for the dynamic parameters of the robot
+
+
+
+
+
+
+
+
+
+Yes, I can read your handwriting well 👍 I’ll transcribe everything you wrote into a clean inline text version so you can use it directly. Here’s the full content from all your pages:
+
+---
+---
+
+Got it ✅ — here’s your disposition translated into English in the same structure and style:
+
+---
+
+# Disposition
+
+## 1) Problem Analysis
+
+### a) Preliminary Working Title
+
+* Summarizes the content of the thesis in brief
+* What was done in the thesis?
+* Which context/environment is addressed?
+* Is the title specific enough?
+
+### b) Problem Description
+
+* Describes the intended task as precisely as possible
+* Subdivision into problem statement / motivation & research question
+
+#### 1) Problem Statement / Problem Description
+
+* Explains the subject area & outlines the context
+* Description of the relevance from:
+
+  * a scientific perspective
+  * an application-oriented perspective
+
+#### 2) Motivation / Scientific Research Gap
+
+* Are there comparable works?
+* Do these address the intended tasks?
+* Practical relevance:
+
+  * Is the solution needed in industry/companies?
+  * Demonstrated through studies, surveys, literature sources, etc.
+
+### c) Checklist
+
+* 3 most important facts about the context
+* Why does it exist?
+* Why does this thesis need to be written?
+
+---
+
+## 2) Research Question
+
+* What is to be investigated?
+
+  * **Define clearly!!!**
+* Represents the substantive basis of the thesis
+* Can be subdivided into sub-questions
+
+  * Specification into individual sections
+* One central question & concrete sub-questions
+
+### Checklist
+
+* My thesis answers the following questions …
+* My thesis is relevant because …
+* Why is my thesis relevant for others?
+* Are there gaps in the state of the art?
+* The answer is not obvious, because …
+
+---
+
+## 3) Methodological Approach
+
+* Describes the scientific procedure in the thesis
+* Which methods are used to address the research question(s) & sub-questions?
+* Justify the selection of methods
+
+---
+
+## 4) Expected Results
+
+* Rough outline of the expected results (related to research questions & sub-questions)
+
+  * How will the result of each chapter look?
+
+### Checklist
+
+* My thesis shows …
+* Results in relation to research question(s) & sub-questions
+
+---
+
+![Focus Check](/docs/reserach/illustrations/focuscheck.png)
+![Structure](/docs/reserach/illustrations/structure.png)
+![Validate Questions 0](/docs/reserach/illustrations/validate_questions_0.png)
+![Validate Questions 1](/docs/reserach/illustrations/validate_questions_1.png)
+
+---
+---
+---
+
+# 1 Introduction
+
+## 1.1 Motivation
+
+### 1.1.1 Context
+
+* robotic arm manipulators increase more and more
+  - since a very long time 📍 *bottom of the funnel* → $\textcolor{orange}{funnel_0}$
+* collaborative robotic arm manipulation increases more & more 📍 $\textcolor{orange}{funnel_1}$ $\textcolor{violet}{c_1}$
+    - safe manipulation, safe manipulation at payloads, safe collaborative manipulation with & without payload
+        - awareness of payload 📍 $\textcolor{orange}{funnel_2}$
+            - 📍 awareness fundamental for safe manipulation of payloads
+                - and for collaborative payload manipulation
+
+### 1.1.2 Use Case
+
+* camera able to get shape and dimensions of payload, but no information of mass, CoM & inertia
+* payload’s mass, CoM & inertia information fundamental for safe manipulation
+* payload’s mass, CoM & inertia just identifiable with sensor data
+* 🔑 methods to identify robot dynamic parameters and payload parameters is relevant for robotic arm manipulation tasks like pick & place tasks or collaborative manipulation
+    - 📍 robot dynamic parameter identification (RDPI) $\textcolor{violet}{c_2}$
+        - relevant for general robotic arm movement
+    - 📍 payload dynamic parameter identification (PDPI) $\textcolor{violet}{c_2}$
+        - relevant for pick & place and collaborative manipulation
+
+    - both dynamic online & including everything $\textcolor{violet}{c_2}$
+    - to estimate online what’s going on dynamically $[vel, acc, f/t]$
+      - regression respecting friction, non linearity, noise  
+
+* 🗝️ methods relevant to all robotic arm manipulation tasks $\textcolor{violet}{c_1}$
+  - payload
+  - surgery
+  - collaborative
+  - regression respecting friction, nonlinearity, noise
+
+  ## 1.2 Problem Statement
+
+  ## 1.3 Aim of this work
