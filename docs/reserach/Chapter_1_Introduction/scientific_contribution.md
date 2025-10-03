@@ -220,4 +220,14 @@ Got it ✅ — here’s your disposition translated into English in the same str
 
   ## 1.2 Problem Statement
 
+  - to get information about the robot or payloads dynmaic parameters is not straight forward. There are problems for example non linearity and noise. 
+
+
   ## 1.3 Aim of this work
+
+  ### 1.3.1 Research Question
+
+  - (using a GAN is robust at this, but lacks of anything) what needs to be done to handle that lack?
+
+  ### 1.3.2 Scientific Contribution
+  - evaluating a GAN for payload dynmaic parameter identification and impoving the lack of anything.
