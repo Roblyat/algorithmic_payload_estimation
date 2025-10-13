@@ -219,16 +219,17 @@ $$
 
 The structured literature search identified a substantial number of relevant papers in each query category (Q1–Q6). The table below summarizes the counts of total relevant papers, those published 2022–present, and the subset of “Mature SoA” papers (i.e. peer-reviewed works with citations or high relevance) for each category:
 
-| Query                             | Total Papers | 2021–Current | Relev. SoA | Rigid-body | Payload | Both  |
-| --------------------------------- | ------------ | ------------ | ---------- | ---------- | ------- | ----- |
-| **Q1 – Classical / Observers**    | 15           | 13           | 13         | 4          | 8       | 1     |
-| **Q2 – GP / Hybrid GP**           | 3            | 3            | 3          | 3          | 0       | 0     |
-| **Q3 – Deep Sequence Models**     | 9            | 7            | 6          | 4          | 1       | 1     |
-| **Q4 – Hybrid / Residual**        | 6            | 5            | 3          | 3          | 0       | 0     |
-| **Q5 – Physics-Informed / Diff.** | 2            | 2            | 2          | 1          | 1       | 0     |
-| **Q6 – Domain Adaptation**        | 12           | 8            | 6          | 2          | 4       | 0     |
-| **Q8 – Surveys & Overviews**      | 2            | 1            | 1          | –          | –       | –     |
-| **Total** without Surveys         | **47**       | **38**       | **33**     | **17**     | **14**  | **2** |
+| Query                             | Relev. SoA | Rigid-body | Payload | Both  | other |
+| --------------------------------- | ---------- | ---------- | ------- | ----- | ----- |
+| **Q1 – Classical / Observers**    | 17         | 4          | 8       | 1     | -     |
+| **Q2 – GP / Hybrid GP**           | 3          | 3          | 0       | 0     | -     |
+| **Q3 – Deep Sequence Models**     | 6          | 4          | 1       | 1     | -     |
+| **Q4 – Hybrid / Residual**        | 3          | 3          | 0       | 0     | -     |
+| **Q5 – Physics-Informed / Diff.** | 2          | 1          | 1       | 0     | -     |
+| **Q6 – Domain Adaptation**        | 5          | 2          | 4       | 0     | -     |
+| **Q7 – Reinforcement Learning**   | 5          | -          | -       | -     | -     |
+| **Q8 – Surveys & Overviews**      | 2          | –          | –       | –     | –     |
+| **Total** without Surveys         | **41**     | **17**     | **14**  | **2** | **2** |
 
 > **Note:** “Total Papers” excludes non-article references like textbooks.
 > “2022–Present” counts publications from 2022 to 2025.
@@ -251,35 +252,38 @@ The structured literature search identified a substantial number of relevant pap
 |   7| Hu et al. – *On the Fully Decoupled Rigid-Body Dynamics Identification of Serial Industrial Robots*                          | 2025 / T-RO          | Q1          | **Both**       | 8             |
 |   8| Liu et al. – *A Two-Stage Payload Dynamic Parameter Identification Method for Interactive*                                   | 2025 / T-ASE         | Q1          | **Payload**    | 0             |
 |   9| Xu et al. – *Identifying Current Dynamics of Robot Payload*                                                                  | 2025 / TIM           | Q1          | **Payload**    | 1             |
-|  10| Xu et al. – *An accurate identification method based on double weighting for inertial parameters                             | 2022 / Robotica      | Q1          | **Payload**    | 10            |
+|  10| Xu et al. – *An accurate identification method based on double weighting for inertial parameters*                            | 2022 / Robotica      | Q1          | **Payload**    | 10            |
 |  11| Duan et al. – *Payload Identification and Gravity/Inertial Compensation for Six-Dimensional Force/Torque*                    | 2022 / Sensors       | Q1          | **Payload**    | 35            |
 |  12| Wei et al. – *Composite Disturbance Filtering for Interaction Force Estimation With Online Environmental Stiffness*          | 2025 / T-Mech        | Q1          | **Rigid-body** | 0             |
 |  13| Huang et al. – *Toward Sensorless Interaction Force Estimation for Industrial Robots Using High-Order Finite-Time*           | 2025 / T-Mech        | Q1          | **Rigid-body** | 49            |
+|  14| Xu et al. – *An online payload identification method based on parameter difference for industrial robots*                    | 2024 / Robotica      | Q1          | **Payload**    | 2             |
+|  15| Wanke Yu et al. – *A Novel Sliding Mode Momentum Observer for Collaborative Robot Collision Detection*                       | 2022 / ADAII         | Q1          | **Rigid-body** | 16            |
+|  16| Dan Zhang et al. – *Dynamic Parameter Identification of Collaborative Robot Based on WLS-RWPSO Algorithm*                    | 2023 / ISAR          | Q1          | **Rigid-body** | 16            |
+|  17| Xu et al. – *An online payload identification method based on parameter difference for industrial robots*                    | 2024 / Robotica      | Q1          | **Payload**    | 2             |
 |    |                                                    -                                                                         |        -             |     -       |      -         | -             |
 |  14| Wei et al. – *Decoupling Observer for Contact Force Estimation of Robot Manipulators Based on Enhanced Gaussian*             | 2022 / CCIS          | Q2          | **Rigid-body** | 3             |
-|  15| Wei et al. – *Contact Force Estimation of Robot Manipulators With Imperfect Dynamic Model: On Gaussian Process*              | 2024 / T-ASE         | Q2 + Q4     | **Rigid-body** | 1             |
-|  16| Fathi et al. – *Human-Robot Contact Detection in Assembly Tasks*                                                             | 2022 / ICMERR        | Q2          | **Rigid-body** | 0             |
+|  16| Wei et al. – *Contact Force Estimation of Robot Manipulators With Imperfect Dynamic Model: On Gaussian Process*              | 2024 / T-ASE         | Q2 + Q4     | **Rigid-body** | 1             |
+|  17| Fathi et al. – *Human-Robot Contact Detection in Assembly Tasks*                                                             | 2022 / ICMERR        | Q2          | **Rigid-body** | 0             |
 |    |                                                    -                                                                         |        -             |     -       |      -         | -             |
-|  17| Wu et al. – *Extended Deep Lagrangian Network for Robotic Arm Dynamics considering Motor Couplings*                          | 2025 / YAC Conf.     | Q3          | **Rigid-body** | 0             |
-|  18| De León et al. – *Parameter Identification of a Robot Arm Manipulator Based on a Convolutional Neural Network*               | 2022 / IEEE Access   | Q3          | **Both**       | 11            |
-|  19| Lao et al. – *A Learning-Based Approach for Estimating Inertial Properties of Unknown Objects From Encoder Discrepancies*    | 2023 / RA-L          | Q3          | **Payload**    | 4             |
-|  20| Kružić et al. – *End-Effector Force and Joint Torque Estimation of a 7-DoF Robotic Manipulator Using Deep Learning*          | 2021 / Electronics   | Q3          | **Rigid-body** | 12            |
-|  21| Peng et al. – *Neural-Learning-Based Force Sensorless Admittance Control for Robots With Input Deadzone*                     | 2021 / T-IE          | Q3 + Q4     | **Rigid-body** | 43            |
-|  22| Pan et al. – *An adaptive sparse general regression neural network-based force observer for teleoperation system*            | 2023 / Eng. Apps. AI | Q3          | **Rigid-body** | **9**         |
+|  18| Wu et al. – *Extended Deep Lagrangian Network for Robotic Arm Dynamics considering Motor Couplings*                          | 2025 / YAC Conf.     | Q3          | **Rigid-body** | 0             |
+|  19| De León et al. – *Parameter Identification of a Robot Arm Manipulator Based on a Convolutional Neural Network*               | 2022 / IEEE Access   | Q3          | **Both**       | 11            |
+|  20| Lao et al. – *A Learning-Based Approach for Estimating Inertial Properties of Unknown Objects From Encoder Discrepancies*    | 2023 / RA-L          | Q3          | **Payload**    | 4             |
+|  21| Kružić et al. – *End-Effector Force and Joint Torque Estimation of a 7-DoF Robotic Manipulator Using Deep Learning*          | 2021 / Electronics   | Q3          | **Rigid-body** | 12            |
+|  22| Peng et al. – *Neural-Learning-Based Force Sensorless Admittance Control for Robots With Input Deadzone*                     | 2021 / T-IE          | Q3 + Q4     | **Rigid-body** | 43            |
+|  23| Pan et al. – *An adaptive sparse general regression neural network-based force observer for teleoperation system*            | 2023 / Eng. Apps. AI | Q3          | **Rigid-body** | **9**         |
 |    |                                                     -                                                                        |        -             |     -       |      -         | -             |
-|  23| Liu et al. – *Sensorless force estimation for industrial robots using disturbance observer and neural learning of friction*  | 2021 / RCIM          | Q4 + Q3     | **Rigid-body** | 90            |
-|  24| Bao et al. – *Adaptive Neural Trajectory Tracking Control for n-DOF Robotic Manipulators With State Constraints*             | 2023 / T-II          | Q4          | **Rigid-body** | 4             |
-|  25| Tao et al. – *Robot Hybrid Inverse Dynamics Model Compensation Method Based on the BLL Residual Prediction Algorithm*        | 2025 / Robotica      | Q4          | **Rigid-body** | 0             |
+|  25| Liu et al. – *Sensorless force estimation for industrial robots using disturbance observer and neural learning of friction*  | 2021 / RCIM          | Q4 + Q3     | **Rigid-body** | 90            |
+|  25| Bao et al. – *Adaptive Neural Trajectory Tracking Control for n-DOF Robotic Manipulators With State Constraints*             | 2023 / T-II          | Q4          | **Rigid-body** | 4             |
+|  26| Tao et al. – *Robot Hybrid Inverse Dynamics Model Compensation Method Based on the BLL Residual Prediction Algorithm*        | 2025 / Robotica      | Q4          | **Rigid-body** | 0             |
 |    |                                                    -                                                                         |        -             |     -       |      -         | -             |
-|  26| Yang et al. – *A Residual-Driven Decomposed PINNs Method for Dynamics Identification of Robot Manipulators                   | 2025 / RCAR          | Q5 + Q1     | **Rigid-body** | 0             |
-|  27| Zhang et al. – *Provably-Safe, Online System Identification*                                                                 | 2025 / arXiv         | Q5          | **Payload**    | 0             |
+|  27| Yang et al. – *A Residual-Driven Decomposed PINNs Method for Dynamics Identification of Robot Manipulators                   | 2025 / RCAR          | Q5 + Q1     | **Rigid-body** | 0             |
+|  28| Zhang et al. – *Provably-Safe, Online System Identification*                                                                 | 2025 / arXiv         | Q5          | **Payload**    | 0             |
 |    |                                                    -                                                                         |        -             |     -       |      -         | -             |
-|  28| Liang & Kroemer – *Contact Localization for Robot Arms in Motion without Torque Sensing*                                     | 2021 / ICRA          | Q6          | **Rigid-body** | 1             |
-|  29| Taie et al. – *Payload Parameters Identification Using Incremental Ensemble Learning*                                        | 2024 / ICCCR         | Q6          | **Payload**    | 2             |
-|  30| Taie et al. – *Online Identification of Payload Inertial Parameters Using Ensemble Learning for Collaborative Robots*        | 2024 / RA-L          | Q6          | **Payload**    | 1             |
-|  31| Taie et al. – *Addressing Catastrophic Forgetting in Payload Parameter Identification Using Incremental Ensemble Learning*   | 2024 / Frontiers     | Q6          | **Payload**    | 0             |
-|  32| Liu et al. – *External force estimation for robotic manipulator based on particle swarm optimization*                        | 2021 / IJARS         | Q6          | **Rigid-body** | 5             |
-|  33| Xu et al. – *An online payload identification method based on parameter difference for industrial robots*                    | 2024 / Robotica      | Q6          | **Payload**    | 2             |
+|  29| Liang & Kroemer – *Contact Localization for Robot Arms in Motion without Torque Sensing*                                     | 2021 / ICRA          | Q6          | **Rigid-body** | 1             |
+|  30| Taie et al. – *Payload Parameters Identification Using Incremental Ensemble Learning*                                        | 2024 / ICCCR         | Q6 + Q3     | **Payload**    | 2             |
+|  31| Taie et al. – *Online Identification of Payload Inertial Parameters Using Ensemble Learning for Collaborative Robots*        | 2024 / RA-L          | Q6          | **Payload**    | 1             |
+|  32| Taie et al. – *Addressing Catastrophic Forgetting in Payload Parameter Identification Using Incremental Ensemble Learning*   | 2024 / Frontiers     | Q6          | **Payload**    | 0             |
+|  33| Liu et al. – *External force estimation for robotic manipulator based on particle swarm optimization*                        | 2021 / IJARS         | Q6          | **Rigid-body** | 5             |
 ---
 
 ### 📊 Survey's

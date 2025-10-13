@@ -35,6 +35,18 @@ https://ieeexplore-1ieee-1org-100033c761aa6.han.technikum-wien.at/document/11029
     - current sota kalman filter classical observers
 ---
 
+### Yang et al. (RCAR 2025)
+
+**“A Residual-Driven Decomposed PINNs Method for Dynamics Identification of Robot Manipulators.”**
+
+- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/11139811]
+
+* **Focus:** Rigid-body estimation
+* **Summary:** Compares LS with PINN residuals. Reduced torque prediction RMSE by 65%. PINN performs real time well
+and deals well with nonlinearity
+
+---
+
 * **Fast Object Inertial Parameter Identification for Collaborative Robots (ICRA 2022)** [(https://arxiv.org/abs/2203.00830)]
 ---
 
@@ -74,20 +86,6 @@ https://ieeexplore-1ieee-1org-100033c761aa6.han.technikum-wien.at/document/11029
 
 - We want to eliminate the need for the dynamic parameters of the robot
 
-
-
-
-
-
-
-
-
-Yes, I can read your handwriting well 👍 I’ll transcribe everything you wrote into a clean inline text version so you can use it directly. Here’s the full content from all your pages:
-
----
----
-
-Got it ✅ — here’s your disposition translated into English in the same structure and style:
 
 ---
 

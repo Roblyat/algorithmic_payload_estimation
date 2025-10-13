@@ -134,32 +134,6 @@
 
 ---
 
-### Q6_6 — *An online payload identification method based on parameter difference for industrial robots* (Robotica, 2024)
-
-- **Task:** **Online PDPI** via a **parameter-difference** formulation: identify robot base parameters **with** payload online (RLS) and subtract **offline** base parameters **without** payload to **algebraically recover** payload mass, CoM, and inertia terms. 
-- **Setting:** **UR10** industrial robot; **real hardware** experiments on optimized **Fourier** excitation; application to **manual guidance** with measured user forces. 
-- **Sensors/Data:** **Motor currents → joint torques** (via identified drive gains **K**), **commanded** (q_d,\dot q_d,\ddot q_d) from the controller (used to **avoid noisy acceleration derivatives**); **no wrist F/T** or external IMU at runtime. 
-
-- **Method core:**
-
-  * Dynamics with **nonlinear friction** ( \tau_{f,j}=(F_{c,j}+F_{v,j}|{\dot q}*j|^{\alpha_j})\operatorname{sgn}(\dot q_j)+B_j ) to improve identification. **Offline:** identify robot base params ( \pi_a ) and friction ( \alpha_a ). **Online:** RLS on **with-payload** regressor (Y_b(q_d,\dot q_d,\ddot q_d,\alpha_a)) → ( \pi_b ). **Then:** ( \varepsilon=\pi_b-\pi_a ) and a **symbolic linear map** from selected components of ( \varepsilon ) to payload ( \phi_L={m, mr_x, mr_y, mr_z, I*{xx},…,I_{zz}} ). 
-  * Trajectory: **Fourier-series** excitation optimized to **reduce regressor condition numbers** under joint limits. 
-
-- **Key result:**
-
-  * **Convergence ~6.59 s** to online solution; **payload mass error ≈ 0.04%**, outperforming classical online/ static baselines (e.g., 4.11% and 0.92%). **Inertia tensor** accuracy remains limited. 
-  * **Application:** compensating identified payload reduces **manual-guidance mean forces** by **≈13% (X), 26% (Y), 44% (Z)** and **variance** by **≈52–65%**. 
-
-- **Strengths:** **No external F/T**, uses **commanded signals** to avoid noisy (\ddot q); **nonlinear friction** improves model fit; **fast** online solve; clear algebraic recovery of payload terms; demonstrated **force-reduction** in guidance. [Q6_6] 
-- **Weaknesses / assumptions:** Requires **offline robot ID** (base params & friction) and **drive gains K**; needs **optimized excitation** (not arbitrary-task streaming); **inertia tensor** estimates remain **inaccurate**; assumes **rigid joints** and reliable commanded signals access. [Q6_6] 
-- **Notes:** Details full RLS loop, excitation design, and **symbolic equations** mapping parameter differences to ( \phi_L ). Compares linear vs **nonlinear friction** (lower RMSE). 
-
-- **Problem statement (paper’s own):** Online payload ID often uses **linear friction** and **actual** (noisy) trajectories → degraded accuracy; need a method that is **accurate online** using **proprioception only**. [Q6_6] 
-- **Context / Use case:** Industrial cells picking **frequent, unknown payloads** where controller access to **commanded trajectories** exists and **safe, quick** mass/CoM estimates are needed for **feedforward compensation / guidance comfort**. [Q6_6] 
-- **SoA / Contribution:** Introduces **parameter-difference + nonlinear friction + commanded-signal** pipeline yielding **state-of-the-art mass accuracy** in **~6.6 s** without external sensors; shows tangible **ergonomic benefits** in manual guidance. [Q6_6] 
-
----
-
 ### XX. Q_Peripheral - Optimization of Adaptive Algorithm for Precise Motion Control of Multi-Degree-of-Freedom Robotic Arms
 
 * **Problem/Issue**: Precise control of multi-DoF arms suffers under uncertainty, noise, and nonlinearities.
