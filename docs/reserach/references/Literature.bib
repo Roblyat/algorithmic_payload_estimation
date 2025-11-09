@@ -580,26 +580,6 @@ url       = {https://doi.org/10.1017/S026357472400105X}
 }
 
 % ----------------------------------------------------
-% Paper 2: Adaptive Neural Trajectory Tracking Control
-% Keywords:
-% Issue: uncertain dynamics, disturbances, and state constraints degrade tracking
-% Math: robot rigid-body dynamics, RBFNN approximation, BLF stability
-% Methods: adaptive neural controller = CTC + RBFNN + NDO + BLF
-% Results: superior tracking accuracy (IAE, ITAE) vs baselines in 7-DOF robot
-% Contribution: unified observer-based adaptive neural control with sensitivity analysis
-@ARTICLE{bao_adaptive_neural_tracking,
-  author    = {Bao, Dan and Liang, Xiaoling and Ge, Shuzhi Sam and Hou, Baolin},
-  journal   = {IEEE Transactions on Industrial Informatics}, 
-  title     = {Adaptive Neural Trajectory Tracking Control for n-DOF Robotic Manipulators With State Constraints}, 
-  year      = {2023},
-  volume    = {19},
-  number    = {7},
-  pages     = {8039--8048},
-  keywords  = {Robots;Manipulator dynamics;Uncertainty;Robot sensing systems;Lyapunov methods;Stability analysis;Sensitivity analysis;Barrier Lyapunov function (BLF);disturbance observer;radial basis function neural network (RBFNN);robotic manipulator;sensitivity analysis;state constraint},
-  doi       = {10.1109/TII.2022.3215985}
-}
-
-% ----------------------------------------------------
 % Paper 3: Hybrid Inverse Dynamics with BLL Residual
 % Keywords:
 % Issue: nominal NE models inaccurate under unmodeled dynamics & friction
@@ -644,23 +624,6 @@ url       = {https://doi.org/10.1017/S026357472400105X}
   pages     = {660--665},
   keywords  = {Adaptation models; Torque; Parameter estimation; Accuracy; Training data; Real-time systems; Robustness; Manipulator dynamics; Payloads; PINNs; nonlinear friction; dynamics identification},
   doi       = {10.1109/RCAR65431.2025.11139811}
-}
-
-% ----------------------------------------------------
-% Paper 2: Provably-Safe, Online System Identification
-% Keywords: provably-safe, online system identification, payload dynamics, inertial parameter estimation, exciting trajectories, interval arithmetic, ARMOUR
-% Issue: Classical ID ignores safety (obstacles, torque limits), unsafe under payload uncertainty
-% Math: momentum-based dynamics (integral form), interval arithmetic, perturbation analysis, regressor condition number optimization
-% Methods: ARMOUR-based safe trajectory planning, interval-bounded ID loop, locally exciting trajectories
-% Results: Kinova Gen3 + dumbbell experiments, tighter inertial bounds, safe manipulation, higher task success rate
-% Contribution: First framework for provably-safe online payload ID with theoretical guarantees
-@article{provably_safe_sysid,
-  author    = {Zhang, Bohao and Zhou, Zichang and Vasudevan, Ram},
-  title     = {Provably-Safe, Online System Identification},
-  journal   = {arXiv preprint arXiv:2504.21486},
-  year      = {2025},
-  url       = {http://arxiv.org/pdf/2504.21486v1},
-  note      = {Robotics Institute, University of Michigan. Supported by AFOSR MURI FA9550-23-1-0400}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -772,108 +735,6 @@ url       = {https://doi.org/10.1017/S026357472400105X}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End of Q6 Section
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Q7 = Reinforcement Learning
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% ----------------------------------------------------
-% Paper 1: Estimating an Object’s Inertial Parameters by Robotic Pushing
-% Keywords: payload identification, inertial parameters, data-driven, pushing, contact dynamics
-% Issue: traditional ID needs F/T sensors or rigid grasps; limiting for general manipulation
-% Math: planar rigid-body pushing dynamics, linear regression for inertial params
-% Methods: robotic pushing experiments; regression-based data-driven parameter learning
-% Results: recovers mass, CoM, friction approx. from pushing without F/T sensors
-% Contribution: first data-driven pushing-based inertial ID framework
-@inproceedings{yu2016pushing_inertial_id,
-author = {Yu, Kunpeng and Calandra, Roberto and Levine, Sergey and Abbeel, Pieter},
-title = {Estimating an Object’s Inertial Parameters by Robotic Pushing: A Data-Driven Approach},
-booktitle = {2016 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
-year = {2016},
-pages = {3803--3810},
-doi = {10.1109/IROS.2016.7759565},
-keywords = {payload identification, inertial parameters, robotic pushing, data-driven ID, contact dynamics}
-}
-
-% ----------------------------------------------------
-% Paper 2: Model-based Reinforcement Learning with Parametrized Physical Models
-% Keywords: reinforcement learning, system identification, MPC, optimism, physics-informed
-% Issue: model-based RL suffers from poor dynamics; GP-based PILCO not scalable
-% Math: rigid-body dynamics linear-in-parameters; least squares ID; MPC optimization
-% Methods: parameter regression with morphology priors; optimism-driven exploration in MPC
-% Results: outperforms GP-based RL (PILCO) on pendulum/cartpole; scales to 7-DoF arm
-% Contribution: first integration of parametrized physical models with optimistic exploration for sample-efficient RL
-@inproceedings{xie2016mb_rl_physical_models,
-author = {Xie, Chris and Patil, Sachin and Moldovan, Teodor and Levine, Sergey and Abbeel, Pieter},
-title = {Model-based Reinforcement Learning with Parametrized Physical Models and Optimism-Driven Exploration},
-booktitle = {2016 IEEE International Conference on Robotics and Automation (ICRA)},
-year = {2016},
-pages = {504--511},
-doi = {10.1109/ICRA.2016.7487170},
-keywords = {reinforcement learning, system identification, optimism, MPC, physical models}
-}
-
-% ----------------------------------------------------
-% Paper 3: Preparing for the Unknown: Learning a Universal Policy with Online System Identification
-% Keywords: reinforcement learning, universal policy, online system identification, dynamics, robustness, reality gap
-% Issue: RL policies trained in simulation fail under real-world model mismatch; need adaptive, generalizable control
-% Math: parameterized dynamics x_{t+1} = f_mu(x_t,u_t); UP: π(x,μ); OSI: φ(history) → μ
-% Methods: Universal Policy (TRPO-based), Online System Identification (NN on state-action history), iterative refinement with simulated rollouts
-% Results: Robust performance across pendulum, manipulator, hopper, cart-pole; adapts to varying mass, friction, CoM, pole length; generalizes beyond training range
-% Contribution: Coupled UP + OSI framework for robust control under unknown dynamics; narrows the simulation-to-reality gap
-@inproceedings{yu2017uposi,
-  author    = {Yu, Wenhao and Tan, Jie and Liu, C. Karen and Turk, Greg},
-  title     = {Preparing for the Unknown: Learning a Universal Policy with Online System Identification},
-  booktitle = {Proceedings of Robotics: Science and Systems (RSS)},
-  year      = {2017},
-  address   = {Cambridge, MA, USA},
-  doi       = {10.15607/RSS.2017.XIII.038},
-  url       = {https://arxiv.org/abs/1702.02453},
-  keywords  = {reinforcement learning, online system identification, adaptive control, dynamics, robustness}
-}
-
-% ----------------------------------------------------
-% Paper 4: Learning Force Control for Contact-Rich Manipulation Tasks With Rigid Position-Controlled Robots
-% Keywords: reinforcement learning, force control, compliance, impedance, rigid robots
-% Issue: RL unsafe for rigid position-controlled robots; torque-level access unavailable
-% Math: force control (parallel position/force, admittance), RL agent learns gains
-% Methods: learning-based force control framework; safe training mechanism
-% Results: simulation + UR3e robot; learned safe force control in contact-rich tasks
-% Contribution: first RL+force control integration for rigid robots; enables real-world safe learning
-@article{beltran2020force_control_rl,
-author    = {Beltran-Hernandez, Cristian Camilo and Petit, Damien and Ramirez-Alpizar, Ixchel Georgina and Nishi, Takayuki and Kikuchi, Shinichi and Matsubara, Takamitsu and Harada, Kensuke},
-title     = {Learning Force Control for Contact-Rich Manipulation Tasks With Rigid Position-Controlled Robots},
-journal   = {IEEE Robotics and Automation Letters},
-volume    = {5},
-number    = {4},
-pages     = {5709--5716},
-year      = {2020},
-doi       = {10.1109/LRA.2020.3010739},
-keywords  = {force control, reinforcement learning, compliance control, rigid robots, contact-rich manipulation}
-}
-
-
-% ----------------------------------------------------
-% Paper 5: Reinforcement Learning Based Variable Impedance Control for High Precision Human-Robot Collaboration Tasks
-% Keywords: reinforcement learning, impedance control, human-robot collaboration, PPO, adaptive control
-% Issue: fixed impedance controllers fail for varying operators and tasks in HRC
-% Math: impedance control laws, PPO optimization
-% Methods: RL-based variable impedance learning control (VILC)
-% Results: adaptive impedance in collaborative assembly; robust to human differences
-% Contribution: first PPO variable impedance controller for HRC; generalizable and teach-less
-@inproceedings{meng2021rl_variable_impedance,
-author    = {Meng, Yan and Su, Jianhua and Wu, Jiaxi},
-title     = {Reinforcement Learning Based Variable Impedance Control for High Precision Human-robot Collaboration Tasks},
-booktitle = {2021 6th IEEE International Conference on Advanced Robotics and Mechatronics (ICARM)},
-pages     = {560--565},
-year      = {2021},
-doi       = {10.1109/ICARM52023.2021.9536100},
-keywords  = {reinforcement learning, impedance control, collaboration, adaptive control, human-robot interaction}
-}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% End of Q7 Section
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

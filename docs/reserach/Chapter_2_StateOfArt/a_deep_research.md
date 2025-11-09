@@ -264,6 +264,7 @@ The structured literature search identified a substantial number of relevant pap
 |  14| Wei et al. – *Decoupling Observer for Contact Force Estimation of Robot Manipulators Based on Enhanced Gaussian*             | 2022 / CCIS          | Q2          | **Rigid-body** | 3             |
 |  16| Wei et al. – *Contact Force Estimation of Robot Manipulators With Imperfect Dynamic Model: On Gaussian Process*              | 2024 / T-ASE         | Q2 + Q4     | **Rigid-body** | 1             |
 |  17| Fathi et al. – *Human-Robot Contact Detection in Assembly Tasks*                                                             | 2022 / ICMERR        | Q2          | **Rigid-body** | 0             |
+|  XX| Giulio et al. – *A Comparison Between Gaussian Processes and Neural Networks / GP vs. DeLaN*                                 | 2023 / IFAC          | Q2 + Q3     | **Rigid-body** | 2             |
 |    |                                                    -                                                                         |        -             |     -       |      -         | -             |
 |  18| Wu et al. – *Extended Deep Lagrangian Network for Robotic Arm Dynamics considering Motor Couplings*                          | 2025 / YAC Conf.     | Q3          | **Rigid-body** | 0             |
 |  19| De León et al. – *Parameter Identification of a Robot Arm Manipulator Based on a Convolutional Neural Network*               | 2022 / IEEE Access   | Q3          | **Both**       | 11            |
@@ -273,11 +274,10 @@ The structured literature search identified a substantial number of relevant pap
 |  23| Pan et al. – *An adaptive sparse general regression neural network-based force observer for teleoperation system*            | 2023 / Eng. Apps. AI | Q3          | **Rigid-body** | **9**         |
 |    |                                                     -                                                                        |        -             |     -       |      -         | -             |
 |  25| Liu et al. – *Sensorless force estimation for industrial robots using disturbance observer and neural learning of friction*  | 2021 / RCIM          | Q4 + Q3     | **Rigid-body** | 90            |
-|  25| Bao et al. – *Adaptive Neural Trajectory Tracking Control for n-DOF Robotic Manipulators With State Constraints*             | 2023 / T-II          | Q4          | **Rigid-body** | 4             |
 |  26| Tao et al. – *Robot Hybrid Inverse Dynamics Model Compensation Method Based on the BLL Residual Prediction Algorithm*        | 2025 / Robotica      | Q4          | **Rigid-body** | 0             |
 |    |                                                    -                                                                         |        -             |     -       |      -         | -             |
 |  27| Yang et al. – *A Residual-Driven Decomposed PINNs Method for Dynamics Identification of Robot Manipulators                   | 2025 / RCAR          | Q5 + Q1     | **Rigid-body** | 0             |
-|  28| Zhang et al. – *Provably-Safe, Online System Identification*                                                                 | 2025 / arXiv         | Q5          | **Payload**    | 0             |
+|  28|                                                                                                                              |                      |             |                |               |
 |    |                                                    -                                                                         |        -             |     -       |      -         | -             |
 |  29| Liang & Kroemer – *Contact Localization for Robot Arms in Motion without Torque Sensing*                                     | 2021 / ICRA          | Q6          | **Rigid-body** | 1             |
 |  30| Taie et al. – *Payload Parameters Identification Using Incremental Ensemble Learning*                                        | 2024 / ICCCR         | Q6 + Q3     | **Payload**    | 2             |
@@ -360,3 +360,78 @@ These matched your CMD search but are not directly solving your core **payload/r
 
 * **Pezzato et al 2025** - Sampling-Based Model Predictive Control Leveraging Parallelizable Physics Simulations
  - Isaac
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Categories
+
+1. **Classical**
+   Observers & filters using an analytic model (MO/GMO/DOB/KF/EKF/UKF/LS/RLS/WLS).
+
+2. **Hybrid (Physics + Residual)**
+   Start from (M,C,G) (or NE/EL) and learn a **correction** (GP or NN) that’s added to the model or fused in a filter.
+
+3. **Pure Deep**
+   NN learns dynamics/inverse dynamics **without** explicit physics (MLP/LSTM/GRU/TCN/Transformer).
+
+4. **Physics-Informed**
+   NN is **constrained by physics** (e.g., DeLaN/Lagrangian nets, PINNs, differentiable simulation). SINDY, NEURAL ODE
+
+---
+
+Just add up to **three** short tags so you keep it lightweight:
+
+* **Sequence:** `LSTM/GRU`, `TCN`, `Transformer`
+* **Use-case:** `contact force`, `collision`, `payload ID`, `inverse dynamics`
+
+---
+
+# One-line decision rules
+
+* **Has nominal (M,C,G) and adds a learned fix?** → **Hybrid**.
+* **No explicit physics at all?** → **Pure Deep**.
+* **Physics is built into the NN (Lagrangian/PINN/DiffSim)?** → **Physics-Informed**.
+* **Classic observers/filters/LS with no learning?** → **Classical**.
+
+---
+
+**“sequence”** means the method **models time series explicitly**—it takes a **window or stream of past samples** and learns the temporal dynamics, not just a single ((q,\dot q,\ddot q)) snapshot.
+
+### What counts as “sequence”
+
+* **RNNs (LSTM/GRU):** ingest one timestep at a time, keep a hidden **state** that carries info from the past → good for variable-length streams and online use.
+* **TCN (Temporal Conv Nets):** use **causal 1-D convolutions** over time (often **dilated**) to capture long history with fixed latency → efficient and stable.
+* **Transformers:** use **attention** over the window (or stream) to learn long-range temporal dependencies and context → strong but heavier.
+
+### What does *not* count
+
+* A plain **MLP** that sees only the **current** ((q,\dot q,\ddot q)) with no history.
+* An MLP that sees a few handcrafted features but **no explicit time window/state**.
+
+### Why it matters in robotics
+
+* **Dynamics are history-dependent** (friction, backlash, compliance). Sequence models can infer these from recent motion.
+* **Latency/causality:**
+
+  * **Online control:** use **causal** models (LSTM/GRU/causal TCN) with a short window to keep delay low.
+  * **Offline prediction:** you can use **bidirectional** TCN/Transformers for accuracy (but not for real-time control).
+---
+
+# PAPER TO CHECK
+
+- A PINN-Based Friction-Inclusive Dynamics Modeling Method for Industrial Robots
+[https://ieeexplore-1ieee-1org-100033cd20427.han.technikum-wien.at/document/10729277]
+
+- Embedding the Physics in Black-box Inverse Dynamics Identification: a Comparison Between Gaussian Processes and Neural Networks
+[https://www.sciencedirect.com/science/article/pii/S240589632302267X]

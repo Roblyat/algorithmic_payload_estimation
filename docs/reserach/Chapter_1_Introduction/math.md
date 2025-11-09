@@ -31,7 +31,7 @@ $$
 Residual joint torque attributable to the flange wrench:
 
 $$
-r_\tau := \tau_m - \tau_{\text{robot}} \approx {}^{S}J^{\top} F_S
+r_\tau = \tau_m - \tau_{\text{robot}} \approx {}^{S}J^{\top} F_S
 $$
 
 ---
@@ -42,7 +42,7 @@ $$
 $$
 \Lambda_S(q) := \big({}^{S}JM^{-1} \ {}^{S}J^{\top}\big)^{-1},
 \qquad
-\boxed{\hat F_S = \Lambda_S{}^{S}JM^{-1}r_\tau;}
+\boxed{\hat F_S = \Lambda_S{}^{S}JM^{-1}r_\tau}
 $$
 
 ---
@@ -51,24 +51,24 @@ $$
 
 Model of the raw sensor reading (y_S):
 $$
-y_S ;=; \underbrace{\hat F_S}_{\text{from motors}} ;+; b_S ;+; \varepsilon
+y_S = \underbrace{\hat F_S}_{\text{from motors}} + b_S + \varepsilon
 \quad \text{(no external contacts besides tool dynamics)}
 $$
 
 Define the residual you care about:
 $$
-\boxed{;e_S ;=; y_S ;-; \hat F_S;}
+\boxed{e_S = y_S - \hat F_S}
 $$
 
 Bias calibration:
 $$
-\hat b_S ;=; \mathrm{mean}!\big(y_S - \hat F_S\big)
+\hat b_S = \mathrm{mean}!\big(y_S - \hat F_S\big)
 $$
 
 (Optional) Frame misalignment fit:
 $$
-\min_{R_{ES},,b_S};\sum_k \left|
-y_S^{(k)} - \operatorname{blkdiag}(R_{ES},R_{ES}),\hat F_S^{(k)} - b_S
+\min_{R_{ES},b_S}\sum_k \left|
+y_S^{(k)} - \operatorname{blkdiag}(R_{ES},R_{ES})\hat F_S^{(k)} - b_S
 \right|^2
 $$
 
@@ -78,22 +78,22 @@ $$
 
 Parameters:
 $$
-\phi^\top ;=; \big[m,; m c_x,; m c_y,; m c_z,; J_{xx},J_{xy},J_{xz},J_{yy},J_{yz},J_{zz}\big]
+\phi^\top = \big[m, m c_x, m c_y, m c_z, J_{xx},J_{xy},J_{xz},J_{yy},J_{yz},J_{zz}\big]
 ;\in; \mathbb{R}^{10}
 $$
 
 Spatial inertia at (S) (with ( [c]*\times ) the skew matrix of (c)):
 $$
-I_S(\phi) ;=;
+I_S(\phi) =
 \begin{bmatrix}
 J_C - m[c]*\times[c]*\times & m[c]*\times \
--,m[c]_\times & m I_3
+-m[c]_\times & m I_3
 \end{bmatrix}
 $$
 
-Newton–Euler wrench of the tool in (S) (twist (V_S=[\omega_S; v_S]), accel (\dot V_S=[\dot\omega_S; \dot v_S])):
+Newton–Euler wrench of the tool in (S) (twist (V_S=[\omega_S v_S]), accel (\dot V_S=[\dot\omega_S \dot v_S])):
 $$
-\boxed{;\hat F_S(\phi) ;=; I_S(\phi),\dot V_S ;+; \operatorname{ad}^\top_{V_S},I_S(\phi),V_S;}
+\boxed{\hat F_S(\phi) = I_S(\phi)\dot V_S + \operatorname{ad}^\top_{V_S}I_S(\phi)V_S}
 $$
 
 ---
@@ -102,19 +102,19 @@ $$
 
 Residual joint torque:
 $$
-r_\tau ;=; \tau_m - \big(M\ddot q + C\dot q + g + \tau_f\big)
+r_\tau = \tau_m - \big(M\ddot q + C\dot q + g + \tau_f\big)
 $$
 
 Wrench estimate (either of the two):
 $$
-\hat F_S ;=; \Lambda_S,{}^{S}J,M^{-1} r_\tau
+\hat F_S = \Lambda_S{}^{S}JM^{-1} r_\tau
 \qquad\text{or}\qquad
-\hat F_S ;=; ({}^{S}J^\top)^{\dagger} r_\tau
+\hat F_S = ({}^{S}J^\top)^{\dagger} r_\tau
 $$
 
 Sensor residual:
 $$
-e_S ;=; y_S - \hat F_S
+e_S = y_S - \hat F_S
 $$
 
 ---
@@ -122,10 +122,10 @@ $$
 # 7) In short
 
 $$
-\boxed{;
-\hat F_S ;=; \big({}^{S}J,M^{-1},{}^{S}J^\top\big)^{-1},{}^{S}J,M^{-1},
+\boxed{
+\hat F_S = \big({}^{S}JM^{-1}{}^{S}J^\top\big)^{-1}{}^{S}JM^{-1}
 \big(\tau_m - M\ddot q - C\dot q - g - \tau_f\big)
-;}
+}
 $$
 
 Subtract from the F/T reading: (e_S = y_S - \hat F_S).
