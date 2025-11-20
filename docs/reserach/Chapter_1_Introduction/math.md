@@ -79,7 +79,7 @@ $$
 Parameters:
 $$
 \phi^\top = \big[m, m c_x, m c_y, m c_z, J_{xx},J_{xy},J_{xz},J_{yy},J_{yz},J_{zz}\big]
-;\in; \mathbb{R}^{10}
+\in \mathbb{R}^{10}
 $$
 
 Spatial inertia at (S) (with ( [c]*\times ) the skew matrix of (c)):

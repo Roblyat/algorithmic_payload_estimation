@@ -1,110 +1,396 @@
-**Representative evidence (growing list):**
-- Q1_1 — *Fast Object Inertial Parameter Identification for Collaborative Robots* (PDPI; PMD + gravity/full weighting; short-batch cobots). [Q1_1]
-- Q1_2 — *The Sum of Its Parts: Visual Part Segmentation for Inertial Parameter Identification of Manipulated Objects* (PDPI; RGB-D + F/T; HPS w/ volumetric segmentation; stop-and-go; near real-time cobots). [Q1_2]
-- Q1_3 — *Online Payload Identification for Tactile Robots Using the Momentum Observer* (PDPI; MO + RLS; proprioceptive-only; observer-matched filtering; virtual calibration; **online during task**). [Q1_3]
-- Q1_4 — *External Torque Estimation Using Higher Order Sliding-Mode Observer for Robot Manipulators* (sensorless contact awareness; HOSM + Luenberger/SOS; finite-time; robust to friction/model error). [Q1_4]
-- Q1_5 — *Contact force and torque sensing… adaptive Kalman filter with variable time period* (sensorless CFT; **motor-current AKF**). [Q1_5]
-- Q1_6 — *Accurate Payload Dynamics Estimation and Compensation… without External Motion Measuring Sensors* (PDPI + compensation; **6D F/T–only**; kinematics + 2nd-order filter; step-by-step LS; optimized excitation). [Q1_6]
-- **Q1_7 — *On the Fully Decoupled Rigid-Body Dynamics Identification of Serial Industrial Robots*** (**RDPI & PDPI**, **fully decoupled** via **RSC**; friction/gravity/inertia/payload isolated; improved accuracy vs CRDI/PDRDI/CLS/IHLS; **offline**). [Q1_7]
-- **Q1_8 — *A Two-Stage Payload Dynamic Parameter Identification Method for Interactive Industrial Robots With Large Components*** (PDPI for **large/high-payload**; **two-stage static+dynamic in {S}**; **RRTLS online**; safety-aware posture & Fourier excitation; improved external force sensing). [Q1_8]
-- **Q1_9 — *Identifying Current Dynamics of Robot Payload Based on Iterative Weighting Estimation*** (**payload current-level ID**; **motor currents only**; iterative-weighting WLS + improved Stribeck friction; matched loaded/unloaded trajectories; supports collision detection). [Q1_9]
-- **Q1_10 — *An accurate identification method based on double weighting for inertial parameters of robot payloads*** (**PDPI without F/T**; **double weighting** with two-loop dynamic ID + stacked WLS; best **mass/CoM** accuracy vs four baselines; **offline**). [Q1_10]
-- **Q1_11 — *Payload Identification and Gravity/Inertial Compensation for 6D F/T Sensor with Fast Trajectory Design*** (**PDPI + gravity/inertial compensation**; **10 s** excitation; integrated accel on **6D F/T**; LS with base tilt & zero estimation). [Q1_11]
-- **Q1_12 — *Composite Disturbance Filtering for Interaction Force Estimation With Online Environmental Stiffness Exploration*** (**sensorless force estimation** + **online stiffness ID** via **EEFO (CDF + EM)**; **no force/position sensors** at the tool; superior accuracy vs DO/NDO/GMO/KF/DKF). [Q1_12]
-- **Q1_13 — *Toward Sensorless Interaction Force Estimation… HOFTO*** (**sensorless force estimation**; **high-order finite-time observer**; **better than ESO/DOB**; integrates into collision detection & impedance/drag). [Q1_13]
-- **Q1_14 — *Dynamic Model Identification for Industrial Robots*** (**foundational RDPI/PDPI** via **periodic band-limited excitation**, **DFT exact differentiation**, **WLS/ML**, and **d-optimal** trajectory design; **industrial KR15 payload plug-in**). [Q1_14]
-- **Q1_15 — *A Novel Sliding Mode Momentum Observer for Collaborative Robot Collision Detection*** (**NSOMO + TVDT**; **finite-time**; **lower delay/jitter** vs GM/SOMO; **localizes** collision; **no wrist F/T**). [Q1_15]
-- **Q1_16 — *Dynamic Parameter Identification of Collaborative Robot Based on WLS-RWPSO*** (**offline RDPI**; **WLS init + Random-Weight PSO**; **Kalman/Butterworth** preprocessing; periodic Fourier excitation; **no wrist F/T**). [Q1_16]
+### Q1_1 - Fast_Object_Inertial_Parameter_Identification_for_Collaborative_Robots
 
-**Strengths (from cards):**
-- Works in **low-SNR**, short windows typical for cobots; preserves **physical consistency**; convex solve. [Q1_1]
-- Outperforms OLS/RTLS in low-SNR settings; competitive with GEO without strong init. [Q1_1]
-- Vision + F/T **fusion** enables full parameters from **safe stop-and-go** motions; **100% physical consistency**; fast segmentation + ID. [Q1_2]
-- **Online PDPI** from **proprioception only**; robust to motion misalignment via **virtual calibration**; filtering reduces need for RTLS. [Q1_3]
-- **Sensorless external torque** via **HOSM + Luenberger/H∞**; finite-time; robust vs ESO. [Q1_4]
-- **Sensorless CFT from motor currents** with **AKF**; lower variance/faster response vs CKF. [Q1_5]
-- **FDRDI**: **fully decouples** friction/gravity/inertia/payload with **RSC** symmetry; ensures **per-parameter excitation**; **payload ID robust** to friction variations; consistent accuracy gains vs coupled methods. [Q1_7]
-- **Comprehensive, safety-aware PDPI for large components**: static tilt/zero-drift + dynamic inertia with **RRTLS online**; measurable **force-sensing gains** under high/low speed tests. [Q1_8]
-- **Motor-current–only payload ID** avoids torque-constant uncertainty; **iterative weighting** (covariance normalization + outlier masking); improved friction model; **best RMSE vs torque-based baselines**; benefits collision detection. [Q1_9]
-- **No F/T, robust PDPI** via **double weighting** (covariance + data weights), **nonlinear friction** modeling, and **designed Fourier excitation**; strong **mass/CoM** accuracy. [Q1_10]
-- **Very fast** (≈10 s) PDPI + **inertial compensation** directly from **6D F/T with accelerometers**; estimates base tilt & sensor zeros; yields **≤0.5 N / ≤0.2 N·m** residuals on test paths. [Q1_11]
-- **Sensorless force estimation with online stiffness exploration**, leveraging a robot–environment **coupled model**; **best ARMSE** and faster transients vs classical observers/filters. [Q1_12]
-- **Finite-time, sensorless force estimation** for **fast-varying** forces; validated on a real 6-DoF industrial arm; improves precision vs **ESO/DOB**; enables **collision/drag**. [Q1_13]
-- **High-SNR periodic ID** with **exact differentiation** and **WLS/ML**; clear **validation** and **payload plug-in** demonstrating **≤5% mass** and **≤1 cm CoM** without F/T. [Q1_14]
-- **Finite-time** observer with **adaptive TVDT** → **fast**, **noise-tolerant** collision detection; works for **dynamic** and **quasi-static** contacts; supports **collision localization**. [Q1_15]
-- **Heteroskedastic WLS** + **RWPSO** yields **lower RMS** and **faster convergence** than PSO/WLS-PSO; practical **no-F/T** RDPI with documented excitation and filters. [Q1_16]
+**Key idea:**
+Payload dynamic parameters can be identified **without using a rigid-body dynamics (RBD) model**.
+The **PMD method** (point mass discretization) fits point masses into a **known payload geometry** (e.g., *dumbbell shape*).
 
-**Weaknesses (from cards):**
-- Requires **object shape/pose** (from prior or vision); relies on F/T signal quality; not true streaming (short-batch). [Q1_1]
-- RGB-D reconstruction & **homogeneous-part** assumption; occlusion sensitivity. [Q1_2]
-- Needs joint-torque sensing and accurate model for MO; \(k_O\) tuning; low excitation hurts. [Q1_3]
-- Assumes accurate \(M,C,G\); gain tuning; J sensitivity; no direct PDPI. [Q1_4]
-- Needs \(M,C,G,J\) + motor constants & friction calibration; not PDPI. [Q1_5]
-- **Kinematics/J accuracy** critical; filter lag/oscillation; assumes offset constancy; **6D F/T mandatory**. [Q1_6]
-- **Offline**, multi-run **RSC** with good tracking; time-consuming; relies on symmetry and filtering; industrial calibration setting. [Q1_7]
-- Requires **6D F/T**, accurate kinematics; multi-posture setup time; assumes manageable drift within sessions; not fully streaming under arbitrary motion. [Q1_8]
-- Requires **matched trajectories**, designed excitation and filtering; produces **non-physical 56-D parameterization**; primarily **offline**; assumes linear current–torque map. [Q1_9]
-- **Offline**; needs **matched trajectories** with/without payload; relies on accurate **current→torque gains** \(K\) and kinematics; inertia elements still hard for light payloads; threshold tuning. [Q1_10]
-- Needs a **special 6D F/T** (with acc sensing), accurate transforms, and synchronized DAQ; **offline short run**, not continuous streaming; assumes rigid payload & good tracking. [Q1_11]
-- Assumes **linear/isotropic stiffness**; depends on model quality \((M,C,G,J)\); **EM** adds compute; validated with partial wrench dimensions; requires good synchronization/filters. [Q1_12]
-- Requires **good model ID**; **gain tuning** vs chattering/noise; finite-time → **bounded region** for general time-varying forces; added compute for higher order. [Q1_13]
-- **Offline periodic runs**; simple friction (Coulomb/viscous) limits reversal accuracy; needs accurate **current→torque** constants; risk of exciting **flex modes** at high harmonics; PDPI depends on **prior link ID**. [Q1_14]
-- Requires **accurate dynamics**, careful **gain tuning**, and **offline TVDT identification**; assumptions on bounded external torque; sensitivity to filtering/synchronization. [Q1_15]
-- **Offline**; needs accurate **current→torque** gains and periodic excitation; friction limited to **Coulomb/viscous** (tanh approx. near zero); several hyper-parameters to tune. [Q1_16]
+**Estimation pipeline:**
+
+* Use **gravity-only WLS–NE regressor (Â)** for slow motions.
+* Use **full WLS–NE regressor** to enhance **inertia estimation** during dynamic trajectories.
+
+**Findings:**
+
+* **Mass:** very good accuracy.
+* **Center of Mass (CoM):** acceptable, *reasonable* given the **short sequence durations** (~1.5 s trajectories).
+* **Inertia:** poor accuracy, but still *reasonable* given the **short sequence durations** (~1.5 s trajectories).
+
+---
+
+### Q1_2 - Online_Payload_Identification_for_Tactile_Robots_Using_the_Momentum_Observer
+
+**Concept:** Payload parameter identification without using a force–torque sensor. The robot executes the **same trajectory with and without payload**, and the method detects **payload-induced changes in motion and timeseries**.
+
+**External torque extraction:** A time-consistent joint-space external torque $\tau_{\text{ext}}$ is computed, which **requires a nominal rigid-body model (RBD)**.
+
+**Calibration:** A dedicated **calibration trajectory** is used. The **tool–object (gripper) parameters** are time-independent and denoted:
+
+$$
+\phi_{t,o}
+$$
+
+The payload parameters are obtained by **subtracting parameters**:
+
+$$
+\phi_L - \phi_0 = \tilde{\phi}
+$$
+
+where
+
+- $\phi_L$ = parameters with payload  
+- $\phi_0$ = parameters without payload  
+- $\tilde{\phi}$ = identified payload parameters  
+
+**Estimation method:**
+
+- **Rated Least-Square Newton–Euler regressor** used to estimate $\phi_{\text{payload}}$  
+- **Good results** for **mass**, **CoM**, and **inertia**, especially when a calibration run is included
+
+---
+
+### Q1_3 - External_Torque_Estimation_Using_Higher_Order_Sliding-Mode_Observer_for_Robot_Manipulators
+
+**Concept:**  
+Joint torque and external force estimation using a **nominal rigid-body model (NRB)**.  
+The method compares **measured joint torques** with **computed joint torques** (NRB + controller torques).  
+Controller forces are known and mapped to joint torques; external forces can be observed in **end-effector (EE) space** using the Jacobian.
+
+**Assumptions:**  
+- gravity model is accurate  
+- bounded model errors  
+- bounded known friction  
+
+**Estimation method:**  
+- **Sliding Mode Observer (SMO)**  
+- Accurate in **joint space** and **end-effector space**  
+- Provides **good results** for execution validation and external force estimation
+
+---
+
+## Q1.4 — End-Effector Contact Force Estimation (Clean Version)
+
+**Concept:**  
+End-effector (EE) contact force estimation using an **Adaptive Moment Filter (AMF)**.  
+The method requires a **nominal rigid-body model (NRB)**.
+
+The AMF estimates the EE wrench:
+
+$$
+\hat{f}
+$$
+
+If needed, the wrench is mapped into joint space using:
+
+$$
+\tau_{\text{ext}} = J^\top \hat{f}
+$$
+
+The filter also outputs the estimated wrench with covariance:
+
+$$
+\Sigma
+$$
+
+**Noise and parameter identification (offline):**  
+Offline identification is used to determine:
+
+- KF process noise $R$ 
+- KF measurement noise $Q$ 
+- covariance matrix $\Sigma$  
+- motor torque constant $k_t$  
+- gear ratio $D$  
+- friction parameters $\Psi_f$
+
+**Estimation method:**  
+- **Adaptive Kalman Filter (AKF)**  
+- Outperforms CKF in **cup-lifting EE-force estimation**  
+- **Significantly reduces estimation error**
+
+---
+
+### Q1_5 - Accurate_Payload Dynamics Estimation and Compensation of a Robotic Manipulator without External Motion Measuring Sensors
+
+**Concept:**  
+Payload parameter identification **without requiring a nominal rigid-body model (NRB)** and **with an FT sensor**.  
+The method uses the **same excitation trajectory** and computes the **offset bias** of the FT sensor.
+
+- In **static poses**: payload **mass** and **CoM** are estimated.  
+- In **dynamic motion**: payload **inertia** is estimated using the excitation trajectory.
+
+**Estimation method:**  
+- **Least-Square Regressor on torque residuals in the sensor frame**
+
+**Performance:**  
+- Works okay; approximately **~10% error** on payload mass  
+- **No ground truth** for payload CoM and inertia → **no validation** of CoM & inertia results
+
+--- 
+
+### Q1_6 -  On_the_Fully_Decoupled_Rigid-Body_Dynamics_Identification_of_Serial_Industrial_Robots
+
+**Concept:**  
+Robot and payload parameter identification **without requiring a nominal rigid-body model (NRB)** and **without an FT sensor**.  
+Uses **reciprocating S-curve symmetric trajectories**.
+
+The method decouples:
+- robot parameter / payload parameter estimation  
+- joints  
+- friction, gravity, and inertia parameters  
+
+Decoupling is achieved using **CV/CA (constant-velocity/constant-acceleration RSC-S trajectories)** for gravitational parameters.
+
+**Estimation method:**  
+- **Ordinary Least-Squares (LS) Newton–Euler Regressor** for **RDPI** (robot dynamic parameter identification) and **PDPI** (payload dynamic parameter identification)
+
+**Execution details:**  
+- Multiple runs for RSC sections for RDPI & PDPI → enough data for trivial LS  
+- **Good results** in RDPI & PDPI on RSC trajectories  
+- PDPI ground truth from CAD  
+- RDPI validated by comparing **measured** $\hat{\tau}_j$ vs **predicted** $\tilde{\tau}_j$
+- Validation performed **offline**
+
+---
+
+### Q1_7 - Two-Stage Payload Dynamic Parameter Identification Method for Interactive Industrial Robots ith Large Components
+
+**Concept:**  
+Payload dynamic parameter identification **without requiring a nominal rigid-body model (NRB)** and **with an FT sensor**.  
+The payload is directly connected to the **sensor frame $S$**.
+
+A **two-stage LS method** is used:
+
+1. **Static-pose LS** for payload **mass $m$** and **CoM** estimation  
+2. **RRTLS** (recursive regularized TLS) inertia estimation using **dynamic Fourier trajectories**
+
+**Experiment setup:**  
+- Heavy ≈ 40 kg payload  
+- 15 static poses (~2 s each)  
+- 5 dynamic trajectories (~10 s each)
+
+**Estimation method:**  
+- **LS & RRTLS** for **PDPI** in sensor frame $S$, with payload **directly mounted on $S$**
+
+**Performance:**  
+- Strong PDPI results at heavy payloads  
+- Good payload compensation & contact force estimation  
+- **≈10 s contact estimation time**,  
+- **≈40 s payload estimation time**
+
+---
+
+### Q1_8/Q1_9 - An accurate identification method based on double weighting for inertial parameters of robot payloads
+
+**Concept:**  
+Robot and payload dynamic parameter identification **without requiring a nominal rigid-body model (NRB)** and **without an FT sensor**, operating in **motor-current space $I_s$**.
+
+Uses the **same Fourier trajectories** with and without payload:
+
+- **RDPI w/o payload** via WLS  
+- **PDPI with payload** via staged WLS using the same trajectories
+
+**Estimation method:**  
+- **Double-weighting WLS** on RDPI  
+  → use same trajectory with & without payload  
+  → RDPI → WLS on payload
+
+**Performance:**  
+- Good results on payload cylinder vs. CAD ground truth  
+- Strong results in joint torque prediction  
+- Validation performed **offline**
+
+---
+
+### Q1_10 - Payload Identification and Gravity_Inertial Compensation for Six Dimensional Force_Torque Sensor with a Fast and Robust Trajectory Design Approach
+
+**Concept:** Payload dynamic parameter identification for **better trajectory design**.
+
+- Results are **offline**, with **no ground truth**  
+- Used only as a reference for **static-pose payload mass & CoM estimation**
+
+---
+
+### Q1_11 - Composite Disturbance Filtering for Interaction Force Estimation With Online Environmental Stiffness Exploration
+
+**Concept:** Surgery → just for the beginning of the **funnel**.
+
+---
+
+### Q1_12 - Toward Sensorless Interaction Force Estimation for Industrial Robots Using High-Order Finite-Time Observers
+
+**Concept:**  
+EE interaction force estimation **without requiring an NRB model**.  
+The FT sensor is used **only for ground truth**, not for the estimation itself.
+
+An **offline LS–NE regressor** is used to identify the robot model:
+
+- $M(q)$ — inertia matrix  
+- $C(q)$ — Coriolis terms  
+- $G(q)$ — gravity terms  
+
+Online **HOFFTO** runs in joint space using the Jacobian $J(q)$, and outputs the estimated EE-interaction force using the **offline-identified robot model** as input.
+
+**Estimation method:**  
+- **LS–NE regressor** to estimate RDP **offline** → used as input for the **Higher-Order Finite-Time Observer (HOFFTO)**
+
+**Performance:**  
+- Good offline RDP → leads to good HOFFTO predicted joint torque $\tilde{\tau}_j$  
+- **Okay** results in EE-interaction force estimation vs. FT-sensor ground truth
+
+---
+
+### Q1_13 - Dynamic_Model_Identification_for_Industrial_Robots
+
+**Concept:**  
+Robot and payload dynamic parameter identification **without an NRB model** and **without an FT sensor**.  
+All identification occurs in **joint space**.
+
+First, perform **RDPI** using an LS–NE regressor in joint space:
+
+$$
+\tau_j = \phi(q, \dot{q}, \ddot{q}) \, \theta
+$$
+
+Then, use another LS–NE regressor for payload identification:
+
+$$
+\tilde{\tau} = \phi_j^{b} \theta_j^{b} + \phi_L^{e} \theta_L^{e}
+$$
+
+→ identifies payload parameters $\theta_L$ = **PDPI**, using the **same trajectories** with and without payload.
+
+**Estimation method:**  
+- **LS–NE regressor for RDPI**  
+- **LS–NE regressor for PDPI**
+
+**Performance:**  
+- Very strong results for both RDPI and PDPI  
+- Performed **offline**
+
+---
+
+### Q1_14 - A Novel Sliding Mode Momentum Observer for Collaborative Robot Collision Detection
+
+**Concept:**  
+Collision detection that **requires a nominal rigid-body model (NRB)**.  
+Performs **binary contact force detection** and **identifies the collided joint index**.
+
+Method:  
+An LS–NE regressor (NRB) + controller torques gives the robot torque estimate:
+
+- Known robot torque: $\tilde{\tau}_{\text{robot}}$
+- Measured torque: $\tau_{\text{measured}}$
+
+Estimated applied contact force:
+
+$$
+\tau_{\text{contact}} = \tau_{\text{measured}} - \tilde{\tau}_{\text{robot}}
+$$
+
+Collision decision:
+
+- If $\tau_{\text{contact}} > \text{threshold}$ → **binary contact = true**  
+- Joint index identified from $\tau_{\text{contact}} \in \{0, \dots, 6\}$
+
+**Estimation method:**  
+- **LS–NE regressor + controller joint torques** for $\tilde{\tau}_{\text{robot}}$  
+- Uses $\tau_{\text{measured}}$ for contact force detection & joint index estimation
+
+**Performance:**  
+- Good results in **contact force binary detection**  
+- Good results in **collided joint index detection**
+
+---
+
+### Q1_15 - Dynamic Parameter Identification of Collaborative Robot Based on WLS-RWPSO Algorithm
+
+**Concept:**  
+Robot dynamic parameter identification **without requiring an NRB model**.  
+*Goal*: predict joint torques $\tilde{\tau}_j$.
+
+**Estimation method:**  
+- **WLS optimized with particle swarm**  
+- Dataset is **preprocessed** using a **KLT-denoised** dataset
+
+**Performance:**  
+- Very good results in $\tilde{\tau}_j$ joint torque prediction  
+- Strong agreement vs. controller applied torque
+
+---
+
+### Q1_16 - An-online-payload-identification-method-based-on-parameter-difference-for-industrial-robots
+
+**Concept:**  
+Payload dynamic parameter identification **without requiring an NRB model**.
+
+Workflow:
+1. **Offline**: Train an LS–NE regressor for the **robot base parameters** $\theta$.  
+2. **Online**:  
+   - Compute **measured joint torque**  
+   - Subtract predicted **robot torque**  
+   - The **residual torque** corresponds to payload torque  
+3. Apply **LS–NE regressor** on the residual torque to estimate **payload parameters**
+
+**Estimation method:**  
+- **RLS–NE regressor** on joint torque & residual torque for payload
+
+**Performance:**  
+- Strong results in joint torque & payload **mass**, **CoM**, and **inertia**  
+- Matches **CAD ground truth** closely
+
+---
+
+### Q1_17 - Sensorless force estimation for industrial robots using disturbance observer and neural learning of friction approximation
+
+**Concept:**  
+End-effector (EE) force estimation **requiring an NRB model**.  
+A **Disturbance Kalman Filter (DKF)** combined with a **NN friction model** is evaluated.
+
+Comparisons include:
+- DKF + Stribeck friction  
+- DKF + NN friction  
+- DKF + NN friction vs. model-based methods  
+- DKF + NN friction vs. **general momentum observer**
+
+**Estimation method:**  
+- **DKF + NN friction**  
+- **DKF + Stribeck friction**  
+- model-based estimation  
+- general momentum observer
+
+**Performance:**  
+- NN friction vs. Stribeck → **NN is better**, still **2.17–7.18 Nm error**  
+- DKF good **without external force**  
+- With external torque → **0.13 Nm – 8.85 Nm error** → **bad results**
+
+---
 
 
-**Best-fit contexts:**
-- Collaborative, human-centric manipulation under **ISO 10218/TS 15066** speed constraints; **1–3 s** ID windows; gravity-dominant. [Q1_1]
-- RGB-D + F/T available; **stop-and-go** feasible; few homogeneous parts. [Q1_2]
-- **Tactile robots** (joint torque sensing) needing **on-the-fly** PDPI without external F/T or vision. [Q1_3]
-- Robots with **joint-torque sensing** requiring **sensorless** force/torque awareness. [Q1_4]
-- **Low-cost** setups using **motor currents** for online CFT awareness. [Q1_5]
-- Cells with **wrist 6D F/T** but no IMU/vision; need **PDPI + compensation**. [Q1_6]
-- **Industrial offline calibration** where executing **designed RSC** is acceptable; need **high-accuracy RDPI & PDPI** before deployment. [Q1_7]
-- **High-payload pHRI assembly** with suction gripping and safety constraints; need accurate force sensing via PDPI under feasible workspace limits. [Q1_8]
-- **Industrial robots without torque sensors** seeking payload awareness and improved **collision detection** using only **motor currents**. [Q1_9]
-- **Industrial robots without F/T** needing accurate **mass/CoM** offline for planning, safety limits, and collision monitoring baselines. [Q1_10]
-- Force-controlled industrial tasks needing **quick calibration** between jobs, with **6D F/T** available and **larger/faster** motions where inertial effects matter. [Q1_11]
-- **Soft-tissue / surgical manipulation** requiring **force awareness without wrist F/T**; scenarios with **time-varying stiffness**. [Q1_12]
-- **Industrial robots without F/T** needing **online** force awareness for collision detection and impedance/drag control, especially with **fast** force transients. [Q1_13]
-- **Industrial offline calibration** for torque feedforward and **shop-floor payload ID** (pre-task). [Q1_14]
-- **Cobot pHRI** needing **rapid sensorless collision awareness** (no wrist F/T), including slow squeezes and fast impacts. [Q1_15]
-- **Cobot calibration** for improved model-based control/monitoring where **wrist F/T is unavailable** and periodic runs are acceptable. [Q1_16]
 
+Nice, Q1 is a super consistent category, so it’s actually easy to pull out the big messages.
+I’ll give you all four things you asked for in one go.
 
-**Failure modes:**
-- Shape/pose missing; F/T bias; extremely low motion. [Q1_1]
-- Mesh/segmentation errors; coplanarity; occlusions. [Q1_2]
-- Model mismatch/backlash contaminating MO; bad \(k_O\); weak excitation. [Q1_3]
-- Inaccurate \(M,C,G,J\); chattering if gains poor. [Q1_4]
-- Bad motor constant/friction calibration; high-freq contact beyond AKF responsiveness. [Q1_5]
-- Kinematic/J errors; filter mistuning; time-varying offsets; contacts during ID. [Q1_6]
-- Asymmetric/poorly tracked **RSC**; insufficient acceleration coverage; filter artifacts; jerk-excited flex modes if non-S-curve used. [Q1_7]
-- Infeasible/unsafe postures; poor tracking of designed excitation; rapidly time-varying drift; large kinematic/J errors; suction-induced pose shifts between stages. [Q1_8]
-- Mismatched loaded/unloaded paths; poor current SNR; too-aggressive outlier masking → **rank deficiency**; kinematics/filter errors; payload not rigidly attached. [Q1_9]
-- Trajectory mismatch between runs; bad \(K\) calibration; overly aggressive outlier masking (rank issues); weak excitation; light payload vs robot mass. [Q1_10]
-- Poor synchronization/kinematics; non-rigid/tool slippage; insufficient pose diversity (N<12); high noise on acc channels; large model misalignment. [Q1_11]
-- Strongly **nonlinear/anisotropic** tissue; poor kinematics/Jacobian; heavy model mismatch; insufficient compute for EM iterations; desynchronization/noisy signals. [Q1_12]
-- Poor \(M,C,G,f\) identification; desynchronization/noisy signals; overly aggressive gains → **chattering**; very high-frequency force changes vs chosen observer order. [Q1_13]
-- Bad current constants; nonperiodic tracking; harmonics near structural resonances; friction nonlinearity at reversals; insufficient periods for averaging. [Q1_14]
-- Poor model/filters or mis-identified TVDT → false positives/negatives; aggressive gains → chattering; large unmodeled dynamics. [Q1_15]
-- Miscalibrated torque constants; poor filtering/synchronization; weak excitation/ill-conditioned regressor; friction not captured (static/Stribeck); PSO hyper-params badly tuned. [Q1_16]
+---
 
+## 1. One-page condensed SoA summary for Q1
 
-**Gap notes (Q1):**
-- Relax/fuse **shape/pose** dependence (vision paths). [Q1_1]
-- Toward **true streaming** with drift/bias handling. [Q1_1]
-- Preserve **full inertia identifiability** under weak excitation/low SNR. [Q1_1]
-- Reduce segmentation assumptions; streaming vision–dynamics fusion. [Q1_2]
-- Lower model/gain dependence; explicit friction/backlash modeling (MO/HOSM). [Q1_3,Q1_4]
-- Reduce calibration burden (motor constants/friction); handle high-freq contacts (AKF). [Q1_5]
-- **Accelerate FDRDI** (fewer runs), auto-tune RSC parameters, tolerate tracking asymmetries; explore **semi-online** decoupled updates. [Q1_7]
-- Toward **fewer static postures** and **faster transitions**; robustness to **time-varying zero-drift**; integrate **secondary drift compensation** online; bridge to **continuous PDPI during arbitrary pHRI**. [Q1_8]
-- Unify torque-/current-level ID with **physical parameter maps**; reduce dependence on **matched trajectories**; move toward **semi-online** current-level updates; automatic **outlier/threshold** tuning; bridge to **interpretable PDPI**. [Q1_9]
-- Unify **double-weighted** offline PDPI with **semi-online** updates; reduce dependence on matched runs and \(K\) calibration; improve **inertia** identifiability for light payloads; auto-tune outlier thresholds. [Q1_10]
-- Generalize to **commodity** F/T (no accel); tolerate **time-varying** offsets; reduce dependence on precise synchronization; move toward **streaming updates** post 10 s calibration. [Q1_11]
-- Bridge to **full 6-D wrench** estimation; relax **linear/isotropic** assumptions (e.g., Hunt–Crossley/Kelvin–Voigt); reduce **model dependence** via residual learning; **real-time** EM with bounded compute. [Q1_12]
-- Auto-tune **observer order/gains** to balance chattering vs responsiveness; reduce **model dependence** via residual learning; bounded-error guarantees under noise; integration with **online PDPI** to co-estimate payload & forces. [Q1_13]
-- Extend friction beyond Coulomb/viscous; automate **trajectory frequency selection** to avoid flex modes; shorten runs while preserving SNR; reduce reliance on accurate current constants; bridge to **semi-online** updates. [Q1_14]
-- Auto-tune **NSOMO gains**; **online**/task-agnostic TVDT adaptation; robustness under heavier model mismatch; extend to **6-D wrench** estimation or integration with **online PDPI** to co-estimate payload & collisions. [Q1_15]
-- Extend friction beyond Coulomb/viscous (static/Stribeck, temperature); reduce reliance on **current constants**; move toward **semi-online** updates; auto-tune PSO/filters; integrate with **payload ID** mapping where needed. [Q1_16]
+Category Q1 groups classical **model-based methods for robot and payload dynamics and interaction force estimation**, mostly based on **linearly parameterised rigid-body dynamics (RBD) and LS/WLS regressors**, sometimes combined with observers and Kalman filters.
+
+Across the papers, **Least Squares (LS), Weighted LS (WLS) and LS–Newton–Euler (LS–NE) regressors** are the dominant tools for both **robot dynamic parameter identification (RDPI)** and **payload dynamic parameter identification (PDPI)**. They are used in joint space, in motor-current space and in sensor frames, and provide **strong performance for mass, centre of mass (CoM) and joint-torque prediction** when trajectories are sufficiently exciting.
+
+A large subset of works demonstrates that **neither a nominal CAD-based RBD model nor an FT sensor is strictly necessary**. Q1.1, Q1.5–Q1.8, Q1.13, Q1.15 and Q1.16 build the regressor directly from measured joint states and controller torques, sometimes in **fully decoupled formulations** or via **residual-torque decomposition**. They use **constant-velocity/acceleration S-curve trajectories, Fourier trajectories or repeated sections** to decorrelate parameters and improve conditioning. These approaches typically obtain **very good mass estimates and acceptable CoM**, with **inertia remaining the weakest part of the identification**, especially for short trajectories.
+
+Several methods employ **two-stage pipelines**: static poses for mass and CoM, followed by dynamic trajectories for inertia (e.g. Q1.5 and Q1.7). Q1.7 also shows that such schemes scale to **heavy (~40 kg) payloads**, and can feed into **contact force estimation and compensation** with moderate batch times (≈10 s for contact, ≈40 s for payload).
+
+Where an **NRB model is available or identified offline**, it is commonly combined with **observers** for external torque and force estimation. Q1.2 and Q1.3 use LS–NE-based torque prediction together with **momentum or sliding-mode observers** to estimate external joint torques and EE forces. Q1.4 and Q1.17 combine RBD with **(adaptive) Kalman filters / disturbance observers** and explicit friction models (Stribeck or NN-based). These approaches can yield **good EE force estimation and collision detection**, but they are sensitive to model mismatch and friction modelling; Q1.17 reports good behaviour without external forces but large errors (up to ≈9 Nm) under contact.
+
+**Sensorless interaction-force estimation** is addressed in Q1.3, Q1.12 and Q1.17. Q1.12, for example, uses LS–NE identification of $M(q)$, $C(q)$ and $G(q)$, then runs a **High-Order Finite-Time Observer (HOFFTO)** in joint space, using an FT sensor only as ground truth. This yields **good joint-torque prediction and acceptable EE force estimates**, but still depends on accurate offline dynamics.
+
+Finally, Q1.14 shows that combining LS–NE predicted torques with measured joint torques enables **robust collision detection and localisation of the collided joint** using simple residual thresholds, again assuming a reasonably accurate NRB.
+
+In summary, **Q1 methods show that classical LS-type identification and observers are mature and effective**:
+
+* **Mass and CoM** can be identified very reliably, even **without NRB and without FT sensors**.
+* **Inertia** is consistently harder and requires **carefully designed dynamic excitation**, and still tends to be less accurate or weakly validated.
+* **Torque prediction, contact detection and simple EE force estimation** are already at a high level with these methods, but they **rely on good friction modelling and reasonably accurate dynamics**.
+
+---

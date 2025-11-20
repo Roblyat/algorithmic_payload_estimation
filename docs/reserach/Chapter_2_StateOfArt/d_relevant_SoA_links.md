@@ -368,7 +368,37 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 ### Wanke Yu et al. ADAII 2022 - A Novel Sliding Mode Momentum Observer for Collaborative Robot Collision Detection
 
 - 🔗 [https://www.mdpi.com/2075-1702/10/9/818#:~:text=This%20paper%20presents%20a%20novel,accuracy%20to%20ensure%20safe%20PHRI]
+---
 
+### Swevers et al. IEEE CSM 2007 - Dynamic Model Identification for Industrial Robots
+
+- 🔗 [https://ieeexplore-1ieee-1org-100033cd209e7.han.technikum-wien.at/document/4303475]
+
+---
+
+### Hu et al. IEEE TIE 2024 - A PINN-Based Friction-Inclusive Dynamics Modeling Method for Industrial Robots
+
+- 🔗 [https://ieeexplore-1ieee-1org-100033cd20427.han.technikum-wien.at/document/10729277]
+
+---
+
+### Lutter et al. arxiv 2023 - Combining Physics and Deep Learning to learn Continuous-Time Dynamics Models
+
+- 🔗 [https://arxiv.org/abs/2110.01894v2]
+
+---
+
+###  Yang et al. 2023 - Physics-Informed Neural Network for Model Prediction and Dynamics Parameter Identification of Collaborative Robot Joints
+
+- 🔗 [https://ieeexplore-1ieee-1org-100033cd209e7.han.technikum-wien.at/document/10305255]
+
+---
+
+### Giacomuzzo et al. IFAC 2023 – A Comparison Between Gaussian Processes and Neural Networks / GP vs. DeLaN
+
+- 🔗 [https://www.sciencedirect.com/science/article/pii/S240589632302267X]
+
+---
 
 ## Summary & Trends
 
