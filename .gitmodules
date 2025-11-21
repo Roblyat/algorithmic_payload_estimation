@@ -17,10 +17,6 @@
 	path = manipulator_moveit_config
 	url = https://github.com/Roblyat/manipulator_moveit_config.git
 	branch = main
-[submodule "docs/docs/latex-module"]
-	path = docs/docs/latex-module
-	url = https://github.com/Roblyat/latex-module.git
-	branch = main
 [submodule "Universal_Robots_ROS2_Description"]
 	path = Universal_Robots_ROS2_Description
 	url = https://github.com/Roblyat/Universal_Robots_ROS2_Description.git
@@ -29,3 +25,6 @@
 	path = Universal_Robots_ROS2_Driver
 	url = https://github.com/Roblyat/Universal_Robots_ROS2_Driver.git
 	branch = jazzy
+[submodule "docs/latex-module"]
+	path = docs/latex-module
+	url = git@github.com:Roblyat/latex-module.git

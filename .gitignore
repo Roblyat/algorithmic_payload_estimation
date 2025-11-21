@@ -11,7 +11,7 @@ build/
 devel/
 
 # Ignore VS Code settings
-.vscode/
+# .vscode/
 
 # Ignore lock files
 ~lock*
