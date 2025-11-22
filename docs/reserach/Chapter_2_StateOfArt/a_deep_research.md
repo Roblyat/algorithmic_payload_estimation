@@ -5,36 +5,33 @@
 
 ### Categories
 - $C_1  =$ Classical / Observers
-- $C_2  =$ Gaussian Process (GP) / Hybrid GP
-- $C_3  =$ Deep Sequence Models (MLP / GRU / TCN / Transformer)
-- $C_4  =$ Hybrid / Residual  
-- $C_5  =$ Physics-Informed / Differentiable  
-- $C_6  =$ Domain Adaptation / Latent Context
-- $C_7. =$ Surveys & Overviews
-- $C_8  =$ Reinforcement Learning
-- $C_9  =$ Estimation Goal & Domain
-  - $C_9a =$ Estimation & Modeling Terms
-  - $C_9b =$ Robotics Context Terms
+- $C_2  =$ Gaussian Process (GP)
+- $C_3  =$ Deep Sequence Models (MLP / GRU / TCN / Transformer / LSTM)
+- $C_4  =$ Physics-Informed / Differentiable  
+- $C_5  =$ Surveys 
+- $C_T  =$ Goal & Domain Terms
+  - $C_mt =$ Estimation & Modeling Terms
+  - $C_ct =$ Robotics Context Terms
 
 ### Query Logic (Generalized Set Intersection)
 
 ### Combined Representation
 
 $$
-C = \{ C_1, C_2, \dots, C_8 \}
+C = \{ C_1, \dots, C_4 \}
 $$
 
 $$
-Q = \bigcup_{i=1}^{8} Q_i
+Q = \bigcup_{i=1}^{5} Q_i
 $$
 
 $$
 Q_i = \left( \bigvee_{c \in C_i} c \right) 
 \;\; \land \;\; 
-\left( \bigvee_{e \in C9a} e \right) 
+\left( \bigvee_{e \in Cmt} e \right) 
 \;\; \land \;\; 
-\left( \bigvee_{r \in C9b} r \right),
-\quad i = 1, 2, \dots, 8
+\left( \bigvee_{r \in Cct} r \right),
+\quad i = 1, 2, \dots, 5
 $$
 
 ---
@@ -224,11 +221,8 @@ The structured literature search identified a substantial number of relevant pap
 | **Q1 – Classical / Observers**    | 17         | 4          | 8       | 1     | -     |
 | **Q2 – GP / Hybrid GP**           | 3          | 3          | 0       | 0     | -     |
 | **Q3 – Deep Sequence Models**     | 6          | 4          | 1       | 1     | -     |
-| **Q4 – Hybrid / Residual**        | 3          | 3          | 0       | 0     | -     |
-| **Q5 – Physics-Informed / Diff.** | 2          | 1          | 1       | 0     | -     |
-| **Q6 – Domain Adaptation**        | 5          | 2          | 4       | 0     | -     |
-| **Q7 – Reinforcement Learning**   | 5          | -          | -       | -     | -     |
-| **Q8 – Surveys & Overviews**      | 2          | –          | –       | –     | –     |
+| **Q4 – Physics-Informed / Diff.** | 2          | 1          | 1       | 0     | -     |
+| **Q5 – Surveys & Overviews**      | 2          | –          | –       | –     | –     |
 | **Total** without Surveys         | **41**     | **17**     | **14**  | **2** | **2** |
 
 > **Note:** “Total Papers” excludes non-article references like textbooks.
