@@ -362,13 +362,8 @@ Comparisons include:
 - DKF good **without external force**  
 - With external torque → **0.13 Nm – 8.85 Nm error** → **bad results**
 
+
 ---
-
-
-
-Nice, Q1 is a super consistent category, so it’s actually easy to pull out the big messages.
-I’ll give you all four things you asked for in one go.
-
 ---
 
 ## 1. One-page condensed SoA summary for Q1

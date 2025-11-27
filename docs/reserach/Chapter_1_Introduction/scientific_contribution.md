@@ -176,7 +176,8 @@
 
 
 
-
+---
+---
 
 what i in very far aim for is payload dynamic parameter identification, as now perfectly shown in your rewrote mathematical subsection. now i think of it an other way. i saw many approaches in current state of art mapping directly encoder/motor/sensor data to payload parameters. as well as doing the way i see it, giving the robot a awareness of its own movement, training with no payload, exactly what f/t results at the end effector. then manipulating and predicting based on $(\mathbf{a},\boldsymbol{\alpha},\boldsymbol{\omega})$ what would have result without payload based on that trajectory data. now this can be done however, mapping the motor/encoder data to f/t sensor data, being able to use the motor current as well somehow if advantages. or mapping encoder data to the motor current data, using the current in each motor and calculate joint torque by \boldsymbol{\tau}_{\mathrm{motor}} = k_t\,\boldsymbol{I} and mapping this with jacobian to EE.
 
@@ -190,14 +191,7 @@ now in the mathematical i want to show this, our current version aim to PDPI wit
 
 now our current version is very good, very precise, very good scientific phrased so if we can use as much of that would be very good. and we need to still keep this as short as possible, it is okay if it gets a tiny but longer, but only if it need to be so. and also dont get any methods or aim of work content in please, i just provided that to show my core idea and perspective on that problem. 
 
-
-
-
-
-
-
-
-
+---
 
 okay, please lets get that more correct:
         For a gripper–payload combination we define an effective rigid body
@@ -217,126 +211,4 @@ now this wrench results in the robots motion it self, with a clean flange, incre
 
 because phi indecates rigid body that influences the effecting wrench. but i want to get that clean
 
-
-
-
-
-
-
-
-
-
-
-------
-
-
-
-
-
-        The inertial properties of a rigid body are collected in the standard 10-dimensional parameter vector
-        \begin{equation}
-        \boldsymbol{\phi}^T
-        =
-        \begin{bmatrix}
-            m & m c_x & m c_y & m c_z &
-            J_{xx} & J_{xy} & J_{xz} & J_{yy} & J_{yz} & J_{zz}
-        \end{bmatrix}
-        \in \mathbb{R}^{10},
-        \label{eq:rigidBody}
-        \end{equation}
-        which enters the Newton--Euler equations
-        \begin{equation}
-        \begin{bmatrix} 
-            \mathbf{f} \\[2pt] \boldsymbol{\tau}
-        \end{bmatrix}
-        =
-        m
-        \begin{bmatrix}
-            \mathbf{I}_{3\times3} & -[\mathbf{c}]^{\times} \\
-            [\mathbf{c}]^{\times} & \mathbf{J}_s
-        \end{bmatrix}
-        \begin{bmatrix}
-            \mathbf{a} \\[2pt] \boldsymbol{\alpha}
-        \end{bmatrix}
-        +
-        \begin{bmatrix}
-            m[\boldsymbol{\omega}]^{\times}[\boldsymbol{\omega}]^{\times}\mathbf{c} \\
-            [\boldsymbol{\omega}]^{\times}\mathbf{J}_s\boldsymbol{\omega}
-        \end{bmatrix},
-        \label{eq:newtonEuler}
-        \end{equation}
-        so that the wrench $(\mathbf{f},\boldsymbol{\tau})$ depends nonlinearly on the motion $(\mathbf{a},\boldsymbol{\alpha},\boldsymbol{\omega})$ but linearly on $\boldsymbol{\phi}$.
-
-        For a gripper–payload combination we define an effective rigid body
-        \begin{equation}
-        \boldsymbol{\phi}_{\mathrm{eff}}
-        =
-        \boldsymbol{\phi}_{\mathrm{gripper}}
-        +
-        \boldsymbol{\phi}_{\mathrm{payload}},
-        \label{eq:rigidEffective}
-        \end{equation}
-        which acts on top of the nominal robot dynamics. 
-        We denote by $\boldsymbol{\tau}_{\mathrm{robot}}$ the nominal joint-space dynamics of the robot (clean flange)
-        \begin{equation}
-        \boldsymbol{\tau}_{\mathrm{robot}}
-        =
-        \mathbf{M}(\mathbf{q}) \ddot{\mathbf{q}}
-        +
-        \mathbf{C}(\mathbf{q},\dot{\mathbf{q}})\dot{\mathbf{q}}
-        +
-        \mathbf{G}(\mathbf{q})
-        +
-        \boldsymbol{\tau}_f(\dot{\mathbf{q}}),
-        \label{eq:robot_dynamics}
-        \end{equation}
-        where $\boldsymbol{\tau}_f(\dot{\mathbf{q}})$ models joint-level non-idealities such as Coulomb and viscous friction, possible Stribeck effects, and drive-train phenomena like backlash.
-        
-        The additional torque contribution from the payload wrench
-        \begin{equation}
-        \boldsymbol{\tau}_{\mathrm{ext}}
-        =
-        \mathbf{J}^T(\mathbf{q})\,\vec{F}_{\mathrm{ext}}(\boldsymbol{\phi}_{\mathrm{eff}}),
-        \label{eq:tau_ext}
-        \end{equation}
-        where $\mathbf{J}(\mathbf{q})$ is the end-effector Jacobian.
-
-        The motor torques are therefore
-        \begin{equation}
-        \boldsymbol{\tau}_{\mathrm{motor}}
-        =
-        \boldsymbol{\tau}_{\mathrm{robot}}
-        +
-        \boldsymbol{\tau}_{\mathrm{ext}}(\boldsymbol{\phi}_{\mathrm{eff}}),
-        \label{eq:tau_motor}
-        \end{equation}
-        and for brushless DC actuators with torque constant $k_t$ one obtains the current–torque relation
-        \begin{equation}
-        \boldsymbol{\tau}_{\mathrm{motor}} = k_t\,\boldsymbol{I}
-        \quad\Rightarrow\quad
-        \boldsymbol{I}
-        =
-        \frac{\boldsymbol{\tau}_{\mathrm{robot}}
-                + \boldsymbol{\tau}_{\mathrm{ext}}(\boldsymbol{\phi}_{\mathrm{eff}})}
-            {k_t}.
-        \label{eq:I_payload}
-        \end{equation}
-
-        If a force/torque sensor is mounted at the flange, its measurement can be expressed abstractly as
-        \begin{equation}
-        \vec{F}_{\mathrm{measured}}
-        =
-        f\!\left(
-            \boldsymbol{\tau}_{\mathrm{motor}},
-            \mathbf{q},
-            \dot{\mathbf{q}},
-            \boldsymbol{\phi}_{\mathrm{eff}}
-        \right),
-        \label{eq:f_measured}
-        \end{equation}
-        where $f(\cdot)$ is a nonlinear mapping induced by the coupled, configuration-dependent robot dynamics, contact forces, friction and transmission effects.
-
-        From an identification viewpoint, this creates two tightly coupled challenges.  
-        First, all available measurements (joint currents, positions, velocities and flange wrench) depend on the \emph{combined} dynamics of robot, gripper and payload via the nonlinear relationships~\eqref{eq:robot_dynamics}–\eqref{eq:f_measured}, so the contribution of the payload parameters $\boldsymbol{\phi}_{\mathrm{payload}}$ cannot be isolated by simple computation or direct measurement.  
-        Second, accurate payload dynamic parameter identification (PDPI) presupposes an equally accurate compensation of the underlying robot–gripper dynamics, including unmodelled effects such as friction and joint transmission nonlinearities.  
-        Together, these aspects make dynamic awareness of payload, tool and robot a mathematically demanding inverse problem rather than a straightforward calculation from geometric or sensor data.
+---

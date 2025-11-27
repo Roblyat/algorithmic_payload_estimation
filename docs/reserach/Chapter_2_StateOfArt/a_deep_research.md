@@ -216,14 +216,14 @@ $$
 
 The structured literature search identified a substantial number of relevant papers in each query category (Q1–Q6). The table below summarizes the counts of total relevant papers, those published 2022–present, and the subset of “Mature SoA” papers (i.e. peer-reviewed works with citations or high relevance) for each category:
 
-| Query                             | Relev. SoA | Rigid-body | Payload | Both  | other |
-| --------------------------------- | ---------- | ---------- | ------- | ----- | ----- |
-| **Q1 – Classical / Observers**    | 17         | 4          | 8       | 1     | -     |
-| **Q2 – GP / Hybrid GP**           | 3          | 3          | 0       | 0     | -     |
-| **Q3 – Deep Sequence Models**     | 6          | 4          | 1       | 1     | -     |
-| **Q4 – Physics-Informed / Diff.** | 2          | 1          | 1       | 0     | -     |
-| **Q5 – Surveys & Overviews**      | 2          | –          | –       | –     | –     |
-| **Total** without Surveys         | **41**     | **17**     | **14**  | **2** | **2** |
+| Query                             | Relev. SoA | Rigid-body | Payload | Both  |
+| --------------------------------- | ---------- | ---------- | ------- | ----- |
+| **Q1 – Classical / Observers**    | 17         | 7          | 7       | 3     |
+| **Q2 – GP / Hybrid GP**           | 4          | 4          | 0       | 0     |
+| **Q3 – Deep Sequence Models**     | 8          | 4          | 4       | 0     |
+| **Q4 – Physics-Informed / Diff.** | 5          | 5          | 0       | 0     |
+| **Q5 – Surveys & Overviews**      | 2          | –          | –       | –     |
+| **Total** without Surveys         | **36**     | **20**     | **11**  | **3** |
 
 > **Note:** “Total Papers” excludes non-article references like textbooks.
 > “2022–Present” counts publications from 2022 to 2025.
@@ -359,7 +359,8 @@ These matched your CMD search but are not directly solving your core **payload/r
 # Categories
 
 1. **Classical**
-   Observers & filters using an analytic model (MO/GMO/DOB/KF/EKF/UKF/LS/RLS/WLS).
+   - Observers & filters using an analytic model (MO/GMO/DOB/KF/EKF/UKF/LS/RLS/WLS).
+   - relevant papers: 1, 2, 4, 5, 6, 7, 9, 12, 16, 17
 
 2. **Hybrid (Physics + Residual)**
    Start from (M,C,G) (or NE/EL) and learn a **correction** (GP or NN) that’s added to the model or fused in a filter.
