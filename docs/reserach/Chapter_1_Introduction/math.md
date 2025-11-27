@@ -129,3 +129,130 @@ $$
 $$
 
 Subtract from the F/T reading: (e_S = y_S - \hat F_S).
+
+
+---
+
+Good question, and nope, it’s *not* as simple as
+“(F = m a)” or “(F = \boldsymbol{\phi}_{\mathrm{eff}} \ddot q)”.
+
+Let’s unpack what’s really inside
+[
+\boldsymbol{\tau}_{\mathrm{ext}}
+================================
+
+\mathbf{J}^T(\mathbf{q}),\vec{F}*{\mathrm{ext}}(\boldsymbol{\phi}*{\mathrm{eff}}).
+]
+
+### 1. What is (\vec{F}_{\mathrm{ext}})?
+
+Here (\vec{F}_{\mathrm{ext}} \in \mathbb{R}^6) is a **wrench** in the sensor/tool frame (S),
+typically written as
+
+[
+\vec{F}_{\mathrm{ext}}
+======================
+
+\begin{bmatrix}
+\mathbf{f} [2pt] \boldsymbol{\tau}
+\end{bmatrix},
+]
+
+with
+
+* (\mathbf{f} \in \mathbb{R}^3): linear force,
+* (\boldsymbol{\tau} \in \mathbb{R}^3): moment (torque) around the frame origin.
+
+For a rigid body with parameters (\boldsymbol{\phi}_{\mathrm{eff}})
+(mass, CoM, inertia) moving with
+((\mathbf{a}, \boldsymbol{\alpha}, \boldsymbol{\omega})),
+we already wrote the Newton–Euler equations as
+
+[
+\begin{bmatrix}
+\mathbf{f} [2pt] \boldsymbol{\tau}
+\end{bmatrix}
+=============
+
+m
+\begin{bmatrix}
+\mathbf{I} & -[\mathbf{c}]^{\times} \
+[\mathbf{c}]^{\times} & \mathbf{J}_s
+\end{bmatrix}
+\begin{bmatrix}
+\mathbf{a} [2pt] \boldsymbol{\alpha}
+\end{bmatrix}
++
+\begin{bmatrix}
+m[\boldsymbol{\omega}]^{\times}[\boldsymbol{\omega}]^{\times}\mathbf{c} \
+[\boldsymbol{\omega}]^{\times}\mathbf{J}_s\boldsymbol{\omega}
+\end{bmatrix}.
+]
+
+So:
+
+* The **translational part** (\mathbf{f}) is *related* to (m \mathbf{a}), but with extra
+  centripetal/coriolis terms from (\boldsymbol{\omega}) and the CoM offset (\mathbf{c}).
+* The **rotational part** (\boldsymbol{\tau}) depends on (\mathbf{J}_s \boldsymbol{\alpha}) plus
+  gyroscopic terms involving (\boldsymbol{\omega}).
+
+In compact form, for a given motion ((\mathbf{a},\boldsymbol{\alpha},\boldsymbol{\omega})),
+you can think of this as
+
+[
+\vec{F}_{\mathrm{ext}}
+======================
+
+\vec{F}*{\mathrm{dyn}}(\mathbf{a},\boldsymbol{\alpha},\boldsymbol{\omega}; \boldsymbol{\phi}*{\mathrm{eff}}),
+]
+
+and more specifically,
+
+[
+\vec{F}_{\mathrm{ext}}
+======================
+
+Y(\mathbf{a},\boldsymbol{\alpha},\boldsymbol{\omega}),\boldsymbol{\phi}_{\mathrm{eff}},
+]
+
+where (Y(\cdot)) is a (6\times 10) regressor matrix:
+**linear in (\boldsymbol{\phi}_{\mathrm{eff}})**, but **nonlinear** in the motion.
+
+So it is *not* just
+
+* (F = m a), because you also have angular parts and CoM/inertia effects,
+* and certainly not (F = \boldsymbol{\phi}*{\mathrm{eff}} \ddot q); the mapping from joint accelerations (\ddot q) to (\vec{F}*{\mathrm{ext}}) goes through the kinematics and Newton–Euler.
+
+### 2. Why (\tau_{\mathrm{ext}} = J^T F_{\mathrm{ext}})?
+
+Once you have the wrench at the flange, the joint torques required to balance it are
+
+[
+\boldsymbol{\tau}_{\mathrm{ext}}
+================================
+
+{}^{S}J(\mathbf{q})^{\top} \vec{F}_{\mathrm{ext}},
+]
+
+where ({}^{S}J(\mathbf{q})) is the Jacobian of the sensor/tool frame (S).
+This is just the usual relation “wrench at EE → torques at joints”.
+
+So the picture is:
+
+1. **Rigid-body parameters** (\boldsymbol{\phi}*{\mathrm{eff}})
+   → via Newton–Euler → **flange wrench** (\vec{F}*{\mathrm{ext}}).
+2. **Flange wrench** (\vec{F}*{\mathrm{ext}})
+   → via (J^T) → **joint torques** (\boldsymbol{\tau}*{\mathrm{ext}}).
+
+If you like a compact identification-style notation, you can also write:
+
+[
+\boldsymbol{\tau}_{\mathrm{ext}}
+================================
+
+\mathbf{J}^T(\mathbf{q}),Y(\mathbf{a},\boldsymbol{\alpha},\boldsymbol{\omega}),\boldsymbol{\phi}_{\mathrm{eff}},
+]
+
+which makes it very clear: **linear in (\boldsymbol{\phi}_{\mathrm{eff}})**,
+but nonlinear in (\mathbf{q},\dot{\mathbf{q}},\ddot{\mathbf{q}}) (hidden in (\mathbf{a},\boldsymbol{\alpha},\boldsymbol{\omega})).
+
