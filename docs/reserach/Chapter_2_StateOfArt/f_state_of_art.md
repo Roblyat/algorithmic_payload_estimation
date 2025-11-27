@@ -54,10 +54,6 @@ $$
 
 ### Q1 - SoA Statements
 
-Nice, this is a super solid Q1 set. I’ll stay in “bullet-point mode” and just list the statements I’d want to cover in the Q1 SoA section, including where I’d be a bit critical.
-
----
-
 ## A. General picture of Q1 (“classical / observers”)
 
 * Q1 methods are almost all **model-based**: they rely on a nominal rigid-body dynamics (RBD) model and/or a **Newton–Euler regressor** plus classical estimators (LS/WLS/RLS/TLS, KF, observers, sliding mode, etc.).
