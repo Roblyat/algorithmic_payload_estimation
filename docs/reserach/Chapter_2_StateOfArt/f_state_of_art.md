@@ -218,7 +218,7 @@ $$
 
 ---
 
-## F. Cross-cutting limitations vs your goal
+## F. Q1 Cross-cutting limitations
 
 13. **Strong dependence on accurate base models and friction compensation**
 
@@ -249,3 +249,384 @@ $$
     * There is **no unified framework** in Q1 that gives the robot a clean, online estimate of **its own dynamics + tool + payload** and uses that consistently for both **torque prediction** and **force estimation**.
 
 ---
+---
+## Q2 – Gaussian Process (GP) SoA Statements
+
+### A. General picture of Q2 (“Gaussian Process”)
+
+* All Q2 papers use **Gaussian Process Regression (GPR)** as a *non-parametric model* of robot dynamics or residual dynamics.
+* Two main roles of GP:
+
+  1. **Residual model on top of a nominal RBD model** for **sensorless contact force estimation** (Q2_1, Q2_2).
+  2. **Black-box inverse dynamics / external torque model** for **contact detection** and **model comparison vs deep nets** (Q2_3, Q2_4).
+* Advantages highlighted:
+
+  * GP can **capture complex residual dynamics** (friction, unmodelled effects) and provide **uncertainty (variance) estimates**.
+  * Physics-inspired kernels (GIP) can **embed structure** and improve **generalisation and data efficiency** compared to generic kernels or unconstrained NNs.
+* Limitations across Q2:
+
+  * All methods are **regression on static state vectors** ((q,\dot q,\ddot q)) (no sequence models).
+  * Models are **trained offline** on curated datasets; **online adaptation** is limited to re-training or updating the GP, not continuous learning during arbitrary tasks.
+  * None of the Q2 papers perform **payload dynamic parameter identification (PDPI)**; payload is either fixed, part of the training data, or left for future work.
+
+---
+
+### B. GP residual models for sensorless contact force estimation (Q2_1, Q2_2)
+
+**Q2_1 – EGP + GPDKF (“Decoupling Observer…”)**
+
+* Builds a **hybrid semi-parametric dynamic model**:
+
+  * Nominal Euler–Lagrange model (M(q),C(q,\dot q),G(q)) from RBD.
+  * **Residual dynamics** (\tau_\Delta(q,\dot q,\ddot q)) learned with **GPR** (Enhanced GP, EGP) from **collision-free data**. 
+* The learned GP mean and covariance are plugged into a **Gaussian Process Disturbance Kalman Filter (GPDKF)** that reconstructs **external joint torques / contact forces** while **decoupling residual dynamics from contact**. 
+* Strengths:
+
+  * **More accurate contact force estimates** than classic DKF and NN-based enhanced DKF (EDKF), especially when residual dynamics are significant.
+  * Uses GP **uncertainty** inside the Kalman filter for “cautious” estimation.
+* Limitations / caveats:
+
+  * Requires a **nominal rigid-body model** and **Jacobian**; performance still depends on basic model quality.
+  * GP is trained **offline** on a large contact-free dataset; **no GP update during contact**.
+  * Demonstrations mostly for **simple contact scenarios (constant or slowly varying forces)**; not evaluated for complex, multi-axis interaction or changing payloads.
+
+**Q2_2 – GPADKF (“Contact Force Estimation… With Imperfect Dynamic Model”)**
+
+* Extends Q2_1 to **imperfect dynamic models**:
+
+  * Same hybrid nominal + GP residual model as EGP.
+  * Introduces **Gaussian Process Adaptive Disturbance Kalman Filter (GPADKF)** using **variational Bayes** to adapt **noise covariance matrices** online.
+* Strengths:
+
+  * More robust when both the **robot model and force model are inaccurate**; **reduces dependency on a “perfect” dynamic model**.
+  * Improves **tracking and convergence speed** of contact force estimates vs previous composite disturbance filtering (CDF), DKF and GPDKF baselines.
+* Limitations:
+
+  * Still needs **offline GP training** on contact-free data and a **nominal RBD model**.
+  * Adaptation focuses on **noise statistics**, not on continuous update of the GP dynamics model itself.
+  * Evaluations are limited to **sensorless contact force estimation**; **no PDPI, no explicit treatment of changing tools/payloads**.
+
+---
+
+### C. GP + CNN for human–robot contact detection (Q2_3)
+
+**Q2_3 – “Human-Robot Contact Detection in Assembly Tasks”**
+
+* Proposes a **two-layer architecture**:
+
+  1. **Torque regressor**: a GPR model predicts **required motor torque** for **contact-free motion** from joint positions and velocities (no explicit RBD).
+  2. **Contact classifier**: a **CNN** takes the estimated external torque (measured minus GP prediction) and sensor readings, and outputs **binary contact vs non-contact**.
+* Key idea: handle **data distribution shifts** (new motions / speeds) by **retraining only the GP regressor** on new contact-free trajectories; the CNN classifier can remain fixed, making the system more **data-efficient** and reducing robot downtime.
+* Experiments on a Franka Emika Panda:
+
+  * Show **high contact detection accuracy (~99 %)** under different motions and speeds, with ground truth from joint torque sensors.
+* Limitations:
+
+  * Outputs **binary contact labels**, not continuous force estimates or payload parameters.
+  * Still requires **separate datasets**: one for GP (no-contact) and one for CNN (collision scenarios).
+  * Generalisation to **changing payloads** or different robot types is mentioned as **future work**.
+
+---
+
+### D. Physics-embedding GP for inverse dynamics (Q2_4)
+
+**Q2_4 – “Embedding the Physics in Black-box Inverse Dynamics Identification: a Comparison Between Gaussian Processes and Neural Networks”**
+
+* Compares two **physics-aware black-box inverse dynamics models**:
+
+  * **DeLaN** (Deep Lagrangian Network): NN that **enforces Lagrangian structure** (learned inertia matrix and potential).
+  * **GIP-kernel GP**: GP with **Geometrically Inspired Polynomial kernel**, which constrains the regression basis functions to a **finite-dimensional, physically inspired space** but does *not* enforce exact structural properties.
+* Extensive experiments on simulated and real manipulators with increasing DOF show:
+
+  * **GIP-GP maintains accuracy** as DOF grows, whereas **DeLaN accuracy degrades quickly**.
+  * GIP-GP **better estimates inertial, Coriolis and gravitational torque components** separately, despite not hard-coding the equations of motion.
+* Takeaways:
+
+  * Embedding physics via **kernel design** can give strong **regularisation and data efficiency** for GP inverse dynamics.
+  * Suggests that combining **GIP kernels with structured NNs** (e.g. DeLaN) is a promising future direction.
+* Limitations relative to your goal:
+
+  * Focuses on **inverse dynamics regression quality**, not on **online contact or payload estimation**.
+  * Uses **batch, offline training**; no explicit mechanism for continuous online adaptation to new payloads/tools or contact conditions.
+  * Evaluates inverse dynamics for tracking/control, not for **sensorless force estimation**.
+
+---
+
+### E. Cross-cutting limitations of Q2
+
+* **No structured robot–tool–payload decomposition**
+
+  * None of the Q2 methods explicitly separate **robot base dynamics**, **tool/gripper dynamics**, and **payload dynamics**.
+  * GP residuals always model a **lumped “everything that is missing” term** (friction, flex, tool, payload, etc.), so they do not provide a clean notion of *self-awareness* of robot + tool that could later be reused as a basis for PDPI.
+
+* **GP used for contact or generic inverse dynamics, not for tool/gripper compensation**
+
+  * In Q2_1–Q2_3, GPs are used to improve **sensorless contact force estimation** or **contact detection**; in Q2_4 they target **inverse dynamics quality**.
+  * None of them aim at **precise compensation of a known tool/gripper in the measurement frame** as a separate object, which is the core building block you care about for later PDPI.
+
+* **Static-state regression; no sequence-aware handling of backlash / rate effects**
+
+  * All GPs operate on **instantaneous state features** ((q,\dot q,\ddot q)) (or similar stacked vectors).
+  * There is **no explicit temporal model** (TCN/LSTM/GRU) to capture **history-dependent effects** such as backlash, stick–slip friction, or actuator hysteresis, which you plan to handle via sequence models on top of an offline-trained dynamics model.
+
+* **Adaptation only via dataset updates, not fast online correction**
+
+  * Q2_1 and Q2_2 improve robustness with **disturbance Kalman filters** and adaptive noise covariances, and Q2_3 proposes to **retrain the GP** when the motion distribution changes.
+  * This still means that adaptation is realised through **new offline GP fits on updated datasets**, not through a **lightweight online error-correction model** (e.g. TCN/LSTM on residuals) that can track slow drifts between the offline-trained model and the real robot.
+
+* **Task-specific evaluation**
+
+  * The GP-based observers are tested on **simple, scripted contact tasks**; Q2_3 on **specific assembly motions**; Q2_4 on **tracking torque error**.
+  * None of the works demonstrate a **task-agnostic dynamic awareness module** that can be reused across different manipulation tasks while keeping a separate, well-identified representation of robot + tool dynamics.
+
+---
+---
+## Q3 – SoA statements (Deep sequence / deep learning methods)
+
+### A. General picture
+
+* Q3 collects **deep-learning approaches for inverse dynamics, force estimation and payload identification**:
+
+  * LSTM / GRU-type **sequence models** for residual torque and force estimation.
+  * Feed-forward NNs, MLPs, CNNs and ensemble methods for **PDPI** and **contact detection**.
+* Most works either:
+
+  * learn **residuals on top of a nominal RBD model**, or
+  * learn **direct maps from joint histories to payload parameters / contact labels**.
+* Training is always **offline batch** (possibly with incremental updates later); online is **inference only** or incremental fine-tuning.
+
+---
+
+### B. Deep residual inverse dynamics on top of RBD
+
+1. **Residual LSTM on Franka Panda dataset (Q3_1)**
+
+   * Uses public Franka Panda dataset + Gaz et al. model; computes **torque residuals** between data and RBD model.
+   * Trains a **bootstrapped LSTM ensemble (BLL-LSTM)** to predict residual joint torques from sequences ((q,\dot q,\ddot q)).
+   * Shows **clear improvement** over GP and single models on dataset test splits.
+   * Limitations:
+
+     * Purely **offline / dataset-only**; no real-time controller integration or PDPI.
+     * Requires an accurate **full robot model** (including friction).
+
+2. **LSTM joint-torque and EE-force estimation (Q3_3)**
+
+   * Franka Panda, FT sensor in base; LSTMs map:
+
+     * base FT wrench + joint states → **EE tip force**,
+     * joint states → **joint torques**.
+   * LSTMs outperform MLP, 1D-Conv and DeLaN in both sim and real-robot tests.
+   * Still **task-specific**, with FT hardware and simulation-generated ground-truth forces.
+
+---
+
+### C. Deep learning for end-effector wrench / contact from proprioception
+
+3. **ASGRNN wrench observer (Q3_4)**
+
+   * UR5 teleoperation; adaptive sparse GRNN maps ((q,\dot q,\ddot q,i)) → 6D wrench, using FT data for supervision.
+   * Strong performance for **soft/stiff collision force estimation**, better than MLP and GP baselines.
+   * Good candidate for model-free wrench estimation but:
+
+     * Needs **dense labelled FT data**,
+     * Evaluated mainly in **teleoperation & collision scenarios**, not PDPI.
+
+4. **CNN contact localisation with domain randomisation (Q3_5)**
+
+   * 7-DoF Panda, **no torque sensors, no FT**; input is link velocities and pose errors, transformed to 2D “contact images”.
+   * CNN trained in **IsaacGym with domain randomisation** to classify contact / no-contact and localise the contacting link.
+   * Achieves **~98% sim-to-real accuracy** for binary contact and link localisation.
+   * Does **not estimate wrench magnitude or payload dynamics**.
+
+---
+
+### D. Learning-based PDPI (payload parameters) with NNs / ensembles
+
+5. **MLP-based PDPI from encoder discrepancies (Q3_2)**
+
+   * OpenMANIPULATOR-X, **no FT**; requires an RBD model and camera pose to express payload parameters.
+   * MLP processes joint states and sign of velocity, then LS post-processing recovers **mass & CoM** of known objects.
+   * Average errors: ~9% mass, ~18% CoM; shows feasibility but limited accuracy, few payloads and a small robot.
+
+6. **Ensemble learning line (Q3_7 → Q3_6 → Q3_8)**
+
+   * **Batch ensemble (Q3_7)**:
+
+     * Multiple weak learners (NN / decision tree) map ((q,\dot q,\tau)) directly to payload parameters (\phi) for 77 synthetic payloads along a **fixed excitation path**.
+     * Good **sim-to-real transfer** on Franka Panda, reducing mass/CoM errors vs RLS.
+     * Still needs a **separate excitation trajectory** for each new payload.
+   * **Incremental ensemble (IEM) without catastrophic-forgetting handling (Q3_6)**:
+
+     * Extends the ensemble to **incremental learning along arbitrary task paths**, removing the need for a dedicated excitation path.
+     * Uses Euclidean distance in feature space to decide when to update / create weak learners.
+     * Works, but **suffers catastrophic forgetting**: performance on old paths degrades after adapting to new ones.
+   * **Incremental ensemble with classifier (Q3_8)** 
+
+     * Adds a **bag-based classifier** that routes each new path segment to the most relevant weak learner; new bags spawn new learners.
+     * Demonstrated on 77 payloads with a Franka Emika cobot; maintains **good accuracy on old paths** while adapting to new ones and **eliminates the explicit excitation-path requirement**.
+     * Trade-off: **ensemble size grows** with the number of distinct path “bags”; all models are relatively small feed-forward NNs (no sequence structure).
+
+---
+
+## Q3 – Cross-cutting limitations
+
+1. **Limited use of true sequence models for PDPI**
+
+   * LSTMs / GRNNs are used mainly for **force / torque estimation** (Q3_1, Q3_3, Q3_4), not for **direct payload parameter identification**.
+   * PDPI itself is handled mostly by **static MLPs / small NNs / trees**, not by temporal models that exploit long-horizon joint histories.
+
+2. **Either strong model dependence or fully black-box**
+
+   * Some methods need a reasonably accurate **nominal RBD model + camera / pose calibration** (Q3_1, Q3_2, partly Q3_3), so errors in the base model leak into the learned component.
+   * The ensemble-based PDPI line (Q3_7, Q3_6, Q3_8) is almost fully **black-box**: it ignores known RBD structure and only sees joint signals and torques.
+
+3. **Narrow evaluation regimes and payload sets**
+
+   * Most works use **one robot** (often Panda) and a **small library of payloads / tasks** (e.g. 77 synthetic payloads with similar mounting).
+   * Results are strong on the chosen benchmark paths but give little evidence about **generalisation to unseen payloads, very different motions, or broader operating envelopes**.
+
+4. **No unified treatment of torque prediction, tool/gripper compensation and interaction forces**
+
+   * Contact / EE-wrench estimators (Q3_3, Q3_4, Q3_5) do **not estimate payload parameters**.
+   * PDPI methods (Q3_2, Q3_7–Q3_8) **do not estimate contact forces** and are not evaluated as full inverse-dynamics models.
+   * There is **no single deep model** that simultaneously delivers good **joint-torque prediction**, **tool/payload compensation** and **contact awareness**.
+
+5. **Incremental ensemble PDPI still has structural issues**
+
+   * The latest incremental ensemble (Q3_8) removes catastrophic forgetting and excitation-path dependence, but:
+
+     * relies on a **growing ensemble** of weak learners and bag classifier,
+     * does not exploit temporal structure (no TCN/LSTM in the payload map),
+     * is developed for **payloads only**, not including tool/gripper mass and inertia as part of a unified effective rigid body.
+
+---
+---
+
+## A. Overall picture of Q4 (Physics-informed / differentiable models)
+
+* Q4 papers use **physics-informed deep nets** (DeLaN / PINNs / hybrids) for **inverse dynamics / joint torque prediction**.
+* They exploit **Lagrangian / state-space structure** to enforce energy consistency and physical constraints, typically achieving **better torque prediction and generalisation** than plain MLPs.
+* Focus is almost entirely on **RDPI (robot joint dynamics)**:
+
+  * **No explicit payload dynamics identification**.
+  * **No interaction force estimation** (force shows up only implicitly via torque labels).
+* Training is **offline** on carefully designed excitation trajectories; the models are then **deployed online** for torque prediction / control.
+* Most works either ignore contacts or treat them as unmodelled disturbances; friction is handled either via **simple analytic models** or via **learned residuals**.
+
+---
+
+## B. DeLaN and physics-inspired baselines (Q4_2)
+
+* Q4_2 (“Combining Physics and Deep Learning to Continuous-Time Dynamics Models” – DeLaN/HNN survey & benchmark):
+
+  * Introduces / reviews **Deep Lagrangian Networks (DeLaN)** and **Hamiltonian Neural Networks (HNN)** as structured deep models for robot dynamics.
+  * Shows that **structured** DeLaN/HNN give **lower NMSE and longer valid prediction times** than black-box baselines on 2-DoF systems and a 4-DoF WAM arm.
+  * Highlights limitations:
+
+    * Assumes **no contacts**, conservative dynamics (friction often neglected or added separately).
+    * Requires access to **generalised coordinates and forces** (q, q̇, τ).
+    * Black-box variants may yield **nearly singular mass matrices** and blow-up errors.
+
+(So: Q4_2 is the **conceptual baseline** showing why structured physics-informed nets matter.)
+
+---
+
+## C. DeLaN with motor couplings / currents (Q4_1)
+
+* Q4_1 (“Extended DeLaN for robotic arm dynamics considering motor couplings”):
+
+  * Extends DeLaN to include **motor actuator dynamics and friction**, using **motor currents/voltages plus robot motion** to model a UR10e arm with gearboxes.
+  * Learns:
+
+    * Lagrangian terms (mass matrix, potential),
+    * Electrical / friction parameters (torque constant, viscous / Coulomb levels),
+    * Mapped so that **motor current** is the supervised output.
+  * Demonstrates **good current / torque prediction** on simulated and real data and improved accuracy vs the original DeLaN and a feed-forward NN.
+  * Still:
+
+    * Trained **offline** on ~300 random trajectories (no contacts / payload changes).
+    * Identifies **combined robot-plus-tool dynamics**, but **no explicit payload model**.
+    * Non-conservative effects beyond motor friction (contacts, backlash) are still lumped into residuals.
+
+---
+
+## D. PINN + LS for dynamics identification (Q4_3)
+
+* Q4_3 (“Residual-Driven Decomposed PINNs for dynamics identification of robot manipulators”):
+
+  * Stage 1: classic **LS Newton–Euler base-parameter identification** on a 6-DoF arm using torque labels from motor currents.
+  * Stage 2: **PINN refinement** that minimises a **hybrid loss**:
+
+    * data loss on the torque residuals,
+    * physics loss enforcing RBD equations (M(q)q̈ + C(q,q̇)q̇ + g(q) = τ).
+  * Shows **lower joint-torque RMSE** vs the LS baseline, especially where nonlinear friction is significant.
+  * But:
+
+    * Uses ~15 long excitation trajectories, all **offline**.
+    * No payload variation, no contacts; **only RDPI**.
+    * PINN acts as a refined friction / unmodelled-dynamics learner, not as a full contact/payload estimator.
+
+---
+
+## E. Friction-inclusive PINN + residual sequence model (Q4_4)
+
+* Q4_4 (“PINN-based friction-inclusive dynamics modelling for industrial robots”):
+
+  * Target: **multi-joint industrial robots without joint torque sensors** – uses **joint currents** and motion data only.
+  * Builds a **structured PINN** combining:
+
+    * Lagrangian dynamics,
+    * an explicit **Stribeck friction model** per joint.
+  * Introduces a **dual-loop hybrid learning strategy**:
+
+    * one loop focused on dynamics parameters,
+    * one loop on friction parameters,
+    * plus a **history-based residual network** (your card: TCN) that learns remaining errors over a time window.
+  * Achieves **very strong torque prediction** across lower/upper joints and outperforms DeLaN-type and LS baselines (joint currents as proxy).
+  * Limitations:
+
+    * Still **pure RDPI**: no explicit payload, no contact forces.
+    * Requires extensive **instrumented trajectories** and careful hyper-parameter tuning.
+    * Residual learner is black-box; interpretability of friction vs other errors is limited.
+
+---
+
+## F. H-PINN for joint-level dynamics & parameter ID (Q4_5)
+
+* Q4_5 (“Physics-Informed Neural Network for Model Prediction and Dynamics Parameter Identification of Collaborative Robot Joints”):
+
+  * Proposes **H-PINN**: a **hybrid PINN on an RNN** with customised **RK4 cells** that embed the joint’s state-space dynamics.
+  * Uses labelled data (sim or experiment) to jointly learn:
+
+    * Unknown **physical parameters** (inertia, friction, etc.),
+    * The joint’s **state-transition model**.
+  * Shows accurate **single-joint dynamics prediction** and parameter estimates for a collaborative robot joint.
+  * Limitations:
+
+    * Demonstrated only on **one joint**; scaling to a full 6–7-DoF arm is not addressed.
+    * Architecture and training are comparatively **complex and expensive**.
+    * Again, **no payload / contact modelling** – purely joint dynamics.
+
+---
+
+## G. Cross-cutting Q4 limitations
+
+
+* **Scope**: All Q4 works target **robot joint dynamics (RDPI)**; **payload dynamics and interaction forces are not estimated explicitly.**
+* **Training regime**: Models are **trained offline** on long excitation datasets; runtime is purely feed-forward prediction (no online learning in the strong sense).
+* **Sensing assumptions**:
+
+  * Require **accurate joint states and torque or current signals**;
+  * No use of FT sensors, but also **no explicit EE wrench estimate**.
+* **Contact & payload**:
+
+  * Contacts are excluded from training or treated as disturbances.
+  * Payload changes are not addressed; models implicitly assume a fixed tool/payload.
+* **Complexity & scalability**:
+
+  * PINN/H-PINN architectures can be **computationally heavy and tricky to tune**, especially if extended beyond low-DoF setups or single joints.
+
+* **Relevance**:
+
+  * Q4 gives **very strong structured baselines** for learning inverse dynamics from encoder + motor data, especially with friction.
+  * But they **don’t yet give you**: online awareness of tool/payload, nor force estimation; they’re more like the **“best you can do” for a fixed robot+tool model** that your work can build on.
