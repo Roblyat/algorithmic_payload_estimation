@@ -1,12 +1,8 @@
 [Back](deep_research.md)
 
-## Analysis of Mature SoA Papers (2022–2025)
+---
 
-Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), describing its approach and identifying whether its focus is on **rigid-body estimation**, **payload estimation**, or **both**.
-
---- 35 Paper / C1 - C6 -> 33 / C8 --> 2 
-
-### Nadeau et al. (ICRA 2022)
+### Q1.1  - Nadeau et al. (ICRA 2022)
 
 **“Fast Object Inertial Parameter Identification for Collaborative Robots.”**
 - 🔗 [(https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/9916213)]
@@ -16,17 +12,7 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 
 ---
 
-### Nadeau et al. (ICRA 2023)
-
-**“The Sum of Its Parts: Visual Part Segmentation for Inertial Parameter Identification of Manipulated Objects.”**
-- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/10160394]
-
-* **Focus:** Payload estimation
-* **Summary:** Combines RGB-D based part segmentation with force-torque sensing. Segments objects into homogeneous parts, estimating each part’s inertial parameters. Requires only slow, stop-and-go motions (safe near humans), yet achieves accurate full parameter identification. Validated on tool dataset and hammer-balancing demo.
-
----
-
-### Kurdas et al. (ICRA 2022)
+### Q1.2  - Kurdas et al. (ICRA 2022)
 
 **“Online Payload Identification for Tactile Robots Using the Momentum Observer.”**
 - [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/9811691]
@@ -35,7 +21,7 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 
 ---
 
-### Kommuri et al. (IEEE/ASME T-Mech 2022)
+### Q1.3  - Kommuri et al. (IEEE/ASME T-Mech 2022)
 
 **“External Torque Estimation Using Higher Order Sliding-Mode Observer for Robot Manipulators.”**
 - 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/9382115]
@@ -45,7 +31,7 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 
 ---
 
-### Feng Cao et al. (Robotics & CIM 2021)
+### Q1.4  - Feng Cao et al. (Robotics & CIM 2021)
 
 **“Contact force and torque sensing for serial manipulator based on an adaptive Kalman filter with variable time period”**
 
@@ -56,17 +42,17 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 
 ---
 
-### Zhang et al. (EECR 2025)
+### Q1.5  - Zhang et al. (EECR 2025)
 
 **“Accurate Payload Dynamics Estimation and Compensation of a Robotic Manipulator without External Motion Measuring Sensors.”**
-- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/11077346] 
+- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/11077346]
 
 * **Focus:** Payload estimation
 * **Summary:** Online ID using only wrist F/T sensor + encoders. Stepwise approach (sensor biases → mass & CoM → inertia tensor). Achieved <10% error in payload mass.
 
 ---
 
-### Hu et al. (IEEE T-RO 2025)
+### Q1.6  - Hu et al. (IEEE T-RO 2025)
 
 **“On the Fully Decoupled Rigid-Body Dynamics Identification of Serial Industrial Robots.”**
 
@@ -77,7 +63,7 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 
 ---
 
-### Liu et al. (IEEE T-ASE 2025)
+### Q1.7  - Liu et al. (IEEE T-ASE 2025)
 
 **“A Two-Stage Payload Dynamic Parameter Identification Method for Interactive Industrial Robots with Large Components.”**
 
@@ -88,7 +74,7 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 
 ---
 
-### Xu et al. (IEEE TIM 2025)
+### Q1.8  - Xu et al. (IEEE TIM 2025)
 
 **“Identifying Current Dynamics of Robot Payload Based on Iterative Weighting Estimation.”**
 
@@ -99,7 +85,7 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 
 ---
 
-### Xu et al. (Robotica 2022)
+### Q1.9  - Xu et al. (Robotica 2022)
 
 **“An accurate identification method based on double weighting for inertial parameters of robot payloads.”**
  - 🔗 [(https://www.cambridge.org/core/journals/robotica/article/abs/an-accurate-identification-method-based-on-double-weighting-for-inertial-parameters-of-robot-payloads/527798F0D816B5094A0A1A7118862C92)]
@@ -109,7 +95,7 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 
 ---
 
-### Duan et al. (Sensors 2022)
+### Q1.10 - Duan et al. (Sensors 2022)
 
 **“Payload Identification and Gravity/Inertial Compensation for Six-Dimensional Force/Torque Sensor with a Fast and Robust Trajectory Design Approach”**
 
@@ -120,215 +106,7 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 
 ---
 
-### Wei et al. (IEEE T-ASE 2024)
-
-**“Contact Force Estimation of Robot Manipulators with Imperfect Dynamic Model: On Gaussian Process Adaptive Disturbance Kalman Filter.”**
-
-- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/10144490]
-
-* **Focus:** Rigid-body (force) estimation
-* **Summary:** GP-augmented disturbance Kalman filter learns unmodeled dynamics. Outperforms traditional disturbance observers.
-
----
-
-### Wei et al. (IEEE CCIS 2022)
-
-**“Decoupling Observer for Contact Force Estimation of Robot Manipulators Based on Enhanced Gaussian Process Model.”**
-
-- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/10016359]
-
-* **Focus:** Rigid-body (force) estimation
-* **Summary:** Momentum observer + GP regression. Demonstrated on 3-DOF robot. Robust under uncertainties.
-
----
-
-### Fathi et al. (ICMERR 2022)
-
-**“Human-Robot Contact Detection in Assembly Tasks (using GP classifier).”**
-
-- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/10097827]
-
-* **Focus:** Rigid-body (contact detection)
-* **Summary:** GP classifier predicts probability of contact events with uncertainty bounds. More robust than thresholds.
-
----
-
-### Lao et al. (IEEE RA-L 2023)
-
-**“A Learning-Based Approach for Estimating Inertial Properties of Unknown Objects from Encoder Discrepancies.”**
-
-- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/10176292]
-
-* **Focus:** Payload estimation
-* **Summary:** Encoder-only CNN with attention mechanism estimates payload mass and CoM. Accurate without force sensors.
-
----
-
-### Kružić et al. (Electronics 2021)
-
-**End-Effector Force and Joint Torque Estimation of a 7-DoF Robotic Manipulator Using Deep Learning**
-
-- 🔗 [https://www.mdpi.com/2079-9292/10/23/2963]
-
-* **Focus:** Rigid-body (force/torque estimation)
-* **Summary:** LSTM sequence models outperform MLPs for temporal dynamics. Key insight: sequence modeling matters.
-
----
-
-### Pan et al. (Eng. Apps of AI 2023)
-
-**An adaptive sparse general regression neural network-based force observer for teleoperation system**
-
-- 🔗 [https://www-1sciencedirect-1com-1000340761d0d.han.technikum-wien.at/science/article/pii/S0952197622006790]
-
-* **Focus:** Rigid-body (force estimation)
-* **Summary:** Sparse adaptive GRNN with feature selection. Outperforms GP and NN baselines. High accuracy in teleoperation.
-
----
-
-### Liu et al. (Robotics & CIM 2021)
-
-**“Sensorless force estimation for industrial robots using disturbance observer and neural learning of friction approximation.”**
-
-- 🔗 [https://www-1sciencedirect-1com-1000340761d0d.han.technikum-wien.at/science/article/pii/S0736584521000521]
-
-* **Focus:** Hybrid rigid-body estimation
-* **Summary:** Disturbance observer + NN for nonlinear friction. Reduced errors by \~66%.
-
----
-
-### Bao et al. (IEEE T-II 2023)
-
-**“Adaptive Neural Trajectory Tracking Control for n-DOF Robotic Manipulators with State Constraints.”**
-
-- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/9925646]
-
-* **Focus:** Hybrid rigid-body estimation
-* **Summary:** Controller fusing torque control + RBFNN + disturbance observer. Improves tracking accuracy.
-
----
-
-### Tao et al. (Robotica 2025)
-
-**“Robot hybrid inverse dynamics model compensation method based on the BLL residual prediction algorithm.”**
-- 🔗 [(https://www.cambridge.org/core/journals/robotica/article/robot-hybrid-inverse-dynamics-model-compensation-method-based-on-the-bll-residual-prediction-algorithm/6499FF2BA9499B066EF376E4885A0186)]
-
-* **Focus:** Rigid-body estimation
-* **Summary:** Bagging ensemble of LSTMs compensates model residuals. Torque prediction error dropped from 0.5651 Nm → 0.1096 Nm.
-
----
-
-### Yang et al. (RCAR 2025)
-
-**“A Residual-Driven Decomposed PINNs Method for Dynamics Identification of Robot Manipulators.”**
-
-- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/11139811]
-
-* **Focus:** Rigid-body estimation
-* **Summary:** Combines LS with PINN residuals. Reduced torque prediction RMSE by 65%.
-
----
-
-### Zhang et al. (arXiv 2025)
-
-**“Provably-Safe, Online System Identification.”**
-
-- 🔗 [http://arxiv.org/pdf/2504.21486v1]
-
-* **Focus:** Payload estimation
-* **Summary:** Interval arithmetic + safe trajectory optimization. Guarantees safety during payload ID.
-
----
-
-### Taie et al. (IEEE RA-L 2024)
-
-**“Online Identification of Payload Inertial Parameters Using Ensemble Learning for Collaborative Robots.”**
-
-- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/10372103]
-
-* **Focus:** Payload estimation
-* **Summary:** Online ensemble of NNs updated incrementally. Robust in real-time collaborative settings.
-
----
-
-### Taie et al. (Frontiers in Robotics & AI 2024)
-
-**“Addressing Catastrophic Forgetting in Payload Parameter Identification Using Incremental Ensemble Learning.”**
-
-- 🔗 [https://www.frontiersin.org/articles/10.3389/frobt.2024.1470163/full]
-
-* **Focus:** Payload estimation
-* **Summary:** Incremental ensemble avoids forgetting. Maintains high accuracy across repeated payloads (\~0.007 kg error).
-
-### Taie et al. 2024 ICCCR – *Payload Parameters Identification Using Incremental Ensemble Learning*.
-
-- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/10585532]
-
-  * **Focus:** Payload estimation.
-  * **Contribution:** Conference version; removes need for excitation trajectories, precursor to their RA-L & Frontiers works.
-
-### De León et al. 2022 – *Parameter Identification of a Robot Arm Manipulator Based on a Convolutional Neural Network
-
-- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/9780143]
-
-  * **Focus:** Both rigid-body and payload (maps torque/state signals → inertial parameters using CNN feature extraction).
-  * **Contribution:** Introduces a vision-inspired CNN approach; more robust under noise than LS.
-
-### Wu et al. 2025 – *Extended Deep Lagrangian Network for Robotic Arm Dynamics considering Motor Couplings.
-
-- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/11150193]
-
-  * **Focus:** Rigid-body estimation (extends physics-informed deep models to capture motor couplings + nonlinear friction).
-  * **Contribution:** Improves dynamics prediction on UR10e vs physics-only or NN-only.
-
-### Peng et al. 2021 – Neural-Learning-Based Force Sensorless Admittance Control for Robots With Input Deadzone
-
-- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/9089219]
-
-  * **Focus:** Rigid-body estimation (sensorless external torque observer + NN controller).
-  * **Contribution:** First NN-based admittance control with deadzone compensation; avoids F/T sensors.
-
-### Liu et al. (IJARS 2021)
-
-**“External force estimation for robotic manipulator based on particle swarm optimization.”**
-
-- 🔗 [(https://doi.org/10.1177/17298814211063744)]
-
-* **Focus:** Rigid-body (force estimation)  
-* **Summary:** Uses improved PSO for parameter identification, enabling sensorless external force estimation on Kinova Jaco2. Achieves 0.7 N RMSE. Robust compared to other metaheuristics.
-
----
-
-### Leboutet et al. (Applied Sciences 2021)
-
-**“Inertial Parameter Identification in Robotics: A Survey.”**
-
-- 🔗 [(https://doi.org/10.3390/app11094303)]
-
-* **Focus:** Survey / Benchmarking  
-* **Summary:** Introduces BIRDy Matlab toolbox for systematic benchmarking of ID methods. Compares 17 approaches (LS, ML, IV, DIDIM, CLOE, CLIE, EKF, neural networks, PC methods). Establishes guidelines for method choice.
-
----
-
-### Lee et al. (Annual Review of Control 2024)
-
-**“Robot Model Identification and Learning: A Modern Perspective.”**  
-🔗 [Paper link](https://doi.org/10.1146/annurev-control-061523-102310)
-
-* **Focus:** Survey / Conceptual  
-* **Summary:** Provides unified perspective on robot system identification, bridging classical rigid-body ID with modern ML and physics-informed models. Discusses geometry of inertial parameter identification, simulation vs. equation error, and challenges of data collection.
-
-### Huang et al. (IEEE/ASME T-Mech 2025)
-
-**“Toward Sensorless Interaction Force Estimation for Industrial Robots Using High-Order Finite-Time Observers.”**  
-- 🔗 [(https://ieeexplore-1ieee-1org-100033c761c8f.han.technikum-wien.at/document/9484422)]
-
-* **Focus:** Rigid-body (force estimation)  
-* **Summary:** Proposes a high-order finite-time observer for robust sensorless interaction force estimation in industrial manipulators. Achieves fast convergence and high accuracy under uncertainties. Extends disturbance observer theory.
-
----
-
-### Wei et al. (IEEE/ASME T-Mech 2025)
+### Q1.11 - Wei et al. (IEEE/ASME T-Mech 2025)
 
 **“Composite Disturbance Filtering for Interaction Force Estimation With Online Environmental Stiffness Exploration.”**
 
@@ -339,7 +117,147 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 
 ---
 
-### Liang et al 2021** - Contact Localization for Robot Arms in Motion without Torque Sensing
+### Q1.12 - Han et al. (IEEE/ASME T-Mech 2025)
+
+**“Toward Sensorless Interaction Force Estimation for Industrial Robots Using High-Order Finite-Time Observers.”**  
+- 🔗 [https://ieeexplore-1ieee-1org-100033c761c8f.han.technikum-wien.at/document/9484422]
+
+* **Focus:** Rigid-body (force estimation)  
+* **Summary:** Proposes a high-order finite-time observer for robust sensorless interaction force estimation in industrial manipulators. Achieves fast convergence and high accuracy under uncertainties. Extends disturbance observer theory.
+
+---
+
+### Q1.13 - Swevers et al. IEEE CSM 2007
+
+**"Dynamic Model Identification for Industrial Robots"**
+
+- 🔗 [https://ieeexplore-1ieee-1org-100033cd209e7.han.technikum-wien.at/document/4303475]
+
+---
+
+### Q1.14 - Wanke Yu et al. ADAII 2022
+
+**"A Novel Sliding Mode Momentum Observer for Collaborative Robot Collision Detection"**
+
+- 🔗 [https://www.mdpi.com/2075-1702/10/9/818#:~:text=This%20paper%20presents%20a%20novel,accuracy%20to%20ensure%20safe%20PHRI]
+
+---
+
+### Q1.15 - Dan Zhang et al. ISAR 2023
+
+"**Dynamic Parameter Identification of Collaborative Robot Based on WLS-RWPSO Algorithm"**
+
+- 🔗 [https://www.mdpi.com/2075-1702/11/2/316]
+
+---
+
+### Q1.16 - Xu et al., Robotica 2024
+
+**"An online payload identification method based on parameter difference for industrial robots"**
+
+- 🔗 [https://www.cambridge.org/core/journals/robotica/article/abs/an-online-payload-identification-method-based-on-parameter-difference-for-industrial-robots/23B4C016AAF275A1C4BED7322CDB23FF]
+
+* **Problem/Issue**:  Existing **online payload ID** methods often require external sensors (IMU, F/T) or rely on oversimplified **linear friction models**, limiting accuracy in real deployment.
+
+---
+
+### Q1.17 - Liu et al. (Robotics & CIM 2021)
+
+**“Sensorless force estimation for industrial robots using disturbance observer and neural learning of friction approximation.”**
+
+- 🔗 [https://www-1sciencedirect-1com-1000340761d0d.han.technikum-wien.at/science/article/pii/S0736584521000521]
+
+* **Focus:** Hybrid rigid-body estimation
+* **Summary:** Disturbance observer + NN for nonlinear friction. Reduced errors by \~66%.
+
+---
+
+### Q2.1  - Wei et al. (IEEE CCIS 2022)
+
+**“Decoupling Observer for Contact Force Estimation of Robot Manipulators Based on Enhanced Gaussian Process Model.”**
+
+- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/10016359]
+
+* **Focus:** Rigid-body (force) estimation
+* **Summary:** Momentum observer + GP regression. Demonstrated on 3-DOF robot. Robust under uncertainties.
+
+---
+
+### Q2.2  - Wei et al. (IEEE T-ASE 2024)
+
+**“Contact Force Estimation of Robot Manipulators with Imperfect Dynamic Model: On Gaussian Process Adaptive Disturbance Kalman Filter.”**
+
+- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/10144490]
+
+* **Focus:** Rigid-body (force) estimation
+* **Summary:** GP-augmented disturbance Kalman filter learns unmodeled dynamics. Outperforms traditional disturbance observers.
+
+---
+
+### Q2.3  - Fathi et al. (ICMERR 2022)
+
+**“Human-Robot Contact Detection in Assembly Tasks (using GP classifier).”**
+
+- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/10097827]
+
+* **Focus:** Rigid-body (contact detection)
+* **Summary:** GP classifier predicts probability of contact events with uncertainty bounds. More robust than thresholds.
+
+---
+
+### Q2.4  - Giacomuzzo et al. IFAC 2023
+**"A Comparison Between Gaussian Processes and Neural Networks / GP vs. DeLaN"**
+
+- 🔗 [https://www.sciencedirect.com/science/article/pii/S240589632302267X]
+
+---
+
+### Q3.1  - Tao et al. (Robotica 2025)
+
+**“Robot hybrid inverse dynamics model compensation method based on the BLL residual prediction algorithm.”**
+- 🔗 [(https://www.cambridge.org/core/journals/robotica/article/robot-hybrid-inverse-dynamics-model-compensation-method-based-on-the-bll-residual-prediction-algorithm/6499FF2BA9499B066EF376E4885A0186)]
+
+* **Focus:** Rigid-body estimation
+* **Summary:** Bagging ensemble of LSTMs compensates model residuals. Torque prediction error dropped from 0.5651 Nm → 0.1096 Nm.
+
+---
+
+### Q3.2  - Lao et al. (IEEE RA-L 2023)
+
+**“A Learning-Based Approach for Estimating Inertial Properties of Unknown Objects from Encoder Discrepancies.”**
+
+- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/10176292]
+
+* **Focus:** Payload estimation
+* **Summary:** Encoder-only CNN with attention mechanism estimates payload mass and CoM. Accurate without force sensors.
+
+---
+
+### Q3.3  - Kružić et al. (Electronics 2021)
+
+**End-Effector Force and Joint Torque Estimation of a 7-DoF Robotic Manipulator Using Deep Learning**
+
+- 🔗 [https://www.mdpi.com/2079-9292/10/23/2963]
+
+* **Focus:** Rigid-body (force/torque estimation)
+* **Summary:** LSTM sequence models outperform MLPs for temporal dynamics. Key insight: sequence modeling matters.
+
+---
+
+### Q3.4  - Pan et al. (Eng. Apps of AI 2023)
+
+**An adaptive sparse general regression neural network-based force observer for teleoperation system**
+
+- 🔗 [https://www-1sciencedirect-1com-1000340761d0d.han.technikum-wien.at/science/article/pii/S0952197622006790]
+
+* **Focus:** Rigid-body (force estimation)
+* **Summary:** Sparse adaptive GRNN with feature selection. Outperforms GP and NN baselines. High accuracy in teleoperation.
+
+---
+
+### Q3.5  - Liang et al 2021
+
+**"Contact Localization for Robot Arms in Motion without Torque Sensing"**
 
 - 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/9562058]
 
@@ -349,60 +267,104 @@ Below is the analysis of each *Mature State-of-the-Art* paper (2022–2025), des
 
 ---
 
-### Xu et al., Robotica 2024 - An online payload identification method based on parameter difference for industrial robots
+### Q3.6  - Taie et al. 2024 ICCCR
 
-- 🔗 [https://www.cambridge.org/core/journals/robotica/article/abs/an-online-payload-identification-method-based-on-parameter-difference-for-industrial-robots/23B4C016AAF275A1C4BED7322CDB23FF]
+**"Payload Parameters Identification Using Incremental Ensemble Learning"**
 
-* **Problem/Issue**:  Existing **online payload ID** methods often require external sensors (IMU, F/T) or rely on oversimplified **linear friction models**, limiting accuracy in real deployment.
+- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/10585532]
 
-* **Contribution**:
-  * First **sensorless online payload ID** that incorporates **nonlinear friction** and parameter-difference formulation.
-  * Outperforms previous methods in both **accuracy** and **practicality** for industrial robots.
-
----
-
-### Dan Zhang et al. ISAR 2023 - Dynamic Parameter Identification of Collaborative Robot Based on WLS-RWPSO Algorithm
-
-- 🔗 [https://www.mdpi.com/2075-1702/11/2/316]
-
-### Wanke Yu et al. ADAII 2022 - A Novel Sliding Mode Momentum Observer for Collaborative Robot Collision Detection
-
-- 🔗 [https://www.mdpi.com/2075-1702/10/9/818#:~:text=This%20paper%20presents%20a%20novel,accuracy%20to%20ensure%20safe%20PHRI]
----
-
-### Swevers et al. IEEE CSM 2007 - Dynamic Model Identification for Industrial Robots
-
-- 🔗 [https://ieeexplore-1ieee-1org-100033cd209e7.han.technikum-wien.at/document/4303475]
+  * **Focus:** Payload estimation.
+  * **Contribution:** Conference version; removes need for excitation trajectories, precursor to their RA-L & Frontiers works.
 
 ---
 
-### Hu et al. IEEE TIE 2024 - A PINN-Based Friction-Inclusive Dynamics Modeling Method for Industrial Robots
+### Q3.7  - Taie et al. (IEEE RA-L 2024)
 
-- 🔗 [https://ieeexplore-1ieee-1org-100033cd20427.han.technikum-wien.at/document/10729277]
+**“Online Identification of Payload Inertial Parameters Using Ensemble Learning for Collaborative Robots.”**
+
+- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/10372103]
+
+* **Focus:** Payload estimation
+* **Summary:** Online ensemble of NNs updated incrementally. Robust in real-time collaborative settings.
 
 ---
 
-### Lutter et al. arxiv 2023 - Combining Physics and Deep Learning to learn Continuous-Time Dynamics Models
+### Q3.8  - Taie et al. (Frontiers in Robotics & AI 2024)
+
+**“Addressing Catastrophic Forgetting in Payload Parameter Identification Using Incremental Ensemble Learning.”**
+
+- 🔗 [https://www.frontiersin.org/articles/10.3389/frobt.2024.1470163/full]
+
+* **Focus:** Payload estimation
+* **Summary:** Incremental ensemble avoids forgetting. Maintains high accuracy across repeated payloads (\~0.007 kg error).
+
+---
+
+### Q4.1  - Wu et al. 2025
+
+**"Extended Deep Lagrangian Network for Robotic Arm Dynamics considering Motor Couplings"**
+
+- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/11150193]
+
+  * **Focus:** Rigid-body estimation (extends physics-informed deep models to capture motor couplings + nonlinear friction).
+  * **Contribution:** Improves dynamics prediction on UR10e vs physics-only or NN-only.
+
+---
+
+### Q4.2  - Lutter et al. arxiv 2023
+
+**"Combining Physics and Deep Learning to learn Continuous-Time Dynamics Models"**
 
 - 🔗 [https://arxiv.org/abs/2110.01894v2]
 
 ---
 
-###  Yang et al. 2023 - Physics-Informed Neural Network for Model Prediction and Dynamics Parameter Identification of Collaborative Robot Joints
+### Q4.3  - Yang et al. (RCAR 2025)
+
+**“A Residual-Driven Decomposed PINNs Method for Dynamics Identification of Robot Manipulators.”**
+
+- 🔗 [https://ieeexplore-1ieee-1org-100033c761d0a.han.technikum-wien.at/document/11139811]
+
+* **Focus:** Rigid-body estimation
+* **Summary:** Combines LS with PINN residuals. Reduced torque prediction RMSE by 65%.
+
+---
+
+### Q4.4  - Hu et al. IEEE TIE 2024
+
+**"A PINN-Based Friction-Inclusive Dynamics Modeling Method for Industrial Robots"**
+
+- 🔗 [https://ieeexplore-1ieee-1org-100033cd20427.han.technikum-wien.at/document/10729277]
+
+---
+
+### Q4.5  - Yang et al. 2023
+
+**"Physics-Informed Neural Network for Model Prediction and Dynamics Parameter Identification of Collaborative Robot Joints"**
 
 - 🔗 [https://ieeexplore-1ieee-1org-100033cd209e7.han.technikum-wien.at/document/10305255]
 
 ---
 
-### Giacomuzzo et al. IFAC 2023 – A Comparison Between Gaussian Processes and Neural Networks / GP vs. DeLaN
+### Q5.1  - Lee et al. (Annual Review of Control 2024)
 
-- 🔗 [https://www.sciencedirect.com/science/article/pii/S240589632302267X]
+**“Robot Model Identification and Learning: A Modern Perspective.”**  
+🔗 [Paper link](https://doi.org/10.1146/annurev-control-061523-102310)
+
+* **Focus:** Survey / Conceptual  
+* **Summary:** Provides unified perspective on robot system identification, bridging classical rigid-body ID with modern ML and physics-informed models. Discusses geometry of inertial parameter identification, simulation vs. equation error, and challenges of data collection.
 
 ---
 
-## Summary & Trends
+### Q5.2  - Leboutet et al. (Applied Sciences 2021)
 
-* **Payload estimation** dominates the field — crucial for safety and efficient manipulation.
-* **Rigid-body external force/torque estimation** remains central for interaction control.
-* A few (e.g. *Hu et al. 2025*) combine both.
-* The trend: **physics-informed + learning-based methods** (GPs, neural nets, PINNs, ensembles) for robustness and accuracy.
+**“Inertial Parameter Identification in Robotics: A Survey.”**
+
+- 🔗 [(https://doi.org/10.3390/app11094303)]
+
+* **Focus:** Survey / Benchmarking  
+* **Summary:** Introduces BIRDy Matlab toolbox for systematic benchmarking of ID methods. Compares 17 approaches (LS, ML, IV, DIDIM, CLOE, CLIE, EKF, neural networks, PC methods). Establishes guidelines for method choice.
+
+---
+
+

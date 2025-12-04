@@ -1,2 +1,0 @@
-- observer / EKF require M(q) C(q) G(q)
-- compute SensorFrame vel/acc from motor encoders with Jacobian

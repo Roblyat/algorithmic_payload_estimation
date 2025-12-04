@@ -40,6 +40,20 @@
   note    = {Bar chart illustration},
 }
 
+% ----------------------------------------------------
+%%%%%%%%%%%%
+%%  Q0.4  %%
+%%%%%%%%%%%%
+@inproceedings{Q0_4_sum_of_parts_hps,
+  author    = {Nadeau, Philippe and Giamou, Matthew and Kelly, Jonathan},
+  booktitle = {2023 IEEE International Conference on Robotics and Automation (ICRA)}, 
+  title     = {The Sum of Its Parts: Visual Part Segmentation for Inertial Parameter Identification of Manipulated Objects}, 
+  year      = {2023},
+  pages     = {3779-3785},
+  keywords  = {Point cloud compression; Visualization; Parameter estimation; Shape; Motion segmentation; Collaboration; Clustering algorithms},
+  doi       = {10.1109/ICRA48891.2023.10160394}
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End of Introduction / Motivation / Statistics
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -224,21 +238,21 @@
 %%%%%%%%%%%%%
 %%  Q1.12  %%
 %%%%%%%%%%%%%
-@article{Q1_12_huang_finite_time_observer,
-  author    = {Huang, X. and others},
-  journal   = {IEEE/ASME Transactions on Mechatronics},
-  title     = {Toward Sensorless Interaction Force Estimation for Industrial Robots Using High-Order Finite-Time Observers},
-  year      = {2025},
-  volume    = {30},
-  number    = {1},
-  pages     = {xxx--xxx},
-  doi       = {10.1109/TMECH.2021.9484422}
-}
+@ARTICLE{Q1_12_han_finite_time_observer,
+  author={Han, Linyan and Mao, Jianliang and Cao, Pengfei and Gan, Yahui and Li, Shihua},
+  journal={IEEE Transactions on Industrial Electronics}, 
+  title={Toward Sensorless Interaction Force Estimation for Industrial Robots Using High-Order Finite-Time Observers}, 
+  year={2022},
+  volume={69},
+  number={7},
+  pages={7275-7284},
+  keywords={Estimation;Observers;Force;Robots;Friction;Robot sensing systems;Dynamics;Force control;high-order finite-time observer;interaction force estimation;parameter identification},
+  doi={10.1109/TIE.2021.3095820}}
 
 % ----------------------------------------------------
 %%%%%%%%%%%%%
 %%  Q1.13  %%
-%%%%%%%%%%%%%
+%%%%%%%%%%%%% [old but robust → ~300 citations]
 @article{Q1_13_dynamic_model_id_swevers2007,
   author    = {Swevers, Jan and Verdonck, Walter and De Schutter, Joris},
   journal   = {IEEE Control Systems Magazine}, 
@@ -413,16 +427,15 @@ keywords = {Learning for control, Machine learning, Nonlinear system identificat
 %%%%%%%%%%%%
 %%  Q3.1  %%
 %%%%%%%%%%%%
-@article{Q3_1_tao2025hybrid_bll_id,
-  author    = {Tao, [First names not provided]},
+@article{Q3_1_tao_bll,
+  author = {Tao and Chen and Liu and Wan and Wei and Wang},
   title     = {Robot Hybrid Inverse Dynamics Model Compensation Method Based on the BLL Residual Prediction Algorithm},
   journal   = {Robotica},
   volume    = {43},
   number    = {3},
-  pages     = {649--663},
+  pages     = {649-663},
   year      = {2025},
-  doi       = {10.1017/S0263574724002911},
-  url       = {https://www.cambridge.org/core/journals/robotica/article/robot-hybrid-inverse-dynamics-model-compensation-method-based-on-the-bll-residual-prediction-algorithm/6499FF2BA9499B066EF376E4885A0186}
+  doi       = {10.1017/S0263574724002911}
 }
 
 % ----------------------------------------------------
@@ -629,12 +642,9 @@ keywords = {Learning for control, Machine learning, Nonlinear system identificat
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % ----------------------------------------------------
-% Paper 1: Robot Model ID and Learning Review
-% Keywords:
-% Issue: need for unified modern perspective on system ID
-% Math: system identification, geometry, physics-informed ML
-% Methods: review of classical and data-driven approaches
-% Contribution: bridges physics-based and data-driven ID
+%%%%%%%%%%%%
+%%  Q5.1  %%
+%%%%%%%%%%%%
 @article{Q5_1_lee_robot_model_review,
   author    = {Lee, Taeyoon and Kwon, Jaewoon and Wensing, Patrick M. and Park, Frank C.},
   journal   = {Annual Review of Control, Robotics, and Autonomous Systems},
@@ -647,12 +657,9 @@ keywords = {Learning for control, Machine learning, Nonlinear system identificat
 }
 
 % ----------------------------------------------------
-% Paper 2: Survey on Inertial Parameter Identification
-% Keywords:
-% Issue: lack of unified overview of parameter ID
-% Math: rigid-body dynamics, excitation observability
-% Methods: survey of LS, RLS, convex optimization, probabilistic ID
-% Contribution: definitive survey of inertial parameter ID
+%%%%%%%%%%%%
+%%  Q5.2  %%
+%%%%%%%%%%%%
 @article{Q5_2_leboutet_inertial_survey,
   author    = {Leboutet, Quentin and others},
   journal   = {Applied Sciences},
