@@ -346,6 +346,16 @@
 
 ---
 
+### Q4.6  - Yudie Hu et al.
+
+**"Improved deep Lagragian network-enabled momentum observer for collision detection during human-robot coll"**
+
+- 🔗 [ttps://www-1sciencedirect-1com-1000340zj0136.han.technikum-wien.at/science/article/pii/S0736584525001474#sec0022]
+
+* **DeLaN approch used in APE, MOST RELAVANT METHODS PAPER**
+
+---
+
 ### Q5.1  - Lee et al. (Annual Review of Control 2024)
 
 **“Robot Model Identification and Learning: A Modern Perspective.”**  
@@ -366,5 +376,3 @@
 * **Summary:** Introduces BIRDy Matlab toolbox for systematic benchmarking of ID methods. Compares 17 approaches (LS, ML, IV, DIDIM, CLOE, CLIE, EKF, neural networks, PC methods). Establishes guidelines for method choice.
 
 ---
-
-

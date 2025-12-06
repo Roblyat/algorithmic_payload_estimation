@@ -273,7 +273,11 @@ The structured literature search identified a substantial number of relevant pap
 |  31|  Q4.2  | Lutter et al. *Combining Physics and Deep Learning to learn Continuous-Time Dynamics Models*                                 | 2023 / arxiv         | Q4          | **Rigid-body**    | -             |
 |  32|  Q4.3  | Yang et al. – *A Residual-Driven Decomposed PINNs Method for Dynamics Identification of Robot Manipulators                   | 2025 / RCAR          | Q4 + Q1     | **Rigid-body**    | 0             |
 |  33|  Q4.4  | Hu et al. – *A PINN-Based Friction-Inclusive Dynamics Modeling Method for Industrial Robots*                                 | 2024 / IEEE TIE      | Q4 + Q3     | **Rigid-body**    | 8             |
-|  34|  Q4.5  | Yang et al. – *Physics-Informed Neural Network for Model Prediction and Dynamics Parameter Identification of Collaborative   | 2023 / IEEE RAL      | Q4          | **Rigid-body**    | 26            |
+|  34|  Q4.5  | Yang et al. – *Physics-Informed Neural Network for Model Prediction and Dynamics Parameter Identification of Collaborative*  | 2023 / IEEE RAL      | Q4          | **Rigid-body**    | 26            |
+|  35|  Q4.6  | Yudie Hu et al. – *Improved deep Lagragian network-enabled momentum observer for collision detection during human-robot coll*| 2026 / RCIM          | Q4          | **Rigid-body**    | 1             |
+
+
+
 
 
 ---
