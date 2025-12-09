@@ -5,6 +5,8 @@
 ---
 - additional nonlinearities like drive-train effects (e.g. backlash, temperature) caused by carried payload still remain as unmodeled in this DeLaN + LSTM approach
 --- 
+- drive-drain effects are stick–slip, small backlash, hysteresis, temperaure etc.
+---
 
 # 1 Introduction
 
@@ -70,8 +72,8 @@
   ### 1.3.2 Scientific Contribution
 
   In this work, a 6D force/torque sensor is used primarily as a **research instrument** to validate the proposed joint–space modelling approach in the end–effector measurement frame.
-  During data collection, the FT sensor provides ground–truth flange wrenches (\vec{F}_{\mathrm{meas}}), which are used to (i) supervise the residual LSTM in Stage~2 and (ii) quantitatively assess the accuracy of the combined DeLaN+LSTM model in the sensor frame.
-  However, the core models themselves are formulated and trained **in joint space** using only encoder and motor–current data; the mapping to the end–effector frame is performed afterwards via the Jacobian.
+  During data collection, the FT sensor provides ground–truth flange wrenches (\vec{F}_{\mathrm{meas}}), which are used to validate the accuracy of the combined DeLaN+LSTM model in the sensor frame.
+  However, the core models DeLaN and LSTM themselves are formulated and trained **in joint space** using only encoder and motor–current data; the mapping to the end–effector frame is performed afterwards via the Jacobian.
 
   Conceptually, this means that the FT sensor is **not structurally required** by the method, but only used in this thesis to demonstrate that the learned joint–space model does indeed produce a consistent wrench prediction in the measurement frame.
   If such consistency can be established, a practitioner could in principle follow the same pipeline **without an FT sensor**: train the DeLaN inverse–dynamics model and the sequence model on joint states and motor torques alone, operate the robot without any flange sensing, and perform payload identification purely from joint–space residuals that are subsequently mapped into the end–effector frame.
@@ -79,8 +81,3 @@
   In that sensor–free variant, the effective rigid body “robot+gripper” would be defined by the hardware configuration used during data collection (without FT sensor mass and lever arm), and payload–induced residuals could be interpreted directly in joint space and then transformed to the tool frame for PDPI.
   The FT–based experiments in this thesis should therefore be seen as a **validation of the joint–space modelling and frame transformation**, rather than as a strict requirement that all deployments must equip a permanent force/torque sensor.
 
-- drive-drain effects are stick–slip, small backlash, hysteresis, temperaure etc.
-
--   \item Evaluate the resulting DeLaN+LSTM architecture as a foundation for PDPI: first by quantifying joint-torque and flange-wrench prediction accuracy
-        across diverse trajectories, and then by analysing how deviations between the nominal wrench and measured wrenches correlate with changes
-        in attached payloads.
