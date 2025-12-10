@@ -3,7 +3,7 @@
 	url = https://github.com/Roblyat/IsaacLab.git
 [submodule "payload_estimation"]
 	path = payload_estimation
-	url = https://github.com/Roblyat/payload_estimation.git
+	url = git@github.com:Roblyat/payload_estimation.git
 	branch = main
 [submodule "manipulator_description"]
 	path = manipulator_description
