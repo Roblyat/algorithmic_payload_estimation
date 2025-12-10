@@ -61,13 +61,10 @@
   - Limitations of SoA -> problem statement
 
   ## 1.3 Aim of this work
-  - 251204: rework aim of work, check truth of statements. for example:
-    0. These works, however, focus purely on RDPI for a
-       fixed robot-tool configuration and do not provide an explicit, measurement-frame model of the
-       effective rigid body (robot+tool+payload) or its interaction wrench.
-       --> need to keep that statement in mind and check if this really is true, task for later.
 
-  ### 1.3.1 Research Question
+  Motivated by the SoA, this work adopts a DeLaN+LSTM architecture as a compromise between physical interpretability and data-driven flexibility. Physics-structured models such as DeLaN and PINNs have consistently shown the strongest robustness for inverse dynamics and friction modelling in industrial manipulators, especially when trained on encoder and motor data alone \cite{Q4_1_extended_delan_motor,Q4_2_lutter2023combiningphysicsdeeplearning,Q4_3_residual_pinns_dynamics_id,Q4_4_10729277}. Recent PINN-based approaches further demonstrate that augmenting a structured core with a temporal residual network (e.g. a TCN) can substantially improve torque prediction and friction compensation \cite{Q4_4_10729277}. At the same time, several studies indicate that LSTM-based residual learners are particularly effective in this domain: they successfully compensate modelling errors on top of rigid-body dynamics and achieve strong performance in joint-torque and end-effector force estimation, outperforming MLP and 1D-convolution baselines \cite{Q3_1_tao_bll,Q3_3_lstm_force_estimation}. Building on these findings, the present thesis follows the DeLaN+residual pattern but replaces the TCN with an LSTM, combining a physics-informed DeLaN backbone for nominal robot–gripper dynamics with a recurrent sequence model that captures history-dependent residual effects.
+
+  ### 1.3.1 Research Questions
 
   ### 1.3.2 Scientific Contribution
 

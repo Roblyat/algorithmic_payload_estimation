@@ -210,7 +210,7 @@ $$
 
 ## Results in Numbers / Research Trend
 
-[See detailed results](research_trend.md)
+[See detailed results](b_research_trend.md)
 
 ---
 
@@ -292,17 +292,17 @@ The structured literature search identified a substantial number of relevant pap
 ---
 
 ### see links to read paper here:
-- [Paper Links to read](relevant_SoA_links.md)
+- [Paper Links to read](d_relevant_SoA_links.md)
 
 ---
 
 ### see research trend here:
-- [See detailed research trend](research_trend.md)
+- [See detailed research trend](b_research_trend.md)
 
 ---
 
 ### see citation access date and links here
-- [See detailed citation access](250924_233600_citations.md)
+- [See detailed citation access](e_251130_185300_citations.md)
 
 ## Filter relevant impact State of Art
 * **“Mature SoA”** = cited or relevant work. paper with impact for ape [2022-2025]
@@ -312,7 +312,7 @@ The structured literature search identified a substantial number of relevant pap
 - **Delivered Papers seen in table**
 
 
-![Concept Graph](/docs/reserach/illustrations/250926_concept_graph.drawio.png)
+![Concept Graph](/docs/reserach/illustrations/251202_concept_graph.drawio.png)
 
 ---
 
@@ -323,98 +323,3 @@ The structured literature search identified a substantial number of relevant pap
 - **reference bubbls size with their amount of citation (maybe in combination with the relese date), showing the impact of each reference**
 
 ---
-
-
-## 🔑 Observations
-
-* **Rigid-body estimation SoA:** Classical observers (KF, SMO), GP-based observers, hybrid DOB+NN, and deep models (LSTM, GRNN, CNN).
-* **Payload estimation SoA:** Primarily LS-based dynamic ID (with improvements like double weighting, RRTLS, current-based), ensemble learning, encoder-discrepancy learning, and safe online SysID.
-* **Both (robot + payload):** Only a few, most notably **Hu et al. 2025 (FDRDI)** and **De León et al. 2022 (CNN Arm Param ID)**.
-* **Trends:** Strong shift from pure observers (Q1) toward hybrid ML/physics-informed (Q4–Q5) and online adaptive/ensemble ML (Q6) for payloads.
-
----
----
-
-# 📎 Peripheral Papers (Not Central)
-
-These matched your CMD search but are not directly solving your core **payload/rigid-body estimation** problem:
-
-* **Azulay et al. 2024** – *SightGAN: Augmenting Tactile Simulators* (ICRA).
-
-  * Focus: tactile sim-to-real transfer, not payload ID.
-
-* **Xin et al. 2024** – Programmatic Imitation Learning From Unlabeled and Noisy Demonstrations
-
-  * Focus: program synthesis for imitation learning, not F/T or payload.
-
-* **Zheng et al. 2023** – Uncertainty in Bayesian Reinforcement Learning for Robot Manipulation Tasks with Sparse Rewards
-
-    * Issue: sparse rewards harm exploration & stability in robot manipulation
-    * Results: improved convergence & stability across 4 manipulation tasks
-
-* **Yuan et al 2025** -Optimization of Adaptive Algorithm for Precise Motion Control of Multi-Degree-of-Freedom Robotic Arms
-
-* **Pezzato et al 2025** - Sampling-Based Model Predictive Control Leveraging Parallelizable Physics Simulations
- - Isaac
- 
-
-
- 
-# Categories
-
-1. **Classical**
-   - Observers & filters using an analytic model (MO/GMO/DOB/KF/EKF/UKF/LS/RLS/WLS).
-   - relevant papers: 1, 2, 4, 5, 6, 7, 9, 12, 16, 17
-
-2. **Hybrid (Physics + Residual)**
-   Start from (M,C,G) (or NE/EL) and learn a **correction** (GP or NN) that’s added to the model or fused in a filter.
-
-3. **Pure Deep**
-   NN learns dynamics/inverse dynamics **without** explicit physics (MLP/LSTM/GRU/TCN/Transformer).
-
-4. **Physics-Informed**
-   NN is **constrained by physics** (e.g., DeLaN/Lagrangian nets, PINNs, differentiable simulation). SINDY, NEURAL ODE
-
----
-
-Just add up to **three** short tags so you keep it lightweight:
-
-* **Sequence:** `LSTM/GRU`, `TCN`, `Transformer`
-* **Use-case:** `contact force`, `collision`, `payload ID`, `inverse dynamics`
-
----
-
-# One-line decision rules
-
-* **Has nominal (M,C,G) and adds a learned fix?** → **Hybrid**.
-* **No explicit physics at all?** → **Pure Deep**.
-* **Physics is built into the NN (Lagrangian/PINN/DiffSim)?** → **Physics-Informed**.
-* **Classic observers/filters/LS with no learning?** → **Classical**.
-
----
-
-**“sequence”** means the method **models time series explicitly**—it takes a **window or stream of past samples** and learns the temporal dynamics, not just a single ((q,\dot q,\ddot q)) snapshot.
-
-### What counts as “sequence”
-
-* **RNNs (LSTM/GRU):** ingest one timestep at a time, keep a hidden **state** that carries info from the past → good for variable-length streams and online use.
-* **TCN (Temporal Conv Nets):** use **causal 1-D convolutions** over time (often **dilated**) to capture long history with fixed latency → efficient and stable.
-* **Transformers:** use **attention** over the window (or stream) to learn long-range temporal dependencies and context → strong but heavier.
-
-### What does *not* count
-
-* A plain **MLP** that sees only the **current** ((q,\dot q,\ddot q)) with no history.
-* An MLP that sees a few handcrafted features but **no explicit time window/state**.
-
-### Why it matters in robotics
-
-* **Dynamics are history-dependent** (friction, backlash, compliance). Sequence models can infer these from recent motion.
-* **Latency/causality:**
-
-  * **Online control:** use **causal** models (LSTM/GRU/causal TCN) with a short window to keep delay low.
-  * **Offline prediction:** you can use **bidirectional** TCN/Transformers for accuracy (but not for real-time control).
----
-
-# PAPER TO CHECK
-
-
