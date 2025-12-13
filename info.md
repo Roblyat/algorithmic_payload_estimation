@@ -1,8 +1,10 @@
 # ENVIRONMENT SETUP - Key ROS and system variables
 
+xhost +local:docker
 
 ## Export APE_REPO
 export APE_REPO=/home/robat/.localgit/algorithmic_payload_estimation
+export DELAN_REPO="$HOME/.localgit/deep_lagrangian_networks"
 
 ## Show key env values one by one
 echo "ROS_DISTRO=$ROS_DISTRO"
