@@ -3,8 +3,12 @@
 xhost +local:docker
 
 ## Export APE_REPO
-export APE_REPO=/home/robat/.localgit/algorithmic_payload_estimation
+export APE_REPO="$HOME/.localgit/algorithmic_payload_estimation"
 export DELAN_REPO="$HOME/.localgit/deep_lagrangian_networks"
+export APE_PREPROCESS="$HOME/.localgit/algorithmic_payload_estimation/payload_estimation/services/preprocess"
+export APE_SHARED="$HOME/.localgit/algorithmic_payload_estimation/payload_estimation/shared"
+export APE_EVALUATION="$HOME/.localgit/algorithmic_payload_estimation/payload_estimation/services/evaluation"
+
 
 ## Show key env values one by one
 echo "ROS_DISTRO=$ROS_DISTRO"
