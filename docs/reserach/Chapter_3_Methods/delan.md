@@ -35,6 +35,14 @@ So later you’ll add:
 * resampling to a fixed-rate time grid if needed
 * filtering for `qd` and `qdd` (and possibly recompute `qdd` from filtered `qd`)
 
----
+### DeLaN example train results:
+UR5 Dataset:
+  npz = /workspace/shared/data/processed/delan_ur5_dataset.npz
+   dt ≈ 0.02439441835857372
+  dof = 6
+  Train trajectories = 164
+  Test trajectories  = 41
+  Train samples = 12251
+  Test samples  = 3075
 
-If you want, next step we can add a matching short subsection for “Stage-2 dataset for the LSTM” that defines how you build the sequences $\mathbf{x}_k$ from these flattened arrays.
+![Results DeLaN](/docs/reserach/illustrations/UR5_DeLaN_Torque___Seed=4.png)
