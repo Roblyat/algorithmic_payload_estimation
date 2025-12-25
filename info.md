@@ -8,6 +8,7 @@ export DELAN_REPO="$HOME/.localgit/deep_lagrangian_networks"
 export APE_PREPROCESS="$HOME/.localgit/algorithmic_payload_estimation/payload_estimation/services/preprocess"
 export APE_SHARED="$HOME/.localgit/algorithmic_payload_estimation/payload_estimation/shared"
 export APE_EVALUATION="$HOME/.localgit/algorithmic_payload_estimation/payload_estimation/services/evaluation"
+export LSTM="$HOME/.localgit/algorithmic_payload_estimation/payload_estimation/services/lstm"
 
 ## Start DeLaN training
 workspace/delan_repo:
@@ -27,6 +28,14 @@ python3 scripts/build_lstm_windows.py \
   --in_npz /workspace/shared/data/processed/ur5_residual_traj.npz \
   --out_npz /workspace/shared/data/processed/ur5_lstm_windows_H50.npz \
   --H 50
+
+## Train LSTM
+python3 train_residual_lstm.py \
+  --npz /workspace/shared/data/processed/ur5_lstm_windows_H50.npz \
+  --out_dir /workspace/shared/models/lstm/residual_lstm_H50 \
+  --epochs 60 --batch 64
+
+## Evaluate and Combine DeLaN & LSTM
 
 ## Show key env values one by one
 echo "ROS_DISTRO=$ROS_DISTRO"
