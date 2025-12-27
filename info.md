@@ -2,6 +2,8 @@
 
 xhost +local:docker
 
+vps share: smb://192.168.0.206/share/
+
 ## Export APE_REPO
 export APE_REPO="$HOME/.localgit/algorithmic_payload_estimation"
 export DELAN_REPO="$HOME/.localgit/deep_lagrangian_networks"
