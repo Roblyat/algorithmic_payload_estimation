@@ -223,7 +223,7 @@ The structured literature search identified a substantial number of relevant pap
 | **Q3 – Deep Sequence Models**     | 8          | 4          | 4       | 0     |
 | **Q4 – Physics-Informed / Diff.** | 5          | 5          | 0       | 0     |
 | **Q5 – Surveys & Overviews**      | 2          | –          | –       | –     |
-| **Total** without Surveys         | **36**     | **20**     | **11**  | **3** |
+| **Total**                         | **36**     | **20**     | **11**  | **3** |
 
 > **Note:** “Total Papers” excludes non-article references like textbooks.
 > “2022–Present” counts publications from 2022 to 2025.

@@ -580,3 +580,12 @@ If you want, paste the filenames you currently have for:
 * `evaluate_and_combine.py`
 
 …and I’ll give you the exact patch chunks (diff-style) so you can drop them in with zero guessing.
+
+
+---
+---
+---
+
+NEXT STEPS:
+## Next: “tau_hat only” vs “full features” ablation (recommended)
+--> LINE 425 - end !

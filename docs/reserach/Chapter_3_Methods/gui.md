@@ -1,0 +1,1 @@
+- remove terminal cmd textbox from ui control tab, just remain with "Running" info

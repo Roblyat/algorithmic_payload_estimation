@@ -6,6 +6,7 @@ vps share: smb://192.168.0.206/share/
 
 ## Export APE_REPO
 export APE_REPO="$HOME/.localgit/algorithmic_payload_estimation"
+export APE_PE="$HOME/.localgit/algorithmic_payload_estimation/payload_estimation"
 export DELAN_REPO="$HOME/.localgit/deep_lagrangian_networks"
 export APE_PREPROCESS="$HOME/.localgit/algorithmic_payload_estimation/payload_estimation/services/preprocess"
 export APE_SHARED="$HOME/.localgit/algorithmic_payload_estimation/payload_estimation/shared"
@@ -32,12 +33,18 @@ python3 scripts/build_lstm_windows.py \
   --H 50
 
 ## Train LSTM
-python3 train_residual_lstm.py \
+  python3 train_residual_lstm.py \
   --npz /workspace/shared/data/processed/ur5_lstm_windows_H50.npz \
-  --out_dir /workspace/shared/models/lstm/residual_lstm_H50 \
+  --out_dir /workspace/shared/models/lstm/residual_lstm_H50_scaled \
   --epochs 60 --batch 64
 
 ## Evaluate and Combine DeLaN & LSTM
+python3 evaluate_and_combine.py \
+  --residual_npz /workspace/shared/data/processed/ur5_residual_traj.npz \
+  --model /workspace/shared/models/lstm/residual_lstm_H50_scaled/best.keras \
+  --scalers /workspace/shared/models/lstm/residual_lstm_H50_scaled/scalers_H50.npz \
+  --out_dir /workspace/shared/models/lstm/residual_lstm_H50_scaled/eval_combined \
+  --H 50 --split test --save_pred_npz
 
 ## Show key env values one by one
 echo "ROS_DISTRO=$ROS_DISTRO"

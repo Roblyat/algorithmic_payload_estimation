@@ -46,3 +46,73 @@ UR5 Dataset:
   Test samples  = 3075
 
 ![Results DeLaN](/docs/reserach/illustrations/UR5_DeLaN_Torque___Seed=4.png)
+
+---
+
+## 🔧 Fix 1: matplotlib backend selection (Qt5Agg) should depend on `render`
+
+Right now you do `mp.use("Qt5Agg")` unconditionally (inside try), so even when running headless, you’re *still trying* to use Qt. It might work on your machine because you mounted X11, but it’s fragile and will break on servers.
+
+### Better pattern (drop-in)
+
+Change your matplotlib init to:
+
+```python
+import matplotlib as mp
+plt = None
+
+def _setup_matplotlib(render: bool):
+    global plt
+    try:
+        if render:
+            mp.use("Qt5Agg")
+        else:
+            mp.use("Agg")
+        mp.rc('text', usetex=False)
+        import matplotlib.pyplot as plt_local
+        plt = plt_local
+    except Exception:
+        plt = None
+```
+
+Then **after** you parse args / init env:
+
+```python
+_setup_matplotlib(bool(render))
+```
+
+Now:
+
+* render=1 → interactive window possible
+* render=0 → always headless-safe (still saves PNGs)
+
+---
+
+## 🔧 Fix 2: set `XLA_PYTHON_CLIENT_MEM_FRACTION` *before importing JAX*
+
+You currently set:
+
+```py
+import jax
+...
+os.environ['XLA_PYTHON_CLIENT_MEM_FRACTION'] = '0.4'
+```
+
+That’s too late for it to reliably take effect.
+
+### Minimal fix
+
+Move:
+
+```python
+import os
+os.environ['XLA_PYTHON_CLIENT_MEM_FRACTION'] = '0.4'
+```
+
+to the **very top of the file**, before `import jax`.
+
+---
+more extremely useful plots:
+
+* **per-joint RMSE bar chart** (DeLaN-only, test split)
+* optionally also **per-joint normalized RMSE** (using your `norm_tau`)
