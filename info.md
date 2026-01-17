@@ -7,7 +7,7 @@ vps share: smb://192.168.0.206/share/
 ## Export APE_REPO
 export APE_REPO="$HOME/.localgit/algorithmic_payload_estimation"
 export APE_PE="$HOME/.localgit/algorithmic_payload_estimation/payload_estimation"
-export DELAN_REPO="$HOME/.localgit/deep_lagrangian_networks"
+export APE_DELAN="$HOME/.localgit/algorithmic_payload_estimation/deep_lagrangian_networks"
 export APE_PREPROCESS="$HOME/.localgit/algorithmic_payload_estimation/payload_estimation/services/preprocess"
 export APE_SHARED="$HOME/.localgit/algorithmic_payload_estimation/payload_estimation/shared"
 export APE_EVALUATION="$HOME/.localgit/algorithmic_payload_estimation/payload_estimation/services/evaluation"
