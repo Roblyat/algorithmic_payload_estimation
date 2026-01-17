@@ -28,3 +28,6 @@
 [submodule "docs/latex-module"]
 	path = docs/latex-module
 	url = git@github.com:Roblyat/latex-module.git
+[submodule "deep_lagrangian_networks"]
+	path = deep_lagrangian_networks
+	url = git@github.com:Roblyat/deep_lagrangian_networks.git
