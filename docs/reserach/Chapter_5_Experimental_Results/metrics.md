@@ -720,33 +720,9 @@ If you later want it to also pull DeLaN + LSTM metrics directly:
 ---
 ---
 
-okay, now the pipeline works fine. i also added this to combine_evaluation.py:
-f.write(f"feature_mode={args.features}\n")
-f.write(f"residual_npz={args.residual_npz}\n")
-f.write(f"lstm_model={args.model}\n")
-f.write(f"lstm_scalers={args.scalers}\n")
+NEXT, after that DeLaN_jax to classes and DeLaN_torch train:
 
-see:
-    # ---- Save metrics ----
-    metrics_path = os.path.join(args.out_dir, f"metrics_{split}_H{H}.txt")
-    with open(metrics_path, "w") as f:
-        f.write(f"split={split}\nH={H}\n")
-        f.write(f"delan_mse={delan_mse}\ndelan_rmse={delan_rmse}\n")
-        f.write(f"res_mse={r_mse}\nres_rmse={r_rmse}\n")
-        f.write(f"rg_mse={rg_mse}\nrg_rmse={rg_rmse}\n")
-        f.write("delan_joint_rmse=" + " ".join(map(str, delan_joint.tolist())) + "\n")
-        f.write("res_joint_rmse=" + " ".join(map(str, r_joint.tolist())) + "\n")
-        f.write("rg_joint_rmse=" + " ".join(map(str, rg_joint.tolist())) + "\n")
-        f.write(f"feature_mode={args.features}\n")
-        f.write(f"residual_npz={args.residual_npz}\n")
-        f.write(f"lstm_model={args.model}\n")
-        f.write(f"lstm_scalers={args.scalers}\n")
-
-    print(f"Saved: {metrics_path}")
-
-
-now we need to do step 5 as well:
-## 5) Small improvement for `metrics_boxplots.py` (optional)
+Small improvement for `metrics_boxplots.py` (optional)
 
 Right now it only reads `shared/evaluation/*/metrics_*_H*.txt` (which is fine). 
 If you later want it to also pull DeLaN + LSTM metrics directly:
