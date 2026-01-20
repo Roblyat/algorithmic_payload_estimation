@@ -192,3 +192,154 @@ Keep your existing plots. Then add *interpretability* plots that make decisions 
 * **new:** gain_abs and gain_ratio by feature_mode
 * **new:** per-joint gain grid
 * **new:** correlation scatters (delan_rmse vs rg_rmse / gain_abs / gain_ratio)
+
+
+
+
+
+---
+---
+---
+
+## 4) What I would do in boxplots now that backend exists
+
+You’re right: once backend exists, you want:
+
+* plots for **jax only**
+* plots for **torch only**
+* plots for **jax vs torch**
+
+### Minimal change to your plotting scripts
+
+In **each** of:
+
+* `delan_metrics_boxplots.py`
+* `lstm_metrics_boxplots.py`
+* `eval_metrics_boxplots.py`
+
+Add an optional arg:
+
+```py
+ap.add_argument("--backend", choices=["all", "jax", "torch"], default="all")
+```
+
+Then, while parsing rows, create a column:
+
+* `backend = "jax"` or `"torch"`
+  (parse from folder name: you now have `delan_jax_...` / `delan_torch_...`)
+
+Finally:
+
+```py
+if args.backend != "all":
+    df = df[df["backend"] == args.backend]
+```
+
+### The “extra” comparison plots I would add (very useful)
+
+In **eval_metrics_boxplots** (pipeline):
+
+1. `gain = delan_rmse - rg_rmse` boxplot grouped by:
+
+   * x = `feature_mode`
+   * hue = `backend`  ✅ (torch vs jax side-by-side)
+
+2. `gain_ratio = rg_rmse / delan_rmse` boxplot:
+
+   * x = `feature_mode`
+   * hue = `backend`
+
+3. Scatter:
+
+   * x = `delan_rmse`
+   * y = `gain_ratio`
+   * color = `backend`
+
+In **delan_metrics_boxplots** (stage 1 only):
+
+* torque_rmse boxplot:
+
+  * x = `model_short` (struct/black)
+  * hue = `backend`
+
+In **lstm_metrics_boxplots** (stage 2 only):
+
+* residual rmse boxplot:
+
+  * x = `feature_mode`
+  * hue = `backend`
+  * (optional facet by H)
+
+This gives you “jax vs torch” immediately, without needing new UI logic beyond one dropdown.
+
+---
+
+## 5) UI buttons in evaluation section for delan/lstm plots (same pattern as eval)
+
+You asked for the same pattern; this is exactly what I’d drop into `evaluation.py` next to your existing “Metrics plots” button:
+
+```py
+with e_col3:
+    c1, c2, c3 = st.columns(3)
+
+    with c1:
+        pad_button()
+        if st.button("Eval plots", use_container_width=True):
+            run(
+                f"{cfg.COMPOSE} exec -T evaluation bash -lc "
+                f"\"python3 scripts/eval_metrics_boxplots.py "
+                f"--eval_root {paths.evaluation} "
+                f"--out_dir {metrics_out} "
+                f"\""
+            )
+
+    with c2:
+        pad_button()
+        if st.button("DeLaN plots", use_container_width=True):
+            run(
+                f"{cfg.COMPOSE} exec -T evaluation bash -lc "
+                f"\"python3 scripts/delan_metrics_boxplots.py "
+                f"--delan_root {paths.models_delan} "
+                f"--out_dir {paths.models_delan}/_plots "
+                f"\""
+            )
+
+    with c3:
+        pad_button()
+        if st.button("LSTM plots", use_container_width=True):
+            run(
+                f"{cfg.COMPOSE} exec -T evaluation bash -lc "
+                f"\"python3 scripts/lstm_metrics_boxplots.py "
+                f"--lstm_root {paths.models_lstm} "
+                f"--out_dir {paths.models_lstm}/_plots "
+                f"\""
+            )
+```
+
+(Then later you can add a `backend` selectbox in the evaluation section and pass `--backend {backend}` into each script.)
+
+---
+
+## Summary of what you should change right now
+
+* **delan.py**
+
+  * add backend selector
+  * include backend in `delan_tag` and `delan_id`
+  * use correct service + script per backend
+  * residual name inherits backend via `delan_tag`
+
+* **lstm.py**
+
+  * include backend in windows filename default
+  * rely on `st.session_state["residual_npz"]` as the correct folder-style file path
+
+* **evaluation.py**
+
+  * just use session_state’s residual path; eval output folder already inherits backend if lstm_dir_name does
+
+* **boxplots**
+
+  * add `--backend` filter + “hue=backend” comparisons
+
+If you paste your current `delan.py` naming block (the few lines around where `delan_tag`, `delan_id`, `default_residual_name` are created), I can rewrite that exact block in-place with the backend changes (no refactor, just the affected lines).
