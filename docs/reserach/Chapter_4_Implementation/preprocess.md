@@ -1,82 +1,158 @@
-## Preprocessing pipeline
+## DeLaN preprocess pipeline
+#### Downstream usage note (DeLaN vs LSTM)
 
-### Input dataset (your measured robot logs)
+* For **DeLaN** (per-timestep inverse dynamics), you often **flatten** trajectories into `(N,6)` arrays by concatenating all `T_i`.
+* For **sequence models** (LSTM), you typically keep the trajectory structure and sample windows (or pad+mask).
 
-You record a **long-format CSV** with columns:
+### Inputs
+
+A single **long-format CSV log** where each row is one joint at one timestamp:
 
 * `Time`
 * `Joint Name`
 * `Position`
 * `Velocity`
 * `Acceleration`
-* `Effort` (treated as **τ** for now)
+* `Effort` (used as τ / torque target)
 
-This is **fully measured per joint** (pos/vel/accel/effort). In this first iteration:
+---
 
-* **no filtering** is applied to velocity/acceleration yet
-* no torque constant conversion yet (effort ≙ τ)
+### 1) Load raw CSV
 
-### 2a — select the 6 UR5 joints
+Read the CSV into a pandas DataFrame (no extra parsing/cleaning yet).
 
-We filter the CSV to only:
+---
 
-* `ur5_shoulder_pan_joint`
-* `ur5_shoulder_lift_joint`
-* `ur5_elbow_joint`
-* `ur5_wrist_1_joint`
-* `ur5_wrist_2_joint`
-* `ur5_wrist_3_joint`
+### 2) Select DOF joints (UR5 = 6)
 
-This defines `n_dof = 6`.
+Filter rows to keep only the configured joint names, in a fixed joint order:
 
-### 2b — pack the log into trajectories
+```
+[dof_joints] = [
+  ur5_shoulder_pan_joint,
+  ur5_shoulder_lift_joint,
+  ur5_elbow_joint,
+  ur5_wrist_1_joint,
+  ur5_wrist_2_joint,
+  ur5_wrist_3_joint
+]
+```
 
-Because your log is continuous and does not contain obvious time gaps, we segment it into trajectories using **fixed-length chunks in “frames”**:
+All other joints are dropped.
 
-* A **frame** = one unique timestamp across all joints
-* We assign a `trajectory_id = frame_index // frames_per_trajectory`
+---
 
-This yields many trajectories (you got `train=164 / test=41`).
+### 3) Segment into trajectories (add `trajectory_id`)
 
-### 2c — pivot to wide arrays (T, n_dof)
+Goal: define **trajectory boundaries** so train/test split can happen at the trajectory level.
 
-For each trajectory, we convert long → wide using pivoting:
+Two modes:
 
-* index = `Time`
-* columns = ordered joint list (the 6 UR5 joints)
-* values = one of `Position`, `Velocity`, `Acceleration`, `Effort`
+**A) Time-gap segmentation**
 
-So each trajectory becomes numeric arrays:
+* Sort by `Time`
+* Compute `dt = Time.diff()`
+* Start a new trajectory whenever `dt > time_gap_seconds`
+* `trajectory_id` increments each time a gap is detected
 
-* `t`: `(T,)`
-* `q`: `(T, 6)` from Position
-* `qd`: `(T, 6)` from Velocity
-* `qdd`: `(T, 6)` from Acceleration
-* `tau`: `(T, 6)` from Effort -> T = k_t*i
+**B) Fixed-length segmentation**
 
-### 2d — train/test split by trajectory
+* Treat each unique timestamp as one “frame”
+* Assign a frame index 0,1,2,...
+* Group every `frames_per_trajectory` frames into one trajectory:
 
-We split **by trajectory**, not by rows:
+  * `trajectory_id = frame_idx // frames_per_trajectory`
 
-* randomly shuffle trajectory IDs
-* assign a fraction (e.g. 20%) of trajectories to test
-* rest to train
+Result: the long dataframe now contains an integer `trajectory_id` column.
 
-This avoids leakage of near-identical neighboring samples across splits.
+---
 
-### 2e — save a dataset that training can load
+### 4) Build trajectory tensors (pivot long → wide per `trajectory_id`)
 
-We write `delan_ur5_dataset.npz` containing **trajectory lists** (variable length):
+For each `trajectory_id = i`:
 
-* `train_labels`, `train_t`, `train_q`, `train_qd`, `train_qdd`, `train_tau`
-* `test_labels`,  `test_t`,  `test_q`,  `test_qd`,  `test_qdd`,  `test_tau`
+1. Collect and sort unique timestamps → `t_i` with shape `(T_i,)`
+2. For each signal field in `{Position, Velocity, Acceleration, Effort}`:
 
-Each `*_q` etc. is stored as an **object array** of shape `(n_traj,)`, where each element is an `(T_i, 6)` numpy array.
+   * Pivot to wide format:
 
-On the DeLaN side, we load the NPZ and **flatten** by stacking trajectories:
+     * index = `Time`
+     * columns = `Joint Name` (ordered by `dof_joints`)
+     * values = that signal
+   * Reindex rows to `t_i` and columns to the 6-joint order
+   * Convert to NumPy
+   * **Fail if any NaNs appear** (meaning missing joint samples at some time)
 
-* `train_q = vstack(train_q_list)` → `(N_train, 6)`
-* same for `qd, qdd, tau`
-* and we force numeric dtype (`float32`) to avoid `dtype=object` issues with JAX.
+This produces one trajectory object with aligned matrices:
+
+* `t_i`: `(T_i,)`
+* `q_i`: `(T_i, 6)` from `Position`
+* `qd_i`: `(T_i, 6)` from `Velocity`
+* `qdd_i`: `(T_i, 6)` from `Acceleration`
+* `tau_i`: `(T_i, 6)` from `Effort`
+
+A string label is assigned like: `"traj_0000"`, `"traj_0001"`, …
+
+Conceptually:
+
+```python
+trajs = [
+  {
+    "label": "traj_0000",
+    "t":   t0,    # (T0,)
+    "q":   q0,    # (T0,6)
+    "qd":  qd0,   # (T0,6)
+    "qdd": qdd0,  # (T0,6)
+    "tau": tau0,  # (T0,6)
+  },
+  {
+    "label": "traj_0001",
+    "t":   t1,    # (T1,)
+    "q":   q1,    # (T1,6)
+    "qd":  qd1,   # (T1,6)
+    "qdd": qdd1,  # (T1,6)
+    "tau": tau1,  # (T1,6)
+  },
+  ...
+]
+```
+
+---
+
+### 5) Train/test split (trajectory-level)
+
+Shuffle the list of trajectories and split by fraction:
+
+* select `test_fraction` of trajectories → test set
+* remaining trajectories → train set
+
+No trajectory is split across train/test.
+
+---
+
+### 6) Save to NPZ (ragged trajectories via object arrays)
+
+Write an NPZ file where each field is stored as a **NumPy object array** (ragged list) of length `n_traj`:
+
+**Train:**
+
+* `train_labels` : `(n_train,)` (strings like `"traj_0007"`)
+* `train_t`      : `(n_train,)` where `train_t[i]` is `(T_i,)`
+* `train_q`      : `(n_train,)` where `train_q[i]` is `(T_i,6)`
+* `train_qd`     : `(n_train,)` where `train_qd[i]` is `(T_i,6)`
+* `train_qdd`    : `(n_train,)` where `train_qdd[i]` is `(T_i,6)`
+* `train_tau`    : `(n_train,)` where `train_tau[i]` is `(T_i,6)`
+
+**Test:**
+
+* same keys prefixed with `test_...`
+
+So the file is effectively:
+
+```python
+npz["train_q"][i]   -> ndarray (T_i, 6)
+npz["train_tau"][i] -> ndarray (T_i, 6)
+...
+```
 
 ---
