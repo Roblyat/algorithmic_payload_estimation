@@ -13,38 +13,7 @@ export APE_SHARED="$HOME/.localgit/algorithmic_payload_estimation/payload_estima
 export APE_EVALUATION="$HOME/.localgit/algorithmic_payload_estimation/payload_estimation/services/evaluation"
 export LSTM="$HOME/.localgit/algorithmic_payload_estimation/payload_estimation/services/lstm"
 
-## Start DeLaN training
-workspace/delan_repo:
-python3 -m deep_lagrangian_networks.train_ur5_jax \
-  --npz /workspace/shared/data/preprocessed/delan_ur5_dataset.npz \
-  -t structured -r 1 -m 1 \
-  --save_path /workspace/shared/models/delan/delan_ur5_struct_seed4.jax
-
-## Compute Residuals DeLaN
-python3 -m deep_lagrangian_networks.export_ur5_residuals_jax \
-  --npz_in /workspace/shared/data/preprocessed/delan_ur5_dataset.npz \
-  --ckpt /workspace/shared/models/delan/delan_ur5_struct_seed4.jax \
-  --out /workspace/shared/data/processed/ur5_residual_traj.npz
-
-## Preprocess LSTM Time Windows
-python3 scripts/build_lstm_windows.py \
-  --in_npz /workspace/shared/data/processed/ur5_residual_traj.npz \
-  --out_npz /workspace/shared/data/processed/ur5_lstm_windows_H50.npz \
-  --H 50
-
-## Train LSTM
-  python3 train_residual_lstm.py \
-  --npz /workspace/shared/data/processed/ur5_lstm_windows_H50.npz \
-  --out_dir /workspace/shared/models/lstm/residual_lstm_H50_scaled \
-  --epochs 60 --batch 64
-
-## Evaluate and Combine DeLaN & LSTM
-python3 evaluate_and_combine.py \
-  --residual_npz /workspace/shared/data/processed/ur5_residual_traj.npz \
-  --model /workspace/shared/models/lstm/residual_lstm_H50_scaled/best.keras \
-  --scalers /workspace/shared/models/lstm/residual_lstm_H50_scaled/scalers_H50.npz \
-  --out_dir /workspace/shared/models/lstm/residual_lstm_H50_scaled/eval_combined \
-  --H 50 --split test --save_pred_npz
+clear folders example: rm -rf -- !(.gitkeep|delan_ur5_dataset.npz)
 
 ## Show key env values one by one
 echo "ROS_DISTRO=$ROS_DISTRO"
