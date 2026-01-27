@@ -131,3 +131,73 @@ Now what 5 parameter setups should we choose based on experiment 1 k-domination:
  How this connects to K-domination results now:
 * Best-model approach fixes (K=84) and then asks: “**within the stable regime**, which hyperparameters give the best accuracy-robustness tradeoff across dataset and init seeds?” 
 * The proposed aggregate scatter (median ± IQR) is exactly the right visualization for that, showing the most accurate and most stable model in the bottom-left corner of the scatter plots
+
+
+## Scatter 1: accuracy vs stability
+
+**Title (paper/thesis):**
+
+* **DeLaN validation accuracy vs seed stability (median vs IQR)**
+
+**Short title (plot header):**
+
+* **val_rmse (median) vs val_rmse (IQR)**
+
+**Filename:**
+
+* `scatter_valrmse_median_vs_iqr__delan.png`
+
+**Caption phrase:**
+
+* “Median validation RMSE versus interquartile range (IQR) across DeLaN and dataset seeds; lower-left indicates accurate and stable hyperparameter settings.”
+
+---
+
+## Scatter 2: validation ↔ test alignment
+
+**Title (paper/thesis):**
+
+* **DeLaN validation vs test performance (median val_rmse vs median test_rmse)**
+
+**Short title (plot header):**
+
+* **val_rmse (median) vs test_rmse (median)**
+
+**Filename:**
+
+* `scatter_valrmse_median_vs_testrmse_median__delan.png`
+
+**Caption phrase:**
+
+* “Median validation RMSE versus median test RMSE across DeLaN and dataset seeds; closeness to the diagonal indicates reliable validation-based model selection.”
+
+
+---
+---
+---
+
+
+okay see the delan best model approach experiment i provided as pdf. do you think we should wait, or do you think we can directly setup stage2, having enough knowledge to set the stage 2 best model algorithm up, even not seen best delan model yet. evaluating lstm with different H, early_stopping different warm up and patience -> because metrics show that lstm with no warm up and 10 patience stop early (5 to 15 epochs) does not have a chance to converge and with to small H=25 also not converge even over many epochs. and maybe getting a good perspective on the pipeline testing with different feature modes for lstm. i already have a setup in my pipeline for this and i can adjust the plots for feautre modes or add new ones as best, if these feature modes may make sense for interpreting. see my current feature modes setup:
+
+Feature modes are defined in feature_builders.py and enforced when building the LSTM window dataset in build_lstm_windows.py. Training (train_residual_lstm.py) just consumes the resulting NPZ and the feature_dim stored in it, so the mode is entirely determined at preprocessing time.
+
+Here are the modes and what goes into each feature vector at every timestep (each signal is shape (T, dof)):
+
+full: concat [q, qd, qdd, tau_hat] → feature_dim = 4*dof
+tau_hat: just tau_hat → feature_dim = 1*dof
+state: concat [q, qd, qdd] → feature_dim = 3*dof
+state_tauhat: concat [qd, qdd, tau_hat] → feature_dim = 3*dof
+Where:
+
+q = joint positions
+qd = joint velocities
+qdd = joint accelerations
+tau_hat = model-predicted torque (from DELAN)
+In build_lstm_windows.py, those per‑timestep features are stacked into sliding windows of length H, so each LSTM sample is (H, feature_dim) and the target Y is the residual torque r_tau at the window’s last step. feature_mode is saved into the NPZ metadata, but the training script doesn’t read it — it only uses feature_dim and the arrays.
+
+For plotting, lstm_metrics_boxplots.py parses the run folder name and pulls the feature mode from a __feat_<mode>__ token (e.g., __feat_full__). If it doesn’t find that, it uses unknown as the grouping key. That’s why consistent run naming matters for the feature_mode boxplots.
+
+so do you think we can model the lstm best approach loop?
+
+give your thoughts and how you would setup lstm best model approach.
+i also provided lstm 2 papers in this field, search them to see related works 
