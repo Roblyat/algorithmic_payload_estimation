@@ -13,7 +13,7 @@ export APE_SHARED="$HOME/.localgit/algorithmic_payload_estimation/payload_estima
 export APE_EVALUATION="$HOME/.localgit/algorithmic_payload_estimation/payload_estimation/services/evaluation"
 export LSTM="$HOME/.localgit/algorithmic_payload_estimation/payload_estimation/services/lstm"
 
-clear folders example: rm -rf -- !(.gitkeep|delan_ur5_dataset.npz)
+clear folders example: rm -rf -- !(.gitkeep|delan_ur5_tf0p2_vf0p1_dataset)
 
 ## Show key env values one by one
 echo "ROS_DISTRO=$ROS_DISTRO"
