@@ -15,6 +15,15 @@ export LSTM="$HOME/.localgit/algorithmic_payload_estimation/payload_estimation/s
 
 clear folders example: rm -rf -- !(.gitkeep|delan_ur5_tf0p2_vf0p1_dataset)
 
+## Run Sweeps
+
+### Activate venv
+- location: /home/robat/.localgit/algorithmic_payload_estimation/payload_estimation/scripts
+  - source /home/robat/.venv/ape_sweep/bin/activate
+    - deactivate venv -> deactivate
+- run sweep
+  - ./run_sweep_xx.sh
+
 ## Show key env values one by one
 echo "ROS_DISTRO=$ROS_DISTRO"
 echo "RMW_IMPLEMENTATION=$RMW_IMPLEMENTATION"
