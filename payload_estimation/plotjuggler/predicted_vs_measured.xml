@@ -60,50 +60,50 @@
     <DockSplitter orientation="-" sizes="0.166667;0.166667;0.166667;0.166667;0.166667;0.166667" count="6">
      <DockArea name="...">
       <plot style="Lines" mode="TimeSeries" flip_y="false" flip_x="false">
-       <range right="100.000000" bottom="-50.000000" left="0.000000" top="50.000000"/>
+       <range right="100.000000" bottom="-60.000000" left="0.000000" top="10.000000"/>
        <limitY/>
-       <curve name="/joint_states/effort.7" color="#1f77b4"/>
-       <curve name="/predicted_effort/data.0" color="#d62728"/>
+       <curve name="/joint_states/ur5_elbow_joint/effort" color="#1f77b4"/>
+       <curve name="/predicted_effort/data[0]" color="#d62728"/>
       </plot>
      </DockArea>
      <DockArea name="...">
       <plot style="Lines" mode="TimeSeries" flip_y="false" flip_x="false">
-       <range right="100.000000" bottom="-50.000000" left="0.000000" top="50.000000"/>
+       <range right="100.000000" bottom="-60.000000" left="0.000000" top="10.000000"/>
        <limitY/>
-       <curve name="/joint_states/effort.8" color="#1f77b4"/>
-       <curve name="/predicted_effort/data.1" color="#d62728"/>
+       <curve name="/joint_states/ur5_shoulder_lift_joint/effort" color="#1f77b4"/>
+       <curve name="/predicted_effort/data[1]" color="#d62728"/>
       </plot>
      </DockArea>
      <DockArea name="...">
       <plot style="Lines" mode="TimeSeries" flip_y="false" flip_x="false">
-       <range right="100.000000" bottom="-50.000000" left="0.000000" top="50.000000"/>
+       <range right="100.000000" bottom="-60.000000" left="0.000000" top="10.000000"/>
        <limitY/>
-       <curve name="/joint_states/effort.9" color="#1f77b4"/>
-       <curve name="/predicted_effort/data.2" color="#d62728"/>
+       <curve name="/joint_states/ur5_shoulder_pan_joint/effort" color="#1f77b4"/>
+       <curve name="/predicted_effort/data[2]" color="#d62728"/>
       </plot>
      </DockArea>
      <DockArea name="...">
       <plot style="Lines" mode="TimeSeries" flip_y="false" flip_x="false">
-       <range right="100.000000" bottom="-10.000000" left="0.000000" top="10.000000"/>
+       <range right="100.000000" bottom="-60.000000" left="0.000000" top="10.000000"/>
        <limitY/>
-       <curve name="/joint_states/effort.10" color="#1f77b4"/>
-       <curve name="/predicted_effort/data.3" color="#d62728"/>
+       <curve name="/joint_states/ur5_wrist_1_joint/effort" color="#1f77b4"/>
+       <curve name="/predicted_effort/data[3]" color="#d62728"/>
       </plot>
      </DockArea>
      <DockArea name="...">
       <plot style="Lines" mode="TimeSeries" flip_y="false" flip_x="false">
-       <range right="100.000000" bottom="-10.000000" left="0.000000" top="10.000000"/>
+       <range right="100.000000" bottom="-60.000000" left="0.000000" top="10.000000"/>
        <limitY/>
-       <curve name="/joint_states/effort.11" color="#1f77b4"/>
-       <curve name="/predicted_effort/data.4" color="#d62728"/>
+       <curve name="/joint_states/ur5_wrist_2_joint/effort" color="#1f77b4"/>
+       <curve name="/predicted_effort/data[4]" color="#d62728"/>
       </plot>
      </DockArea>
      <DockArea name="...">
       <plot style="Lines" mode="TimeSeries" flip_y="false" flip_x="false">
-       <range right="100.000000" bottom="-10.000000" left="0.000000" top="10.000000"/>
+       <range right="100.000000" bottom="-60.000000" left="0.000000" top="10.000000"/>
        <limitY/>
-       <curve name="/joint_states/effort.12" color="#1f77b4"/>
-       <curve name="/predicted_effort/data.5" color="#d62728"/>
+       <curve name="/joint_states/ur5_wrist_3_joint/effort" color="#1f77b4"/>
+       <curve name="/predicted_effort/data[5]" color="#d62728"/>
       </plot>
      </DockArea>
     </DockSplitter>

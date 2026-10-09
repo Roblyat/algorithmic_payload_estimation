@@ -8,6 +8,8 @@ This branch (`main`) implements **"Algorithmic Payload Internal Parameter Estima
 
 A UR5 in Gazebo carries a gripper (always attached) and, optionally, a payload. The goal is to estimate the payload's mass and inertia by isolating its contribution to the force/torque (F/T) sensor mounted between the flange and the gripper — separating the gripper's own (constant) contribution from the payload's (variable) one.
 
+![UR5 with gripper and payload in Gazebo](docs/images/gazebo_ur5.png)
+
 The approach: train two Gaussian Process (GP) models on joint-state data recorded while the robot moves with the gripper only (no payload), then use them to predict, live, what the F/T sensor *should* read if there were still no payload:
 - **GP_effort**: predicts the 6 joint motor efforts from joint positions and velocities.
 - **GP_wrench**: predicts the 6D F/T sensor wrench (force + torque) from joint positions, velocities, and the *predicted* effort (chained after GP_effort).
@@ -44,6 +46,8 @@ universal_robot/, robotiq/  # Robot/gripper description submodules
 
 `hmi` is a custom ImGui/ImPlot application (not RViz/rqt) that drives the robot via MoveIt's `move_group` interface. It's how the training trajectories were generated: it can execute random or predefined Cartesian motions (sampling target poses from a cube centered on the TCP, per the paper's data-collection protocol), move along a plane, or control the gripper. It's launched automatically alongside Gazebo.
 
+<img src="docs/images/hmi_panel.png" alt="hmi control panel" width="420"/>
+
 ## Setup
 
 ```bash
@@ -65,9 +69,9 @@ source devel/setup.bash
 roslaunch manipulator_description manipulator_gazebo.launch
 ```
 
-This starts Gazebo (headless-safe; Gazebo/RViz's 3D OpenGL views may render as a black window when captured under software rendering in some environments — the simulation itself is unaffected, `/joint_states` and `/wrench` publish normally regardless), MoveIt, and the `hmi` control panel.
+This starts Gazebo, RViz with the MoveIt motion planning plugin, and the `hmi` control panel.
 
-> `LIBGL_ALWAYS_SOFTWARE=1` is set in `docker-compose.yaml` so Gazebo/RViz fall back to software OpenGL when no GPU is passed through to the container. If you do have GPU passthrough configured, you can remove it.
+> `LIBGL_ALWAYS_SOFTWARE=1` is set in `docker-compose.yaml` so Gazebo/RViz fall back to software OpenGL when no GPU is passed through to the container. If you do have GPU passthrough configured, you can remove it. If the 3D views render as a black window after `docker compose up`, a full `docker compose restart` (not just relaunching the ROS nodes) has reliably fixed this — it appears to be a stale GL context from container startup rather than anything wrong with the simulation itself, which keeps publishing `/joint_states` and `/wrench` normally either way.
 
 ### Running the GP prediction live
 
@@ -100,6 +104,12 @@ source /opt/ros/noetic/setup.bash
 This loads a pre-built layout with two tabs, each overlaying measured (blue) against predicted (red) curves:
 - **Wrench** — `/wrench` vs. `/predicted_wrench`, all 6 channels (Fx, Fy, Fz, Tx, Ty, Tz).
 - **Joint effort** — `/joint_states/effort` (UR5 joints only, indices 7–12 in the message's joint array) vs. `/predicted_effort`, all 6 joints.
+
+![PlotJuggler: measured vs. predicted wrench, live, while the robot moves](docs/images/plotjuggler_wrench.png)
+
+![PlotJuggler: measured vs. predicted effort, live, while the robot moves](docs/images/pj_effort.png)
+
+This is the live-prediction failure mode from the paper, visible directly: the measured wrench (blue) swings through the robot's actual motion while the predicted wrench (red) stays nearly flat, barely reacting.
 
 If you'd rather build the view yourself: open PlotJuggler, set the streaming source to "ROS Topic Subscriber" and hit Start, then drag the topics above onto the plot area.
 
