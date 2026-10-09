@@ -12,9 +12,10 @@ services:
       - QT_QPA_PLATFORM=xcb
       - ROS_MASTER_URI=http://localhost:11311
       - ROS_HOSTNAME=localhost
+      - LIBGL_ALWAYS_SOFTWARE=1
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix  # Share X11 socket for GUI applications
-      - /home/robat/.localgit/algorithmic_payload_estimation:/catkin_ws/src/algorithmic_payload_estimation
+      - ..:/catkin_ws/src/algorithmic_payload_estimation
       - ${SSH_AUTH_SOCK}:/ssh-agent
 
     stdin_open: true

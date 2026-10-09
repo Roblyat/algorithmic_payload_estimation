@@ -224,8 +224,9 @@ def gp_combined_prediction_node():
     use_kfold = rospy.get_param('/rosparam/use_kfold', False)  # Default is False
 
     # Load model and scaler paths for effort and wrench GP models
-    model_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models', data_type)
-    scaler_path = os.path.join('/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers', data_type)
+    gp_models_root = os.getenv("ROS_GP_MODELS_PATH", "/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models")
+    model_path = os.path.join(gp_models_root, data_type)
+    scaler_path = os.path.join(gp_models_root, 'scalers', data_type)
 
     # Define suffix based on use of kfold and sparse
     suffix = ""
@@ -237,10 +238,10 @@ def gp_combined_prediction_node():
         suffix = "_s"
 
     # Define model and scaler paths based on the data type (effort or wrench)
-    effort_model_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/effort'
-    wrench_model_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/wrench'
-    effort_scaler_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers/effort'
-    wrench_scaler_path = '/home/robat/catkin_ws/src/algorithmic_payload_estimation/payload_estimation/gp_models/scalers/wrench'
+    effort_model_path = os.path.join(gp_models_root, 'effort')
+    wrench_model_path = os.path.join(gp_models_root, 'wrench')
+    effort_scaler_path = os.path.join(gp_models_root, 'scalers', 'effort')
+    wrench_scaler_path = os.path.join(gp_models_root, 'scalers', 'wrench')
 
     # Construct the model and scaler filenames with the appropriate paths
     effort_model_filename = os.path.join(effort_model_path, f"{rosbag_base_name}_effort{suffix}_model.pkl")
