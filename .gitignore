@@ -1,10 +1,21 @@
-# Ignore all files inside data/ but keep the structure
-data/*
-!data/**/.gitkeep
+# Ignore the trained GP models (large .pkl, regeneratable via
+# scripts/training/gp_training_node.py) but keep the folder structure.
+# Scalers are tiny (~4KB) and useful as reference, so they stay tracked.
+payload_estimation/gp_models/effort/*.pkl
+payload_estimation/gp_models/wrench/*.pkl
 
-# Ignore all files inside gp_models/ but keep the structure
-gp_models/*
-!gp_models/**/.gitkeep
+# Ignore bulky, regeneratable-from-rosbag data (raw bag/csv and the
+# preprocessed train/test csv), but keep data/result/ (small plots+metrics
+# from the paper) tracked as reference.
+payload_estimation/data/raw/rosbag/**
+!payload_estimation/data/raw/rosbag/**/
+!payload_estimation/data/raw/rosbag/**/.gitkeep
+payload_estimation/data/raw/csv/**
+!payload_estimation/data/raw/csv/**/
+!payload_estimation/data/raw/csv/**/.gitkeep
+payload_estimation/data/processed/**
+!payload_estimation/data/processed/**/
+!payload_estimation/data/processed/**/.gitkeep
 
 # Ignore build and devel folders
 build/
