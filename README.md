@@ -130,5 +130,3 @@ Sparse GP training with 500 inducing points on ~12k samples takes roughly 10 min
 ## Known limitations (from the paper)
 
 - **Live prediction is unreliable**, especially for the wrench model — the paper's own discussion attributes this to the GP's inability to capture the joint states' multivariate distribution well enough to generalize off the training manifold. This is a negative result worth keeping, not a bug to fix.
-- Only the **effort** GP model shipped trained in this repo originally; the **wrench** model was retrained from the existing recorded data as part of setting up this README (same recording, same preprocessing pipeline as the paper).
-- Several scripts (e.g. the Dockerfile's bind-mounted workspace path) assumed a specific developer machine; the `docker-compose.yaml` volume mount has been made relative (`..`) so the repo runs from any clone location.
